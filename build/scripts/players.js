@@ -1,6 +1,6 @@
 "use strict";
 /*
-Copyright © BalaM314, 2024. All Rights Reserved.
+Copyright © BalaM314, 2025. All Rights Reserved.
 This file contains the FishPlayer class, and many player-related functions.
 */
 var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {

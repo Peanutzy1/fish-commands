@@ -1,6 +1,6 @@
 "use strict";
 /*
-Copyright © BalaM314, 2024. All Rights Reserved.
+Copyright © BalaM314, 2025. All Rights Reserved.
 This file contains a custom (bad) polyfill for promises with slightly different behavior.
 */
 Object.defineProperty(exports, "__esModule", { value: true });

@@ -1,6 +1,6 @@
 "use strict";
 /*
-Copyright © BalaM314, 2024. All Rights Reserved.
+Copyright © BalaM314, 2025. All Rights Reserved.
 This file contains a wrapper over the API calls to the backend server.
 */
 Object.defineProperty(exports, "__esModule", { value: true });
