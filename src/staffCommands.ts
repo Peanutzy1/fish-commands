@@ -242,7 +242,7 @@ export const commands = commandList({
 
 	mute_offline: {
 		args: ["name:string?"],
-		description: "Mutes/Unmutes an offline player.",
+		description: "Mutes an offline player.",
 		perm: Perm.mod,
 		handler({args, sender, outputFail, outputSuccess, f, admins}){
 			const maxPlayers = 60;
@@ -265,7 +265,7 @@ export const commands = commandList({
 			if(args.name && uuidPattern.test(args.name)){
 				const info:PlayerInfo | null = admins.getInfoOptional(args.name);
 				if(info != null) {
-					
+					mute(info);
 				} else {
 					outputFail(f`Unknown UUID ${args.name}`);
 				}
@@ -296,7 +296,7 @@ export const commands = commandList({
 			}
 
 
-			menu("Stop", "Choose a player to mute", possiblePlayers, sender, ({option: optionPlayer, sender}) => {
+			menu("Mute", "Choose a player to mute", possiblePlayers, sender, ({option: optionPlayer, sender}) => {
 				mute(optionPlayer)
 			}, true, p => p.lastName);
 		}

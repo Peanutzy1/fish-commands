@@ -298,7 +298,7 @@ exports.commands = (0, commands_1.commandList)({
     },
     mute_offline: {
         args: ["name:string?"],
-        description: "Mutes/Unmutes an offline player.",
+        description: "Mutes an offline player.",
         perm: commands_1.Perm.mod,
         handler: function (_a) {
             var args = _a.args, sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess, f = _a.f, admins = _a.admins;
@@ -323,6 +323,7 @@ exports.commands = (0, commands_1.commandList)({
             if (args.name && globals_2.uuidPattern.test(args.name)) {
                 var info = admins.getInfoOptional(args.name);
                 if (info != null) {
+                    mute(info);
                 }
                 else {
                     outputFail(f(templateObject_22 || (templateObject_22 = __makeTemplateObject(["Unknown UUID ", ""], ["Unknown UUID ", ""])), args.name));
@@ -355,7 +356,7 @@ exports.commands = (0, commands_1.commandList)({
             else {
                 possiblePlayers = players_1.FishPlayer.recentLeaves.map(function (p) { return p.info(); });
             }
-            (0, menus_1.menu)("Stop", "Choose a player to mute", possiblePlayers, sender, function (_a) {
+            (0, menus_1.menu)("Mute", "Choose a player to mute", possiblePlayers, sender, function (_a) {
                 var optionPlayer = _a.option, sender = _a.sender;
                 mute(optionPlayer);
             }, true, function (p) { return p.lastName; });
