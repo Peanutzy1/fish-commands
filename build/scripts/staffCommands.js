@@ -306,7 +306,7 @@ exports.commands = (0, commands_1.commandList)({
             function mute(option) {
                 var fishP = players_1.FishPlayer.getFromInfo(option);
                 if (!sender.canModerate(fishP, true))
-                    outputFail("You do not have permission to stop this player.");
+                    (0, commands_1.fail)("You do not have permission to mute this player.");
                 else {
                     (0, menus_1.menu)("Mute Offine Conformation", "Are you sure you want to ".concat(fishP.muted ? "unmute" : "mute", " player ").concat(option.lastName, "?"), ["[green]Yes, ".concat(fishP.muted ? "unmute" : "mute", " them"), "[red]Cancel"], sender, function (res) {
                         if (res.option == "[green]Yes, ".concat(fishP.muted ? "unmute" : "mute", " them")) {
