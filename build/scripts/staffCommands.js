@@ -326,7 +326,7 @@ exports.commands = (0, commands_1.commandList)({
                     mute(info);
                 }
                 else {
-                    outputFail(f(templateObject_22 || (templateObject_22 = __makeTemplateObject(["Unknown UUID ", ""], ["Unknown UUID ", ""])), args.name));
+                    (0, commands_1.fail)(f(templateObject_22 || (templateObject_22 = __makeTemplateObject(["Unknown UUID ", ""], ["Unknown UUID ", ""])), args.name));
                 }
                 return;
             }

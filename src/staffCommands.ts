@@ -267,7 +267,7 @@ export const commands = commandList({
 				if(info != null) {
 					mute(info);
 				} else {
-					outputFail(f`Unknown UUID ${args.name}`);
+					fail(f`Unknown UUID ${args.name}`);
 				}
 				return;
 			}
