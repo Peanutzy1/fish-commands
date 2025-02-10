@@ -240,6 +240,67 @@ export const commands = commandList({
 		}
 	},
 
+	mute_offline: {
+		args: ["name:string?"],
+		description: "Mutes an offline player.",
+		perm: Perm.mod,
+		handler({args, sender, outputSuccess, f, admins}){
+			const maxPlayers = 60;
+			
+			function mute(option:PlayerInfo){
+				const fishP = FishPlayer.getFromInfo(option);
+				if(!sender.canModerate(fishP, true)) fail(`You do not have permission to mute this player.`);
+				menu(
+					"Mute Offine Confirmation",
+					`Are you sure you want to ${fishP.muted ? "unmute" : "mute"} player ${option.lastName}?`,
+					[true, false],
+					sender, (res) => {
+					if(res.option){
+						logAction(fishP.muted ? "unmuted" : "muted", sender, fishP);
+						if(fishP.muted) fishP.unmute(sender)
+						else fishP.mute(sender);
+						outputSuccess(`${fishP.muted ? "Muted" : "Unmuted"} ${option.lastName}.`);
+					}
+				}, false, opt => opt ? `[green]Yes, ${fishP.muted ? "unmute" : "mute"} them` : `[red]Cancel`);
+			}
+			
+			if(args.name && uuidPattern.test(args.name)){
+				const info:PlayerInfo | null = admins.getInfoOptional(args.name);
+				if(!info) fail(f`Unknown UUID ${args.name}`);
+				mute(info);
+				return;
+			}
+
+			let possiblePlayers:PlayerInfo[];
+			if(args.name) {
+				possiblePlayers = setToArray(admins.searchNames(args.name));
+				if(possiblePlayers.length > maxPlayers){
+					let exactPlayers = setToArray(admins.findByName(args.name));
+					if(exactPlayers.length > 0){
+						possiblePlayers = exactPlayers;
+					} else {
+						fail("Too many players with that name.");
+					}
+				} else if(possiblePlayers.length == 0){
+					fail("No players with that name were found.");
+				}
+				const score = (data:PlayerInfo) => {
+					const fishP = FishPlayer.getById(data.id);
+					if(fishP) return fishP.lastJoined;
+					return - data.timesJoined;
+				}
+				possiblePlayers.sort((a, b) => score(b) - score(a));
+			} else {
+				possiblePlayers = FishPlayer.recentLeaves.map(p => p.info());
+			}
+
+
+			menu("Mute", "Choose a player to mute", possiblePlayers, sender, ({option: optionPlayer}) => {
+				mute(optionPlayer);
+			}, true, p => p.lastName);
+		}
+	},
+
 	restart: {
 		args: [],
 		description: "Stops and restarts the server. Do not run when the player count is high.",
