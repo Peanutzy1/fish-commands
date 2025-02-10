@@ -244,31 +244,30 @@ export const commands = commandList({
 		args: ["name:string?"],
 		description: "Mutes an offline player.",
 		perm: Perm.mod,
-		handler({args, sender, outputFail, outputSuccess, f, admins}){
+		handler({args, sender, outputSuccess, f, admins}){
 			const maxPlayers = 60;
 			
 			function mute(option:PlayerInfo){
 				const fishP = FishPlayer.getFromInfo(option);
-				if(!sender.canModerate(fishP, true))fail(`You do not have permission to mute this player.`);
-				else {
-					menu("Mute Offine Conformation", `Are you sure you want to ${fishP.muted ? "unmute" : "mute"} player ${option.lastName}?`, [`[green]Yes, ${fishP.muted ? "unmute" : "mute"} them`, `[red]Cancel`], sender, (res) => {
-						if(res.option == `[green]Yes, ${fishP.muted ? "unmute" : "mute"} them`){
-							logAction(fishP.muted ? "unmuted" : "muted",sender,fishP,undefined,untilForever());
-							if(fishP.muted) fishP.unmute(sender)
-							else fishP.mute(sender);
-							outputSuccess(`${fishP.muted ? "Muted" : "Unmuted"} ${option.lastName}.`);
-						}
-					});
-				}
+				if(!sender.canModerate(fishP, true)) fail(`You do not have permission to mute this player.`);
+				menu(
+					"Mute Offine Confirmation",
+					`Are you sure you want to ${fishP.muted ? "unmute" : "mute"} player ${option.lastName}?`,
+					[true, false],
+					sender, (res) => {
+					if(res.option){
+						logAction(fishP.muted ? "unmuted" : "muted", sender, fishP);
+						if(fishP.muted) fishP.unmute(sender)
+						else fishP.mute(sender);
+						outputSuccess(`${fishP.muted ? "Muted" : "Unmuted"} ${option.lastName}.`);
+					}
+				}, false, opt => opt ? `[green]Yes, ${fishP.muted ? "unmute" : "mute"} them` : `[red]Cancel`);
 			}
 			
 			if(args.name && uuidPattern.test(args.name)){
 				const info:PlayerInfo | null = admins.getInfoOptional(args.name);
-				if(info != null) {
-					mute(info);
-				} else {
-					fail(f`Unknown UUID ${args.name}`);
-				}
+				if(!info) fail(f`Unknown UUID ${args.name}`);
+				mute(info);
 				return;
 			}
 
@@ -276,7 +275,7 @@ export const commands = commandList({
 			if(args.name) {
 				possiblePlayers = setToArray(admins.searchNames(args.name));
 				if(possiblePlayers.length > maxPlayers){
-					let exactPlayers = setToArray(admins.findByName(args.name) as ObjectSet<PlayerInfo>);
+					let exactPlayers = setToArray(admins.findByName(args.name));
 					if(exactPlayers.length > 0){
 						possiblePlayers = exactPlayers;
 					} else {
@@ -296,8 +295,8 @@ export const commands = commandList({
 			}
 
 
-			menu("Mute", "Choose a player to mute", possiblePlayers, sender, ({option: optionPlayer, sender}) => {
-				mute(optionPlayer)
+			menu("Mute", "Choose a player to mute", possiblePlayers, sender, ({option: optionPlayer}) => {
+				mute(optionPlayer);
 			}, true, p => p.lastName);
 		}
 	},

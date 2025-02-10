@@ -301,33 +301,28 @@ exports.commands = (0, commands_1.commandList)({
         description: "Mutes an offline player.",
         perm: commands_1.Perm.mod,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess, f = _a.f, admins = _a.admins;
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f, admins = _a.admins;
             var maxPlayers = 60;
             function mute(option) {
                 var fishP = players_1.FishPlayer.getFromInfo(option);
                 if (!sender.canModerate(fishP, true))
                     (0, commands_1.fail)("You do not have permission to mute this player.");
-                else {
-                    (0, menus_1.menu)("Mute Offine Conformation", "Are you sure you want to ".concat(fishP.muted ? "unmute" : "mute", " player ").concat(option.lastName, "?"), ["[green]Yes, ".concat(fishP.muted ? "unmute" : "mute", " them"), "[red]Cancel"], sender, function (res) {
-                        if (res.option == "[green]Yes, ".concat(fishP.muted ? "unmute" : "mute", " them")) {
-                            (0, utils_1.logAction)(fishP.muted ? "unmuted" : "muted", sender, fishP, undefined, (0, utils_1.untilForever)());
-                            if (fishP.muted)
-                                fishP.unmute(sender);
-                            else
-                                fishP.mute(sender);
-                            outputSuccess("".concat(fishP.muted ? "Muted" : "Unmuted", " ").concat(option.lastName, "."));
-                        }
-                    });
-                }
+                (0, menus_1.menu)("Mute Offine Confirmation", "Are you sure you want to ".concat(fishP.muted ? "unmute" : "mute", " player ").concat(option.lastName, "?"), [true, false], sender, function (res) {
+                    if (res.option) {
+                        (0, utils_1.logAction)(fishP.muted ? "unmuted" : "muted", sender, fishP);
+                        if (fishP.muted)
+                            fishP.unmute(sender);
+                        else
+                            fishP.mute(sender);
+                        outputSuccess("".concat(fishP.muted ? "Muted" : "Unmuted", " ").concat(option.lastName, "."));
+                    }
+                }, false, function (opt) { return opt ? "[green]Yes, ".concat(fishP.muted ? "unmute" : "mute", " them") : "[red]Cancel"; });
             }
             if (args.name && globals_2.uuidPattern.test(args.name)) {
                 var info = admins.getInfoOptional(args.name);
-                if (info != null) {
-                    mute(info);
-                }
-                else {
+                if (!info)
                     (0, commands_1.fail)(f(templateObject_22 || (templateObject_22 = __makeTemplateObject(["Unknown UUID ", ""], ["Unknown UUID ", ""])), args.name));
-                }
+                mute(info);
                 return;
             }
             var possiblePlayers;
@@ -357,7 +352,7 @@ exports.commands = (0, commands_1.commandList)({
                 possiblePlayers = players_1.FishPlayer.recentLeaves.map(function (p) { return p.info(); });
             }
             (0, menus_1.menu)("Mute", "Choose a player to mute", possiblePlayers, sender, function (_a) {
-                var optionPlayer = _a.option, sender = _a.sender;
+                var optionPlayer = _a.option;
                 mute(optionPlayer);
             }, true, function (p) { return p.lastName; });
         }
