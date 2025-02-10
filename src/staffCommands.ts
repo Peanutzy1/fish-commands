@@ -241,32 +241,27 @@ export const commands = commandList({
 	},
 
 	mute_offline: {
-		args: ["name:string?"],
+		args: ["name:uuid?"],
 		description: "Mutes an offline player.",
 		perm: Perm.mod,
-		handler({args, sender, outputSuccess, f, admins}){
-			const maxPlayers = 60;
+		async handler({args, sender, outputSuccess, f, admins}){
+			const maxPlayers = 300;
 			
-			function mute(option:PlayerInfo){
+			async function mute(option:PlayerInfo){
 				const fishP = FishPlayer.getFromInfo(option);
 				if(!sender.canModerate(fishP, true)) fail(`You do not have permission to mute this player.`);
-				menu(
-					"Mute Offine Confirmation",
-					`Are you sure you want to ${fishP.muted ? "unmute" : "mute"} player ${option.lastName}?`,
-					[true, false],
-					sender, (res) => {
-					if(res.option){
-						logAction(fishP.muted ? "unmuted" : "muted", sender, fishP);
-						if(fishP.muted) fishP.unmute(sender)
-						else fishP.mute(sender);
-						outputSuccess(`${fishP.muted ? "Muted" : "Unmuted"} ${option.lastName}.`);
-					}
-				}, false, opt => opt ? `[green]Yes, ${fishP.muted ? "unmute" : "mute"} them` : `[red]Cancel`);
+				await Menu.confirm(sender, `Are you sure you want to ${fishP.muted ? "unmute" : "mute"} player ${option.lastName}?`, {
+					title: "Mute Offine Confirmation",
+					confirmText: `[green]Yes, ${fishP.muted ? "unmute" : "mute"} them`,
+				});
+				logAction(fishP.muted ? "unmuted" : "muted", sender, fishP);
+				if(fishP.muted) fishP.unmute(sender)
+				else fishP.mute(sender);
+				outputSuccess(`${fishP.muted ? "Muted" : "Unmuted"} ${option.lastName}.`);
 			}
 			
-			if(args.name && uuidPattern.test(args.name)){
-				const info:PlayerInfo | null = admins.getInfoOptional(args.name);
-				if(!info) fail(f`Unknown UUID ${args.name}`);
+			if(args.name){
+				const info = admins.getInfoOptional(args.name) ?? fail(f`Unknown UUID ${args.name}`);
 				mute(info);
 				return;
 			}
@@ -295,9 +290,10 @@ export const commands = commandList({
 			}
 
 
-			menu("Mute", "Choose a player to mute", possiblePlayers, sender, ({option: optionPlayer}) => {
-				mute(optionPlayer);
-			}, true, p => p.lastName);
+			const option = await Menu.pagedList(sender, "Mute", "Choose a player to mute", possiblePlayers, {
+				optionStringifier: p => p.lastName
+			});
+			mute(option);
 		}
 	},
 

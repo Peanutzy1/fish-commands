@@ -349,64 +349,84 @@ exports.commands = (0, commands_1.commandList)({
         }
     },
     mute_offline: {
-        args: ["name:string?"],
+        args: ["name:uuid?"],
         description: "Mutes an offline player.",
         perm: commands_1.Perm.mod,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f, admins = _a.admins;
-            var maxPlayers = 60;
-            function mute(option) {
-                var fishP = players_1.FishPlayer.getFromInfo(option);
-                if (!sender.canModerate(fishP, true))
-                    (0, commands_1.fail)("You do not have permission to mute this player.");
-                menu("Mute Offine Confirmation", "Are you sure you want to ".concat(fishP.muted ? "unmute" : "mute", " player ").concat(option.lastName, "?"), [true, false], sender, function (res) {
-                    if (res.option) {
-                        (0, utils_1.logAction)(fishP.muted ? "unmuted" : "muted", sender, fishP);
-                        if (fishP.muted)
-                            fishP.unmute(sender);
-                        else
-                            fishP.mute(sender);
-                        outputSuccess("".concat(fishP.muted ? "Muted" : "Unmuted", " ").concat(option.lastName, "."));
-                    }
-                }, false, function (opt) { return opt ? "[green]Yes, ".concat(fishP.muted ? "unmute" : "mute", " them") : "[red]Cancel"; });
-            }
-            if (args.name && globals_2.uuidPattern.test(args.name)) {
-                var info = admins.getInfoOptional(args.name);
-                if (!info)
-                    (0, commands_1.fail)(f(templateObject_23 || (templateObject_23 = __makeTemplateObject(["Unknown UUID ", ""], ["Unknown UUID ", ""])), args.name));
-                mute(info);
-                return;
-            }
-            var possiblePlayers;
-            if (args.name) {
-                possiblePlayers = (0, funcs_5.setToArray)(admins.searchNames(args.name));
-                if (possiblePlayers.length > maxPlayers) {
-                    var exactPlayers = (0, funcs_5.setToArray)(admins.findByName(args.name));
-                    if (exactPlayers.length > 0) {
-                        possiblePlayers = exactPlayers;
-                    }
-                    else {
-                        (0, commands_1.fail)("Too many players with that name.");
-                    }
+            return __awaiter(this, arguments, void 0, function (_b) {
+                function mute(option) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var fishP;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    fishP = players_1.FishPlayer.getFromInfo(option);
+                                    if (!sender.canModerate(fishP, true))
+                                        (0, commands_1.fail)("You do not have permission to mute this player.");
+                                    return [4 /*yield*/, menus_1.Menu.confirm(sender, "Are you sure you want to ".concat(fishP.muted ? "unmute" : "mute", " player ").concat(option.lastName, "?"), {
+                                            title: "Mute Offine Confirmation",
+                                            confirmText: "[green]Yes, ".concat(fishP.muted ? "unmute" : "mute", " them"),
+                                        })];
+                                case 1:
+                                    _a.sent();
+                                    (0, utils_1.logAction)(fishP.muted ? "unmuted" : "muted", sender, fishP);
+                                    if (fishP.muted)
+                                        fishP.unmute(sender);
+                                    else
+                                        fishP.mute(sender);
+                                    outputSuccess("".concat(fishP.muted ? "Muted" : "Unmuted", " ").concat(option.lastName, "."));
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
                 }
-                else if (possiblePlayers.length == 0) {
-                    (0, commands_1.fail)("No players with that name were found.");
-                }
-                var score_2 = function (data) {
-                    var fishP = players_1.FishPlayer.getById(data.id);
-                    if (fishP)
-                        return fishP.lastJoined;
-                    return -data.timesJoined;
-                };
-                possiblePlayers.sort(function (a, b) { return score_2(b) - score_2(a); });
-            }
-            else {
-                possiblePlayers = players_1.FishPlayer.recentLeaves.map(function (p) { return p.info(); });
-            }
-            menu("Mute", "Choose a player to mute", possiblePlayers, sender, function (_a) {
-                var optionPlayer = _a.option;
-                mute(optionPlayer);
-            }, true, function (p) { return p.lastName; });
+                var maxPlayers, info, possiblePlayers, exactPlayers, score_2, option;
+                var _c;
+                var args = _b.args, sender = _b.sender, outputSuccess = _b.outputSuccess, f = _b.f, admins = _b.admins;
+                return __generator(this, function (_d) {
+                    switch (_d.label) {
+                        case 0:
+                            maxPlayers = 300;
+                            if (args.name) {
+                                info = (_c = admins.getInfoOptional(args.name)) !== null && _c !== void 0 ? _c : (0, commands_1.fail)(f(templateObject_23 || (templateObject_23 = __makeTemplateObject(["Unknown UUID ", ""], ["Unknown UUID ", ""])), args.name));
+                                mute(info);
+                                return [2 /*return*/];
+                            }
+                            if (args.name) {
+                                possiblePlayers = (0, funcs_5.setToArray)(admins.searchNames(args.name));
+                                if (possiblePlayers.length > maxPlayers) {
+                                    exactPlayers = (0, funcs_5.setToArray)(admins.findByName(args.name));
+                                    if (exactPlayers.length > 0) {
+                                        possiblePlayers = exactPlayers;
+                                    }
+                                    else {
+                                        (0, commands_1.fail)("Too many players with that name.");
+                                    }
+                                }
+                                else if (possiblePlayers.length == 0) {
+                                    (0, commands_1.fail)("No players with that name were found.");
+                                }
+                                score_2 = function (data) {
+                                    var fishP = players_1.FishPlayer.getById(data.id);
+                                    if (fishP)
+                                        return fishP.lastJoined;
+                                    return -data.timesJoined;
+                                };
+                                possiblePlayers.sort(function (a, b) { return score_2(b) - score_2(a); });
+                            }
+                            else {
+                                possiblePlayers = players_1.FishPlayer.recentLeaves.map(function (p) { return p.info(); });
+                            }
+                            return [4 /*yield*/, menus_1.Menu.pagedList(sender, "Mute", "Choose a player to mute", possiblePlayers, {
+                                    optionStringifier: function (p) { return p.lastName; }
+                                })];
+                        case 1:
+                            option = _d.sent();
+                            mute(option);
+                            return [2 /*return*/];
+                    }
+                });
+            });
         }
     },
     restart: {
