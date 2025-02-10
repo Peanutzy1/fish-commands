@@ -29,7 +29,7 @@ export const commands = commandList({
 		perm: Perm.warn,
 		requirements: [Req.cooldown(3000)],
 		handler({args, sender, outputSuccess, f}){
-			if(args.player.hasPerm("blockTrolling")) fail(`Player ${args.player} is insufficiently trollable.`);
+			if(args.player.hasPerm("blockTrolling")) fail(f`Player ${args.player} is insufficiently trollable.`);
 
 			const message = args.message ?? "You have been warned. I suggest you stop what you're doing";
 			menu('Warning', message, ["[green]Accept"], args.player);
@@ -961,7 +961,7 @@ IPs used: ${info.ips.map(i => `[blue]${i}[]`).toString(", ")}`
 		perm: Perm.admin,
 		handler({args, sender, f, outputSuccess}){
 			if(args.player?.hasPerm("blockTrolling"))
-				fail(`Player ${args.player} is insufficiently trollable.`);
+				fail(f`Player ${args.player} is insufficiently trollable.`);
 			if(args.player && !sender.canModerate(args.player, false))
 				fail(`You do not have permission to perform moderation actions on this player.`);
 			const target = args.player ?? sender;

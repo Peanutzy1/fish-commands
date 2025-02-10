@@ -646,7 +646,7 @@ Please stop attacking and [lime]build defenses[] first!`
 			if(!manager.session){
 				menu(
 					"Start a Next Wave Vote",
-					"Select the amount of waves you would like to skip, or click \"Cancel\" to abort.",
+					"Select the amount of waves you would like to skip.",
 					[1, 5, 10],
 					sender,
 					({option}) => {

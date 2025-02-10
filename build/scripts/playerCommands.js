@@ -667,7 +667,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         handler: function (_a) {
             var sender = _a.sender, manager = _a.data.manager;
             if (!manager.session) {
-                (0, menus_1.menu)("Start a Next Wave Vote", "Select the amount of waves you would like to skip, or click \"Cancel\" to abort.", [1, 5, 10], sender, function (_a) {
+                (0, menus_1.menu)("Start a Next Wave Vote", "Select the amount of waves you would like to skip.", [1, 5, 10], sender, function (_a) {
                     var option = _a.option;
                     if (manager.session) {
                         //Someone else started a vote
