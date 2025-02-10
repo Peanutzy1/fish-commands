@@ -77,7 +77,8 @@ else {
 }
 function runServer() {
     console.log("Starting fish-commands Mindustry development server...");
-    (0, node_child_process_1.execSync)(`java -Xmx500M -Xms500M -jar "server-release.jar"`, {
+    const { status } = (0, node_child_process_1.spawnSync)(`which`, ["rlwrap"]);
+    (0, node_child_process_1.execSync)(`${status ? "" : "rlwrap "}java -Xmx500M -Xms500M -jar "server-release.jar"`, {
         stdio: "inherit",
         cwd: path.join(fcRootDirectory, "dev-server")
     });

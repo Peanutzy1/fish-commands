@@ -1,7 +1,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as https from "node:https";
-import { execSync } from "node:child_process";
+import { execSync, spawnSync } from "node:child_process";
 
 
 function fail(message:string):never {
@@ -78,7 +78,8 @@ if(!fs.existsSync(devServerDirectory)){
 
 function runServer(){
 	console.log("Starting fish-commands Mindustry development server...");
-	execSync(`java -Xmx500M -Xms500M -jar "server-release.jar"`, {
+	const { status } = spawnSync(`which`, ["rlwrap"]);
+	execSync(`${status ? "" : "rlwrap "}java -Xmx500M -Xms500M -jar "server-release.jar"`, {
 		stdio: "inherit",
 		cwd: path.join(fcRootDirectory, "dev-server")
 	});
