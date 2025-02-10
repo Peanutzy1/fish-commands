@@ -349,7 +349,7 @@ exports.commands = (0, commands_1.commandList)({
         }
     },
     mute_offline: {
-        args: ["name:uuid?"],
+        args: ["name:string?"],
         description: "Mutes an offline player.",
         perm: commands_1.Perm.mod,
         handler: function (_a) {
@@ -387,7 +387,7 @@ exports.commands = (0, commands_1.commandList)({
                     switch (_d.label) {
                         case 0:
                             maxPlayers = 300;
-                            if (args.name) {
+                            if (args.name && globals_2.uuidPattern.test(args.name)) {
                                 info = (_c = admins.getInfoOptional(args.name)) !== null && _c !== void 0 ? _c : (0, commands_1.fail)(f(templateObject_23 || (templateObject_23 = __makeTemplateObject(["Unknown UUID ", ""], ["Unknown UUID ", ""])), args.name));
                                 mute(info);
                                 return [2 /*return*/];
@@ -1045,39 +1045,52 @@ exports.commands = (0, commands_1.commandList)({
         description: "Searches playerinfo by name, IP, or UUID.",
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var input = _a.args.input, admins = _a.admins, output = _a.output, f = _a.f, sender = _a.sender;
-            if (globals_2.uuidPattern.test(input)) {
-                var fishP = players_1.FishPlayer.getById(input);
-                var info = admins.getInfoOptional(input);
-                if (fishP == null && info == null)
-                    (0, commands_1.fail)(f(templateObject_55 || (templateObject_55 = __makeTemplateObject(["No stored data matched uuid ", "."], ["No stored data matched uuid ", "."])), input));
-                else if (fishP == null && info)
-                    output(f(templateObject_56 || (templateObject_56 = __makeTemplateObject(["[accent]Found player info (but no fish player data) for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nFound player info (but no fish player data) for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), input, info.plainLastName(), (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", ")));
-                else if (fishP && info)
-                    output(f(templateObject_57 || (templateObject_57 = __makeTemplateObject(["[accent]Found fish player data for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nFound fish player data for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), input, fishP.name, (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", ")));
-                else
-                    (0, commands_1.fail)(f(templateObject_58 || (templateObject_58 = __makeTemplateObject(["Super weird edge case: found fish player data but no player info for uuid ", "."], ["Super weird edge case: found fish player data but no player info for uuid ", "."])), input));
-            }
-            else if (globals_2.ipPattern.test(input)) {
-                var matches = admins.findByIPs(input);
-                if (matches.isEmpty())
-                    (0, commands_1.fail)(f(templateObject_59 || (templateObject_59 = __makeTemplateObject(["No stored data matched IP ", ""], ["No stored data matched IP ", ""])), input));
-                output(f(templateObject_60 || (templateObject_60 = __makeTemplateObject(["[accent]Found ", " match", " for search \"", "\"."], ["[accent]Found ", " match", " for search \"", "\"."])), matches.size, matches.size == 1 ? "" : "es", input));
-                matches.each(function (info) { return output(f(templateObject_61 || (templateObject_61 = __makeTemplateObject(["[accent]Player with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nPlayer with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), info.id, info.plainLastName(), (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", "))); });
-            }
-            else {
-                var matches_1 = Vars.netServer.admins.searchNames(input);
-                if (matches_1.isEmpty())
-                    (0, commands_1.fail)(f(templateObject_62 || (templateObject_62 = __makeTemplateObject(["No stored data matched name ", ""], ["No stored data matched name ", ""])), input));
-                output(f(templateObject_63 || (templateObject_63 = __makeTemplateObject(["[accent]Found ", " match", " for search \"", "\"."], ["[accent]Found ", " match", " for search \"", "\"."])), matches_1.size, matches_1.size == 1 ? "" : "es", input));
-                var displayMatches = function () {
-                    matches_1.each(function (info) { return output(f(templateObject_64 || (templateObject_64 = __makeTemplateObject(["[accent]Player with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nPlayer with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), info.id, info.plainLastName(), (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", "))); });
-                };
-                if (matches_1.size > 20)
-                    menus_1.Menu.menu("Confirm", "Are you sure you want to view all ".concat(matches_1.size, " matches?"), ["Yes"], sender, { includeCancel: true }).then(displayMatches);
-                else
-                    displayMatches();
-            }
+            return __awaiter(this, arguments, void 0, function (_b) {
+                var fishP, info, matches, matches_1, displayMatches;
+                var input = _b.args.input, admins = _b.admins, output = _b.output, f = _b.f, sender = _b.sender;
+                return __generator(this, function (_c) {
+                    switch (_c.label) {
+                        case 0:
+                            if (!globals_2.uuidPattern.test(input)) return [3 /*break*/, 1];
+                            fishP = players_1.FishPlayer.getById(input);
+                            info = admins.getInfoOptional(input);
+                            if (fishP == null && info == null)
+                                (0, commands_1.fail)(f(templateObject_55 || (templateObject_55 = __makeTemplateObject(["No stored data matched uuid ", "."], ["No stored data matched uuid ", "."])), input));
+                            else if (fishP == null && info)
+                                output(f(templateObject_56 || (templateObject_56 = __makeTemplateObject(["[accent]Found player info (but no fish player data) for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nFound player info (but no fish player data) for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), input, info.plainLastName(), (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", ")));
+                            else if (fishP && info)
+                                output(f(templateObject_57 || (templateObject_57 = __makeTemplateObject(["[accent]Found fish player data for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nFound fish player data for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), input, fishP.name, (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", ")));
+                            else
+                                (0, commands_1.fail)(f(templateObject_58 || (templateObject_58 = __makeTemplateObject(["Super weird edge case: found fish player data but no player info for uuid ", "."], ["Super weird edge case: found fish player data but no player info for uuid ", "."])), input));
+                            return [3 /*break*/, 5];
+                        case 1:
+                            if (!globals_2.ipPattern.test(input)) return [3 /*break*/, 2];
+                            matches = admins.findByIPs(input);
+                            if (matches.isEmpty())
+                                (0, commands_1.fail)(f(templateObject_59 || (templateObject_59 = __makeTemplateObject(["No stored data matched IP ", ""], ["No stored data matched IP ", ""])), input));
+                            output(f(templateObject_60 || (templateObject_60 = __makeTemplateObject(["[accent]Found ", " match", " for search \"", "\"."], ["[accent]Found ", " match", " for search \"", "\"."])), matches.size, matches.size == 1 ? "" : "es", input));
+                            matches.each(function (info) { return output(f(templateObject_61 || (templateObject_61 = __makeTemplateObject(["[accent]Player with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nPlayer with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), info.id, info.plainLastName(), (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", "))); });
+                            return [3 /*break*/, 5];
+                        case 2:
+                            matches_1 = Vars.netServer.admins.searchNames(input);
+                            if (matches_1.isEmpty())
+                                (0, commands_1.fail)(f(templateObject_62 || (templateObject_62 = __makeTemplateObject(["No stored data matched name ", ""], ["No stored data matched name ", ""])), input));
+                            output(f(templateObject_63 || (templateObject_63 = __makeTemplateObject(["[accent]Found ", " match", " for search \"", "\"."], ["[accent]Found ", " match", " for search \"", "\"."])), matches_1.size, matches_1.size == 1 ? "" : "es", input));
+                            displayMatches = function () {
+                                matches_1.each(function (info) { return output(f(templateObject_64 || (templateObject_64 = __makeTemplateObject(["[accent]Player with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nPlayer with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), info.id, info.plainLastName(), (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", "))); });
+                            };
+                            if (!(matches_1.size > 20)) return [3 /*break*/, 4];
+                            return [4 /*yield*/, menus_1.Menu.confirm(sender, "Are you sure you want to view all ".concat(matches_1.size, " matches?"))];
+                        case 3:
+                            _c.sent();
+                            _c.label = 4;
+                        case 4:
+                            displayMatches();
+                            _c.label = 5;
+                        case 5: return [2 /*return*/];
+                    }
+                });
+            });
         }
     },
     peace: {

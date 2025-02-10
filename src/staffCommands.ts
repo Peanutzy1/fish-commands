@@ -241,7 +241,7 @@ export const commands = commandList({
 	},
 
 	mute_offline: {
-		args: ["name:uuid?"],
+		args: ["name:string?"],
 		description: "Mutes an offline player.",
 		perm: Perm.mod,
 		async handler({args, sender, outputSuccess, f, admins}){
@@ -260,7 +260,7 @@ export const commands = commandList({
 				outputSuccess(`${fishP.muted ? "Muted" : "Unmuted"} ${option.lastName}.`);
 			}
 			
-			if(args.name){
+			if(args.name && uuidPattern.test(args.name)){
 				const info = admins.getInfoOptional(args.name) ?? fail(f`Unknown UUID ${args.name}`);
 				mute(info);
 				return;
@@ -863,7 +863,7 @@ ${getAntiBotInfo("client")}`
 		args: ["input:string"],
 		description: "Searches playerinfo by name, IP, or UUID.",
 		perm: Perm.admin,
-		handler({args:{input}, admins, output, f, sender}){
+		async handler({args:{input}, admins, output, f, sender}){
 			if(uuidPattern.test(input)){
 				const fishP = FishPlayer.getById(input);
 				const info = admins.getInfoOptional(input);
@@ -899,14 +899,9 @@ Last name used: "${info.plainLastName()}" [gray](${escapeStringColorsClient(info
 IPs used: ${info.ips.map(i => `[blue]${i}[]`).toString(", ")}`
 					));
 				};
-				if(matches.size > 20) Menu.menu(
-					"Confirm",
-					`Are you sure you want to view all ${matches.size} matches?`,
-					["Yes"],
-					sender,
-					{ includeCancel: true }
-				).then(displayMatches);
-				else displayMatches();
+				if(matches.size > 20)
+					await Menu.confirm(sender, `Are you sure you want to view all ${matches.size} matches?`);
+				displayMatches();
 			}
 		}
 	},

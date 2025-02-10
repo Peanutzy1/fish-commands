@@ -151,7 +151,14 @@ exports.Menu = {
                     }
                 }
             } });
-        Call.menu(target.con, registeredListeners.generic, title, description, arrangedOptions.map(function (r) { return r.map(optionStringifier); }));
+        var i = 0;
+        var stringifiedOptions = arrangedOptions.map(function (r) { return r.map(function (item) {
+            if (i === cancelOptionId)
+                return item;
+            i++;
+            return optionStringifier(item);
+        }); });
+        Call.menu(target.con, registeredListeners.generic, title, description, stringifiedOptions);
         return promise;
     },
     /** Displays a menu to a player, returning a Promise. Arranges options into a 2D array, and can add a Cancel option. */
@@ -161,7 +168,7 @@ exports.Menu = {
         //Call.menu() with [[]] will cause a client crash, make sure to pass [] instead
         var arrangedOptions = (options.length == 0 && !includeCancel) ? [] : (0, funcs_2.to2DArray)(options, columns);
         if (includeCancel) {
-            arrangedOptions.push(["Cancel"]);
+            arrangedOptions.push(["[red]Cancel[]"]);
             //This is safe because cancelOptionId is set,
             //so the handler will never get called with "Cancel".
             cancelOptionId = options.length;
@@ -222,19 +229,22 @@ exports.Menu = {
         return promise;
     },
     pagedListButtons: function (target, title, description, options, _a) {
-        var _b = _a.rowsPerPage, rowsPerPage = _b === void 0 ? 10 : _b, _c = _a.columns, columns = _c === void 0 ? 3 : _c, cfg = __rest(_a, ["rowsPerPage", "columns"]);
+        var _b;
+        var _c = _a.rowsPerPage, rowsPerPage = _c === void 0 ? 10 : _c, _d = _a.columns, columns = _d === void 0 ? 3 : _d, cfg = __rest(_a, ["rowsPerPage", "columns"]);
         //Generate pages
         var pages = (0, funcs_2.to2DArray)((0, funcs_2.to2DArray)(options, columns), rowsPerPage);
-        if (pages.length == 1)
-            return exports.Menu.buttons(target, title, description, pages[0], cfg);
+        if (pages.length <= 1)
+            return exports.Menu.buttons(target, title, description, (_b = pages[0]) !== null && _b !== void 0 ? _b : [], cfg);
         return exports.Menu.pages(target, title, description, pages, cfg);
     },
     pagedList: function (target, title, description, options, _a) {
-        var _b = _a.rowsPerPage, rowsPerPage = _b === void 0 ? 10 : _b, _c = _a.columns, columns = _c === void 0 ? 3 : _c, optionStringifier = _a.optionStringifier, cfg = __rest(_a, ["rowsPerPage", "columns", "optionStringifier"]);
+        var _b;
+        if (_a === void 0) { _a = {}; }
+        var _c = _a.rowsPerPage, rowsPerPage = _c === void 0 ? 10 : _c, _d = _a.columns, columns = _d === void 0 ? 3 : _d, _e = _a.optionStringifier, optionStringifier = _e === void 0 ? String : _e, cfg = __rest(_a, ["rowsPerPage", "columns", "optionStringifier"]);
         //Generate pages
         var pages = (0, funcs_2.to2DArray)((0, funcs_2.to2DArray)(options.map(function (o) { return ({ data: o, get text() { return optionStringifier(o); } }); }), columns), rowsPerPage);
-        if (pages.length == 1)
-            return exports.Menu.buttons(target, title, description, pages[0], cfg);
+        if (pages.length <= 1)
+            return exports.Menu.buttons(target, title, description, (_b = pages[0]) !== null && _b !== void 0 ? _b : [], cfg);
         return exports.Menu.pages(target, title, description, pages, cfg);
     }
 };

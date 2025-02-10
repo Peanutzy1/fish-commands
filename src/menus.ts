@@ -38,6 +38,7 @@ export function registerListeners(){
 }
 
 type MenuConfirmProps = {
+	/** This message is sent to the user (prefixed with /!\) if they cancel. */
 	cancelOutput?: string;
 	title?: string;
 	confirmText?: string;
@@ -69,7 +70,7 @@ export const Menu = {
 		}:{
 			optionStringifier?:(opt:TOption) => string;
 			/**
-			 * Specifies the behavior when the player cancels the menu (by clicking Cancel, or by pressing Escape). 
+			 * Specifies the behavior when the player cancels the menu (by clicking Cancel, or by pressing Escape).
 			 * @default "ignore"
 			 */
 			onCancel?: TCancelBehavior;
@@ -114,7 +115,13 @@ export const Menu = {
 			}
 		}});
 	
-		Call.menu(target.con, registeredListeners.generic, title, description, arrangedOptions.map(r => r.map(optionStringifier)));
+		let i = 0;
+		const stringifiedOptions = arrangedOptions.map(r => r.map(item => {
+			if(i === cancelOptionId) return item as string;
+			i ++;
+			return optionStringifier(item);
+		}));
+		Call.menu(target.con, registeredListeners.generic, title, description, stringifiedOptions);
 		return promise;
 	},
 	/** Displays a menu to a player, returning a Promise. Arranges options into a 2D array, and can add a Cancel option. */
@@ -133,7 +140,7 @@ export const Menu = {
 		const arrangedOptions = (options.length == 0 && !includeCancel) ? [] : to2DArray(options, columns);
 
 		if(includeCancel){
-			arrangedOptions.push(["Cancel" as never]);
+			arrangedOptions.push(["[red]Cancel[]" as never]);
 			//This is safe because cancelOptionId is set,
 			//so the handler will never get called with "Cancel".
 			cancelOptionId = options.length;
@@ -174,7 +181,7 @@ export const Menu = {
 		return Menu.raw(title, description, options, target, {
 			...cfg,
 			optionStringifier: o => o.text,
-		}).then(o => o?.data);
+		}).then(o => o?.data as TButtonData | (TCancelBehavior extends "null" ? null : never));
 	},
 	pages<TOption extends unknown, TCancelBehavior extends MenuCancelOption>(
 		this:void, target:FishPlayer, title:string, description:string,
@@ -209,7 +216,7 @@ export const Menu = {
 		showPage(0);
 		return promise;
 	},
-	pagedListButtons<TButtonData extends unknown, MenuCancelBehavior extends MenuCancelOption>(
+	pagedListButtons<TButtonData extends unknown, MenuCancelBehavior extends MenuCancelOption = "ignore">(
 		this:void, target:FishPlayer, title:string, description:string,
 		options:{ data: TButtonData; text: string; }[],
 		{ rowsPerPage = 10, columns = 3, ...cfg }: Pick<MenuOptions<TButtonData, MenuCancelBehavior>, "columns" | "onCancel"> & {
@@ -219,23 +226,22 @@ export const Menu = {
 	){
 		//Generate pages
 		const pages = to2DArray(to2DArray(options, columns), rowsPerPage);
-		if(pages.length == 1) return Menu.buttons(target, title, description, pages[0], cfg);
+		if(pages.length <= 1) return Menu.buttons(target, title, description, pages[0] ?? [], cfg);
 		return Menu.pages(target, title, description, pages, cfg);
 	},
-	pagedList<TButtonData extends unknown, MenuCancelBehavior extends MenuCancelOption>(
+	pagedList<TButtonData extends unknown, MenuCancelBehavior extends MenuCancelOption = "ignore">(
 		this:void, target:FishPlayer, title:string, description:string,
 		options:TButtonData[],
-		{ rowsPerPage = 10, columns = 3, optionStringifier, ...cfg }: Pick<MenuOptions<TButtonData, MenuCancelBehavior>, "columns" | "onCancel" | "optionStringifier"> & {
+		{ rowsPerPage = 10, columns = 3, optionStringifier = String, ...cfg }: Pick<MenuOptions<TButtonData, MenuCancelBehavior>, "columns" | "onCancel" | "optionStringifier"> & {
 			/** @default 10 */
 			rowsPerPage?:number;
-			optionStringifier: {};
-		},
+		} = {},
 	){
 		//Generate pages
 		const pages = to2DArray(to2DArray(options.map(
 			o => ({ data: o, get text(){ return optionStringifier(o); }})
 		), columns), rowsPerPage);
-		if(pages.length == 1) return Menu.buttons(target, title, description, pages[0], cfg);
+		if(pages.length <= 1) return Menu.buttons(target, title, description, pages[0] ?? [], cfg);
 		return Menu.pages(target, title, description, pages, cfg);
 	}
 }

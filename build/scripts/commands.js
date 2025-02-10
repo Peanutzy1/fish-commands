@@ -860,7 +860,7 @@ function resolveArgsRecursive(processedArgs, unresolvedArgs, sender) {
                     return [4 /*yield*/, menus_1.Menu.menu("Select a player", "Select a player for the argument \"".concat(argToResolve.name, "\""), optionsList_1, sender, {
                             includeCancel: true,
                             optionStringifier: function (player) { return Strings.stripColors(player.name).length >= 3 ?
-                                Strings.stripColors(player.name)
+                                player.name
                                 : (0, funcs_3.escapeStringColorsClient)(player.name); }
                         })];
                 case 2:

@@ -679,7 +679,7 @@ async function resolveArgsRecursive(processedArgs: Record<string, FishCommandArg
 		const option = await Menu.menu(`Select a player`, `Select a player for the argument "${argToResolve.name}"`, optionsList, sender, {
 			includeCancel: true,
 			optionStringifier: player => Strings.stripColors(player.name).length >= 3 ?
-				Strings.stripColors(player.name)
+				player.name
 			: escapeStringColorsClient(player.name)
 		});
 		processedArgs[argToResolve.name] = FishPlayer.get(option);
