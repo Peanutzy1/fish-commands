@@ -933,5 +933,29 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             var target = _a.args.target, output = _a.output, f = _a.f;
             output(f(templateObject_17 || (templateObject_17 = __makeTemplateObject(["[accent]Statistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nTime in-game: ", "\nWin rate: ", ""], ["[accent]\\\nStatistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nTime in-game: ", "\nWin rate: ", ""])), target, target.stats.blocksBroken, target.stats.blocksPlaced, target.stats.chatMessagesSent, target.stats.gamesFinished, (0, utils_1.formatTime)(target.stats.timeInGame), target.stats.gamesWon / target.stats.gamesFinished));
         }
+    }, showworld: {
+        args: ["x:number?", "y:number?", "size:number?"],
+        perm: commands_1.Perm.none,
+        description: "Views the world as a 2D scrollable menu.",
+        handler: function (_a) {
+            var sender = _a.sender, _b = _a.args, size = _b.size, x = _b.x, y = _b.y;
+            size !== null && size !== void 0 ? size : (size = 7);
+            if (size > 20)
+                (0, commands_1.fail)("Size ".concat(size, " is too high!"));
+            if (Vars.state.rules.fog)
+                (0, commands_1.fail)("This command is disabled when fog is enabled.");
+            var options = (0, funcs_3.to2DArray)(Reflect.get(Vars.world.tiles, "array").map(function (tile) { return ({
+                text: tile.block().emoji(),
+                data: null,
+            }); }), Vars.world.width()).reverse();
+            var height = Vars.world.height();
+            menus_1.Menu.scroll(sender, "The World", "Use the arrow keys to navigate around the world. Click a blank square to exit.", options, {
+                columns: size,
+                rows: size,
+                x: x ? x - Math.trunc(size / 2) : 0,
+                y: height - (y ? y + 1 + Math.trunc(size / 2) : size),
+                getCenterText: function (x, y) { return "".concat(x, ",").concat(height - y - size); }
+            });
+        }
     } }));
 var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11, templateObject_12, templateObject_13, templateObject_14, templateObject_15, templateObject_16, templateObject_17;

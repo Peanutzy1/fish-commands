@@ -906,4 +906,26 @@ Win rate: ${target.stats.gamesWon / target.stats.gamesFinished}`
 			);
 		}
 	},
+	showworld: {
+		args: ["x:number?", "y:number?", "size:number?"],
+		perm: Perm.none,
+		description: "Views the world as a 2D scrollable menu.",
+		handler({sender, args:{size, x, y}}){
+			size ??= 7;
+			if(size > 20) fail(`Size ${size} is too high!`);
+			if(Vars.state.rules.fog) fail(`This command is disabled when fog is enabled.`);
+			const options = to2DArray((Reflect.get(Vars.world.tiles, "array") as Tile[]).map(tile => ({
+				text: tile.block().emoji(),
+				data: null,
+			})), Vars.world.width()).reverse();
+			const height = Vars.world.height();
+			Menu.scroll(sender, "The World", "Use the arrow keys to navigate around the world. Click a blank square to exit.", options, {
+				columns: size,
+				rows: size,
+				x: x ? x - Math.trunc(size / 2) : 0,
+				y: height - (y ? y + 1 + Math.trunc(size / 2) : size),
+				getCenterText: (x, y) => `${x},${height - y - size}`
+			});
+		}
+	},
 });

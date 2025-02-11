@@ -57,6 +57,7 @@ const Vars: {
 			waves:boolean;
 			waitEnemies:boolean;
 			env:number;
+			fog:boolean;
 		}
 		set(state:State):void;
 		gameOver:boolean;
@@ -92,6 +93,8 @@ type Content = {
 class World {
 	build(x:number, y:number):Building | null;
 	tile(x:number, y:number):Tile | null;
+	width(): number;
+	height(): number;
 	tiles: {
 		eachTile(func:(tile:Tile) => unknown):void;
 	}
@@ -144,6 +147,7 @@ class Tile {
 	build: Building | null;
 	breakable():boolean;
 	block():Block;
+	floor():Block;
 	removeNet():void;
 	setNet(block:Block, team:Team, rotation:number):void;
 	getLinkedTiles(callback:(t:Tile) => void):void;
@@ -167,6 +171,7 @@ class Block {
 	buildType: Building;
 	id: number;
 	localizedName: string;
+	emoji(): string;
 }
 type Building = any;
 const Items: Record<string, Item>;

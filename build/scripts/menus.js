@@ -228,6 +228,54 @@ exports.Menu = {
         showPage(0);
         return promise;
     },
+    scroll: function (target, title, description, options, cfg) {
+        var _a, _b;
+        if (cfg === void 0) { cfg = {}; }
+        var _c = promise_1.Promise.withResolvers(), promise = _c.promise, reject = _c.reject, resolve = _c.resolve;
+        var _d = cfg.rows, rows = _d === void 0 ? 5 : _d, _e = cfg.columns, cols = _e === void 0 ? 5 : _e;
+        var height = options.length;
+        var width = options[0].length;
+        function showPage(x, y) {
+            var _a, _b;
+            var opts = __spreadArray(__spreadArray([], __read(options.slice(y, y + rows).map(function (r) { return r.slice(x, x + cols).map(function (d) { return ({ text: d.text, data: [d.data] }); }); })), false), [
+                [
+                    { data: "blank", text: "" },
+                    { data: "up", text: "[".concat(y == 0 ? "gray" : "accent", "]^\n|") },
+                    { data: "blank", text: "" },
+                ], [
+                    { data: "left", text: "[".concat(x == 0 ? "gray" : "accent", "]<--") },
+                    { data: "blank", text: (_b = (_a = cfg.getCenterText) === null || _a === void 0 ? void 0 : _a.call(cfg, x, y)) !== null && _b !== void 0 ? _b : '' },
+                    { data: "right", text: "[".concat(x == width - cols ? "gray" : "accent", "]-->") }
+                ], [
+                    { data: "blank", text: "" },
+                    { data: "down", text: "[".concat(y == height - rows ? "gray" : "accent", "]|\nV") },
+                    { data: "blank", text: "" },
+                ]
+            ], false);
+            exports.Menu.buttons(target, title, description, opts, cfg).then(function (response) {
+                if (response instanceof Array)
+                    resolve(response[0]);
+                else if (response === "right")
+                    showPage(Math.min(x + 1, width - cols), y);
+                else if (response === "left")
+                    showPage(Math.max(x - 1, 0), y);
+                else if (response === "up")
+                    showPage(x, Math.max(y - 1, 0));
+                else if (response === "down")
+                    showPage(x, Math.min(y + 1, height - rows));
+                else {
+                    //Treat numbers as cancel
+                    if (cfg.onCancel == "null")
+                        resolve(null);
+                    else if (cfg.onCancel == "reject")
+                        reject("cancel");
+                    //otherwise, just let the promise hang
+                }
+            });
+        }
+        showPage(Math.min((_a = cfg.x) !== null && _a !== void 0 ? _a : 0, width - cols), Math.min((_b = cfg.y) !== null && _b !== void 0 ? _b : 0, height - rows));
+        return promise;
+    },
     pagedListButtons: function (target, title, description, options, _a) {
         var _b;
         var _c = _a.rowsPerPage, rowsPerPage = _c === void 0 ? 10 : _c, _d = _a.columns, columns = _d === void 0 ? 3 : _d, cfg = __rest(_a, ["rowsPerPage", "columns"]);

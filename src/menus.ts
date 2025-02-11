@@ -216,6 +216,57 @@ export const Menu = {
 		showPage(0);
 		return promise;
 	},
+	scroll<TOption extends unknown, TCancelBehavior extends MenuCancelOption>(
+		this:void, target:FishPlayer, title:string, description:string,
+		options:{ data: TOption; text: string; }[][],
+		cfg: Pick<MenuOptions<TOption, TCancelBehavior>, "onCancel" | "columns"> & {
+			rows?: number;
+			x?: number;
+			y?: number;
+			getCenterText?: (x:number, y:number) => string;
+		} = {},
+	){
+		const { promise, reject, resolve } = Promise.withResolvers<
+			(TCancelBehavior extends "null" ? null : never) | TOption,
+			TCancelBehavior extends "reject" ? "cancel" : never
+		>();
+		const { rows = 5, columns: cols = 5 } = cfg;
+		const height = options.length;
+		const width = options[0].length;
+		function showPage(x:number, y:number){
+			const opts:{ data: "left" | "blank" | "right" | "up" | "down" | readonly [TOption]; text: string; }[][] = [
+				...options.slice(y, y + rows).map(r => r.slice(x, x + cols).map(d => ({ text: d.text, data: [d.data] as const }))),
+				[
+					{ data: "blank", text: `` },
+					{ data: "up", text: `[${y == 0 ? "gray" : "accent"}]^\n|` },
+					{ data: "blank", text: `` },
+				],[
+					{ data: "left", text: `[${x == 0 ? "gray" : "accent"}]<--` },
+					{ data: "blank", text: cfg.getCenterText?.(x, y) ?? '' },
+					{ data: "right", text: `[${x == width - cols ? "gray" : "accent"}]-->` }
+				],[
+					{ data: "blank", text: `` },
+					{ data: "down", text: `[${y == height - rows ? "gray" : "accent"}]|\nV` },
+					{ data: "blank", text: `` },
+				]
+			];
+			Menu.buttons(target, title, description, opts, cfg).then<unknown, never>(response => {
+				if(response instanceof Array) resolve(response[0]);
+				else if(response === "right") showPage(Math.min(x + 1, width - cols), y);
+				else if(response === "left") showPage(Math.max(x - 1, 0), y);
+				else if(response === "up") showPage(x, Math.max(y - 1, 0));
+				else if(response === "down") showPage(x, Math.min(y + 1, height - rows));
+				else {
+					//Treat numbers as cancel
+					if(cfg.onCancel == "null") resolve(null as never);
+					else if(cfg.onCancel == "reject") reject("cancel" as never);
+					//otherwise, just let the promise hang
+				}
+			});
+		}
+		showPage(Math.min(cfg.x ?? 0, width - cols), Math.min(cfg.y ?? 0, height - rows));
+		return promise;
+	},
 	pagedListButtons<TButtonData extends unknown, MenuCancelBehavior extends MenuCancelOption = "ignore">(
 		this:void, target:FishPlayer, title:string, description:string,
 		options:{ data: TButtonData; text: string; }[],
