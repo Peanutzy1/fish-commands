@@ -79,7 +79,7 @@ if(!fs.existsSync(devServerDirectory)){
 function runServer(){
 	console.log("Starting fish-commands Mindustry development server...");
 	const { status } = spawnSync(`which`, ["rlwrap"]);
-	execSync(`${status ? "" : "rlwrap "}java -Xmx500M -Xms500M -jar "server-release.jar"`, {
+	execSync(`${status === 0 ? "rlwrap " : ""}java -Xmx500M -Xms500M -jar "server-release.jar"`, {
 		stdio: "inherit",
 		cwd: path.join(fcRootDirectory, "dev-server")
 	});
