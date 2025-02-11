@@ -8,7 +8,7 @@ import { Perm, PermType } from "./commands";
 import * as globals from "./globals";
 import { FColor, Gamemode, heuristics, Mode, prefixes, rules, stopAntiEvadeTime, text, tips } from "./config";
 import { uuidPattern } from "./globals";
-import { menu } from "./menus";
+import { Menu } from "./menus";
 import { Rank, RankName, RoleFlag, RoleFlagName } from "./ranks";
 import type { FishCommandArgType, FishPlayerData, PlayerHistoryEntry } from "./types";
 import { cleanText, formatTime, formatTimeRelative, isImpersonator, logAction, logHTrip, matchFilter } from "./utils";
@@ -53,10 +53,10 @@ export class FishPlayer {
 	player:mindustryPlayer | null = null;
 	pet:string = "";
 	watch:boolean = false;
-	activeMenu: {
-		cancelOptionId: number;
-		callback?: (sender:FishPlayer, option:number) => void;
-	} = {cancelOptionId: -1};
+	/** Front-to-back queue of menus to show. */
+	activeMenus: {
+		callback: (option:number) => void;
+	}[] = [];
 	tileId = false;
 	tilelog:null | "once" | "persist" = null;
 	trail: {
@@ -320,7 +320,12 @@ export class FishPlayer {
 				fishPlayer.updateName();
 			});
 			//I think this is a better spot for this
-			if(fishPlayer.firstJoin()) menu("Rules for [#0000ff] >|||> FISH [white] servers [white]", rules.join("\n\n[white]") + "\nYou can view these rules again by running [cyan]/rules[].",["[green]I understand and agree to these terms"],fishPlayer);
+			if(fishPlayer.firstJoin()) Menu.menu(
+				"Rules for [#0000ff] >|||> FISH [white] servers [white]",
+				rules.join("\n\n[white]") + "\nYou can view these rules again by running [cyan]/rules[].",
+				["[green]I understand and agree to these terms"],
+				fishPlayer
+			);
 
 		}
 	}
@@ -377,7 +382,7 @@ export class FishPlayer {
 			}
 		}
 		//Clear temporary states such as menu and taphandler
-		fishP.activeMenu.callback = undefined;
+		fishP.activeMenus = [];
 		fishP.tapInfo.commandName = null;
 		fishP.stats.timeInGame += (Date.now() - fishP.lastJoined); //Time between joining and leaving
 		fishP.lastJoined = Date.now();
@@ -449,7 +454,7 @@ export class FishPlayer {
 	static onGameOver(winningTeam:Team){
 		this.forEachPlayer((fishPlayer) => {
 			//Clear temporary states such as menu and taphandler
-			fishPlayer.activeMenu.callback = undefined;
+			fishPlayer.activeMenus = [];
 			fishPlayer.tapInfo.commandName = null;
 			//Update stats
 			if(!this.ignoreGameOver && fishPlayer.team() != Team.derelict && winningTeam != Team.derelict){
@@ -608,22 +613,19 @@ Previously used UUID \`${uuid}\`(${Vars.netServer.admins.getInfoOptional(uuid)?.
 						api.sendStaffMessage(`Autoflagged player ${this.name}[cyan] for suspected vpn!`, "AntiVPN");
 						FishPlayer.messageStaff(`[yellow]WARNING:[scarlet] player [cyan]"${this.name}[cyan]"[yellow] is new (${info.timesJoined - 1} joins) and using a vpn. They have been automatically stopped and muted. Unless there is an ongoing griefer raid, they are most likely innocent. Free them with /free.`);
 						Log.warn(`Player ${this.name} (${this.uuid}) was autoflagged.`);
-						menu(
+						Menu.buttons(
+							this,
 							"[gold]Welcome to Fish Community!",
 							`[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. ${FColor.discord`Join our Discord`} to request a staff member come online if none are on.`,
-							["Close", "Discord"],
-							this,
-							({option, sender}) => {
-								if(option == "Discord"){
-									Call.openURI(sender.con, text.discordURL);
-								}
-							},
-							false,
-							str => ({
-								"Close": "Close",
-								"Discord": FColor.discord("Discord")
-							}[str])
-						);
+							[[
+								{ data: "Close", text: "Close" },
+								{ data: "Discord", text: FColor.discord("Discord") },
+							]]
+						).then((option) => {
+							if(option == "Discord"){
+								Call.openURI(this.con, text.discordURL);
+							}
+						});
 						this.sendMessage(`[gold]Welcome to Fish Community!\n[gold]Hi there! You have been automatically [scarlet]stopped and muted[] because we've found something to be [pink]a bit sus[]. You can still talk to staff and request to be freed. ${FColor.discord`Join our Discord`} to request a staff member come online if none are on.`);
 					}
 				} else if(info.timesJoined < 5){

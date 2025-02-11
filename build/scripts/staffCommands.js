@@ -7,6 +7,42 @@ var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cook
     if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
     return cooked;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 var __read = (this && this.__read) || function (o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
     if (!m) return o;
@@ -74,7 +110,7 @@ exports.commands = (0, commands_1.commandList)({
             if (args.player.hasPerm("blockTrolling"))
                 (0, commands_1.fail)(f(templateObject_1 || (templateObject_1 = __makeTemplateObject(["Player ", " is insufficiently trollable."], ["Player ", " is insufficiently trollable."])), args.player));
             var message = (_b = args.message) !== null && _b !== void 0 ? _b : "You have been warned. I suggest you stop what you're doing";
-            (0, menus_1.menu)('Warning', message, ["[green]Accept"], args.player);
+            menus_1.Menu.menu('Warning', message, ["[green]Accept"], args.player);
             (0, utils_1.logAction)('warned', sender, args.player, message);
             outputSuccess(f(templateObject_2 || (templateObject_2 = __makeTemplateObject(["Warned player ", " for \"", "\""], ["Warned player ", " for \"", "\""])), args.player, message));
         }
@@ -228,72 +264,88 @@ exports.commands = (0, commands_1.commandList)({
         description: "Stops an offline player.",
         perm: commands_1.Perm.mod,
         handler: function (_a) {
-            var _b;
-            var args = _a.args, sender = _a.sender, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess, f = _a.f, admins = _a.admins;
-            var maxPlayers = 60;
-            function stop(option, time) {
-                var fishP = players_1.FishPlayer.getFromInfo(option);
-                if (sender.canModerate(fishP, true)) {
-                    (0, utils_1.logAction)(fishP.marked() ? time == 1000 ? "freed" : "updated stop time of" : "stopped", sender, option, undefined, time);
-                    fishP.stop(sender, time);
-                    outputSuccess(f(templateObject_21 || (templateObject_21 = __makeTemplateObject(["Player ", " was marked for ", "."], ["Player ", " was marked for ", "."])), option, (0, utils_1.formatTime)(time)));
-                }
-                else {
-                    outputFail("You do not have permission to stop this player.");
-                }
-            }
-            if (args.name && globals_2.uuidPattern.test(args.name)) {
-                var info = admins.getInfoOptional(args.name);
-                if (info != null) {
-                    stop(info, (_b = args.time) !== null && _b !== void 0 ? _b : (0, utils_1.untilForever)());
-                }
-                else {
-                    outputFail(f(templateObject_22 || (templateObject_22 = __makeTemplateObject(["Unknown UUID ", ""], ["Unknown UUID ", ""])), args.name));
-                }
-                return;
-            }
-            var possiblePlayers;
-            if (args.name) {
-                possiblePlayers = (0, funcs_5.setToArray)(admins.searchNames(args.name));
-                if (possiblePlayers.length > maxPlayers) {
-                    var exactPlayers = (0, funcs_5.setToArray)(admins.findByName(args.name));
-                    if (exactPlayers.length > 0) {
-                        possiblePlayers = exactPlayers;
+            return __awaiter(this, arguments, void 0, function (_b) {
+                function stop(option, time) {
+                    var fishP = players_1.FishPlayer.getFromInfo(option);
+                    if (sender.canModerate(fishP, true)) {
+                        (0, utils_1.logAction)(fishP.marked() ? time == 1000 ? "freed" : "updated stop time of" : "stopped", sender, option, undefined, time);
+                        fishP.stop(sender, time);
+                        outputSuccess(f(templateObject_21 || (templateObject_21 = __makeTemplateObject(["Player ", " was marked for ", "."], ["Player ", " was marked for ", "."])), option, (0, utils_1.formatTime)(time)));
                     }
                     else {
-                        (0, commands_1.fail)("Too many players with that name.");
+                        outputFail("You do not have permission to stop this player.");
                     }
                 }
-                else if (possiblePlayers.length == 0) {
-                    (0, commands_1.fail)("No players with that name were found.");
-                }
-                var score_1 = function (data) {
-                    var fishP = players_1.FishPlayer.getById(data.id);
-                    if (fishP)
-                        return fishP.lastJoined;
-                    return -data.timesJoined;
-                };
-                possiblePlayers.sort(function (a, b) { return score_1(b) - score_1(a); });
-            }
-            else {
-                possiblePlayers = players_1.FishPlayer.recentLeaves.map(function (p) { return p.info(); });
-            }
-            (0, menus_1.menu)("Stop", "Choose a player to mark", possiblePlayers, sender, function (_a) {
-                var optionPlayer = _a.option, sender = _a.sender;
-                if (args.time == null) {
-                    (0, menus_1.menu)("Stop", "Select stop time", ["2 days", "7 days", "30 days", "forever"], sender, function (_a) {
-                        var optionTime = _a.option, sender = _a.sender;
-                        var time = optionTime == "2 days" ? 172800000 :
-                            optionTime == "7 days" ? 604800000 :
-                                optionTime == "30 days" ? 2592000000 :
-                                    (globals_1.maxTime - Date.now() - 10000);
-                        stop(optionPlayer, time);
-                    }, false);
-                }
-                else {
-                    stop(optionPlayer, args.time);
-                }
-            }, true, function (p) { return p.lastName; });
+                var maxPlayers, info, possiblePlayers, exactPlayers, score_1, optionPlayer, _c, _d, _e;
+                var _f, _g;
+                var args = _b.args, sender = _b.sender, outputFail = _b.outputFail, outputSuccess = _b.outputSuccess, f = _b.f, admins = _b.admins;
+                return __generator(this, function (_h) {
+                    switch (_h.label) {
+                        case 0:
+                            maxPlayers = 60;
+                            if (args.name && globals_2.uuidPattern.test(args.name)) {
+                                info = admins.getInfoOptional(args.name);
+                                if (info != null) {
+                                    stop(info, (_f = args.time) !== null && _f !== void 0 ? _f : (0, utils_1.untilForever)());
+                                }
+                                else {
+                                    outputFail(f(templateObject_22 || (templateObject_22 = __makeTemplateObject(["Unknown UUID ", ""], ["Unknown UUID ", ""])), args.name));
+                                }
+                                return [2 /*return*/];
+                            }
+                            if (args.name) {
+                                possiblePlayers = (0, funcs_5.setToArray)(admins.searchNames(args.name));
+                                if (possiblePlayers.length > maxPlayers) {
+                                    exactPlayers = (0, funcs_5.setToArray)(admins.findByName(args.name));
+                                    if (exactPlayers.length > 0) {
+                                        possiblePlayers = exactPlayers;
+                                    }
+                                    else {
+                                        (0, commands_1.fail)("Too many players with that name.");
+                                    }
+                                }
+                                else if (possiblePlayers.length == 0) {
+                                    (0, commands_1.fail)("No players with that name were found.");
+                                }
+                                score_1 = function (data) {
+                                    var fishP = players_1.FishPlayer.getById(data.id);
+                                    if (fishP)
+                                        return fishP.lastJoined;
+                                    return -data.timesJoined;
+                                };
+                                possiblePlayers.sort(function (a, b) { return score_1(b) - score_1(a); });
+                            }
+                            else {
+                                possiblePlayers = players_1.FishPlayer.recentLeaves.map(function (p) { return p.info(); });
+                            }
+                            return [4 /*yield*/, menus_1.Menu.menu("Stop", "Choose a player to mark", possiblePlayers, sender, {
+                                    includeCancel: true,
+                                    optionStringifier: function (p) { return p.lastName; }
+                                })];
+                        case 1:
+                            optionPlayer = _h.sent();
+                            if (!((_g = args.time) !== null && _g !== void 0)) return [3 /*break*/, 2];
+                            _c = _g;
+                            return [3 /*break*/, 4];
+                        case 2:
+                            _d = args;
+                            _e = utils_1.match;
+                            return [4 /*yield*/, menus_1.Menu.menu("Stop", "Select stop time", ["2 days", "7 days", "30 days", "forever"], sender)];
+                        case 3:
+                            _c = (_d.time = _e.apply(void 0, [_h.sent(), {
+                                    "2 days": 172800000,
+                                    "7 days": 604800000,
+                                    "30 days": 2592000000,
+                                    "forever": globals_1.maxTime - Date.now() - 10000,
+                                }]));
+                            _h.label = 4;
+                        case 4:
+                            _c;
+                            stop(optionPlayer, args.time);
+                            return [2 /*return*/];
+                    }
+                });
+            });
         }
     },
     mute_offline: {
@@ -301,60 +353,80 @@ exports.commands = (0, commands_1.commandList)({
         description: "Mutes an offline player.",
         perm: commands_1.Perm.mod,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f, admins = _a.admins;
-            var maxPlayers = 60;
-            function mute(option) {
-                var fishP = players_1.FishPlayer.getFromInfo(option);
-                if (!sender.canModerate(fishP, true))
-                    (0, commands_1.fail)("You do not have permission to mute this player.");
-                (0, menus_1.menu)("Mute Offine Confirmation", "Are you sure you want to ".concat(fishP.muted ? "unmute" : "mute", " player ").concat(option.lastName, "?"), [true, false], sender, function (res) {
-                    if (res.option) {
-                        (0, utils_1.logAction)(fishP.muted ? "unmuted" : "muted", sender, fishP);
-                        if (fishP.muted)
-                            fishP.unmute(sender);
-                        else
-                            fishP.mute(sender);
-                        outputSuccess("".concat(fishP.muted ? "Muted" : "Unmuted", " ").concat(option.lastName, "."));
-                    }
-                }, false, function (opt) { return opt ? "[green]Yes, ".concat(fishP.muted ? "unmute" : "mute", " them") : "[red]Cancel"; });
-            }
-            if (args.name && globals_2.uuidPattern.test(args.name)) {
-                var info = admins.getInfoOptional(args.name);
-                if (!info)
-                    (0, commands_1.fail)(f(templateObject_23 || (templateObject_23 = __makeTemplateObject(["Unknown UUID ", ""], ["Unknown UUID ", ""])), args.name));
-                mute(info);
-                return;
-            }
-            var possiblePlayers;
-            if (args.name) {
-                possiblePlayers = (0, funcs_5.setToArray)(admins.searchNames(args.name));
-                if (possiblePlayers.length > maxPlayers) {
-                    var exactPlayers = (0, funcs_5.setToArray)(admins.findByName(args.name));
-                    if (exactPlayers.length > 0) {
-                        possiblePlayers = exactPlayers;
-                    }
-                    else {
-                        (0, commands_1.fail)("Too many players with that name.");
-                    }
+            return __awaiter(this, arguments, void 0, function (_b) {
+                function mute(option) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var fishP;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    fishP = players_1.FishPlayer.getFromInfo(option);
+                                    if (!sender.canModerate(fishP, true))
+                                        (0, commands_1.fail)("You do not have permission to mute this player.");
+                                    return [4 /*yield*/, menus_1.Menu.confirm(sender, "Are you sure you want to ".concat(fishP.muted ? "unmute" : "mute", " player ").concat(option.lastName, "?"), {
+                                            title: "Mute Offine Confirmation",
+                                            confirmText: "[green]Yes, ".concat(fishP.muted ? "unmute" : "mute", " them"),
+                                        })];
+                                case 1:
+                                    _a.sent();
+                                    (0, utils_1.logAction)(fishP.muted ? "unmuted" : "muted", sender, fishP);
+                                    if (fishP.muted)
+                                        fishP.unmute(sender);
+                                    else
+                                        fishP.mute(sender);
+                                    outputSuccess("".concat(fishP.muted ? "Muted" : "Unmuted", " ").concat(option.lastName, "."));
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
                 }
-                else if (possiblePlayers.length == 0) {
-                    (0, commands_1.fail)("No players with that name were found.");
-                }
-                var score_2 = function (data) {
-                    var fishP = players_1.FishPlayer.getById(data.id);
-                    if (fishP)
-                        return fishP.lastJoined;
-                    return -data.timesJoined;
-                };
-                possiblePlayers.sort(function (a, b) { return score_2(b) - score_2(a); });
-            }
-            else {
-                possiblePlayers = players_1.FishPlayer.recentLeaves.map(function (p) { return p.info(); });
-            }
-            (0, menus_1.menu)("Mute", "Choose a player to mute", possiblePlayers, sender, function (_a) {
-                var optionPlayer = _a.option;
-                mute(optionPlayer);
-            }, true, function (p) { return p.lastName; });
+                var maxPlayers, info, possiblePlayers, exactPlayers, score_2, option;
+                var _c;
+                var args = _b.args, sender = _b.sender, outputSuccess = _b.outputSuccess, f = _b.f, admins = _b.admins;
+                return __generator(this, function (_d) {
+                    switch (_d.label) {
+                        case 0:
+                            maxPlayers = 300;
+                            if (args.name && globals_2.uuidPattern.test(args.name)) {
+                                info = (_c = admins.getInfoOptional(args.name)) !== null && _c !== void 0 ? _c : (0, commands_1.fail)(f(templateObject_23 || (templateObject_23 = __makeTemplateObject(["Unknown UUID ", ""], ["Unknown UUID ", ""])), args.name));
+                                mute(info);
+                                return [2 /*return*/];
+                            }
+                            if (args.name) {
+                                possiblePlayers = (0, funcs_5.setToArray)(admins.searchNames(args.name));
+                                if (possiblePlayers.length > maxPlayers) {
+                                    exactPlayers = (0, funcs_5.setToArray)(admins.findByName(args.name));
+                                    if (exactPlayers.length > 0) {
+                                        possiblePlayers = exactPlayers;
+                                    }
+                                    else {
+                                        (0, commands_1.fail)("Too many players with that name.");
+                                    }
+                                }
+                                else if (possiblePlayers.length == 0) {
+                                    (0, commands_1.fail)("No players with that name were found.");
+                                }
+                                score_2 = function (data) {
+                                    var fishP = players_1.FishPlayer.getById(data.id);
+                                    if (fishP)
+                                        return fishP.lastJoined;
+                                    return -data.timesJoined;
+                                };
+                                possiblePlayers.sort(function (a, b) { return score_2(b) - score_2(a); });
+                            }
+                            else {
+                                possiblePlayers = players_1.FishPlayer.recentLeaves.map(function (p) { return p.info(); });
+                            }
+                            return [4 /*yield*/, menus_1.Menu.pagedList(sender, "Mute", "Choose a player to mute", possiblePlayers, {
+                                    optionStringifier: function (p) { return p.lastName; }
+                                })];
+                        case 1:
+                            option = _d.sent();
+                            mute(option);
+                            return [2 /*return*/];
+                    }
+                });
+            });
         }
     },
     restart: {
@@ -472,79 +544,81 @@ exports.commands = (0, commands_1.commandList)({
         description: "Bans a player by UUID and IP.",
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f, admins = _a.admins;
-            if (args.uuid_or_ip && globals_2.uuidPattern.test(args.uuid_or_ip)) {
-                //Overload 1: ban by uuid
-                var uuid_1 = args.uuid_or_ip;
-                var data_1;
-                if ((data_1 = admins.getInfoOptional(uuid_1)) != null && data_1.admin)
-                    (0, commands_1.fail)("Cannot ban an admin.");
-                var name = data_1 ? "".concat((0, funcs_2.escapeStringColorsClient)(data_1.lastName), " (").concat(uuid_1, "/").concat(data_1.lastIP, ")") : uuid_1;
-                (0, menus_1.menu)("Confirm", "Are you sure you want to ban ".concat(name, "?"), ["[red]Yes", "[green]Cancel"], sender, function (_a) {
-                    var confirm = _a.option;
-                    if (confirm != "[red]Yes")
-                        (0, commands_1.fail)("Cancelled.");
-                    admins.banPlayerID(uuid_1);
-                    if (data_1) {
-                        var ip = data_1.lastIP;
-                        admins.banPlayerIP(ip);
-                        api.ban({ ip: ip, uuid: uuid_1 });
-                        Log.info("".concat(uuid_1, "/").concat(ip, " was banned."));
-                        (0, utils_1.logAction)("banned", sender, data_1);
-                        outputSuccess(f(templateObject_29 || (templateObject_29 = __makeTemplateObject(["Banned player ", " (", "/", ")"], ["Banned player ", " (", "/", ")"])), (0, funcs_2.escapeStringColorsClient)(data_1.lastName), uuid_1, ip));
-                        //TODO add way to specify whether to activate or escape color tags
+            return __awaiter(this, arguments, void 0, function (_b) {
+                var uuid, data, name, ip, ip, info, alreadyBanned, option;
+                var args = _b.args, sender = _b.sender, outputSuccess = _b.outputSuccess, f = _b.f, admins = _b.admins;
+                return __generator(this, function (_c) {
+                    switch (_c.label) {
+                        case 0:
+                            if (!(args.uuid_or_ip && globals_2.uuidPattern.test(args.uuid_or_ip))) return [3 /*break*/, 2];
+                            uuid = args.uuid_or_ip;
+                            data = void 0;
+                            if ((data = admins.getInfoOptional(uuid)) != null && data.admin)
+                                (0, commands_1.fail)("Cannot ban an admin.");
+                            name = data ? "".concat((0, funcs_2.escapeStringColorsClient)(data.lastName), " (").concat(uuid, "/").concat(data.lastIP, ")") : uuid;
+                            return [4 /*yield*/, menus_1.Menu.confirmDangerous(sender, "Are you sure you want to ban ".concat(name, "?"))];
+                        case 1:
+                            _c.sent();
+                            admins.banPlayerID(uuid);
+                            if (data) {
+                                ip = data.lastIP;
+                                admins.banPlayerIP(ip);
+                                api.ban({ ip: ip, uuid: uuid });
+                                Log.info("".concat(uuid, "/").concat(ip, " was banned."));
+                                (0, utils_1.logAction)("banned", sender, data);
+                                outputSuccess(f(templateObject_29 || (templateObject_29 = __makeTemplateObject(["Banned player ", " (", "/", ")"], ["Banned player ", " (", "/", ")"])), (0, funcs_2.escapeStringColorsClient)(data.lastName), uuid, ip));
+                                //TODO add way to specify whether to activate or escape color tags
+                            }
+                            else {
+                                api.ban({ uuid: uuid });
+                                Log.info("".concat(uuid, " was banned."));
+                                (0, utils_1.logAction)("banned", sender, uuid);
+                                outputSuccess(f(templateObject_30 || (templateObject_30 = __makeTemplateObject(["Banned player ", ". [yellow]Unable to determine IP.[]"], ["Banned player ", ". [yellow]Unable to determine IP.[]"])), uuid));
+                            }
+                            (0, utils_1.updateBans)(function (player) { return "[scarlet]Player [yellow]".concat(player.name, "[scarlet] has been whacked by ").concat(sender.prefixedName, "."); });
+                            return [2 /*return*/];
+                        case 2:
+                            if (!(args.uuid_or_ip && globals_2.ipPattern.test(args.uuid_or_ip))) return [3 /*break*/, 4];
+                            ip = args.uuid_or_ip;
+                            return [4 /*yield*/, menus_1.Menu.confirmDangerous(sender, "Are you sure you want to ban IP ".concat(ip, "?"))];
+                        case 3:
+                            _c.sent();
+                            api.ban({ ip: ip });
+                            info = admins.findByIP(ip);
+                            if (info)
+                                (0, utils_1.logAction)("banned", sender, info);
+                            else
+                                (0, utils_1.logAction)("banned ".concat(ip), sender);
+                            alreadyBanned = admins.banPlayerIP(ip);
+                            if (alreadyBanned) {
+                                outputSuccess(f(templateObject_31 || (templateObject_31 = __makeTemplateObject(["IP ", " is already banned. Ban was synced to other servers."], ["IP ", " is already banned. Ban was synced to other servers."])), ip));
+                            }
+                            else {
+                                outputSuccess(f(templateObject_32 || (templateObject_32 = __makeTemplateObject(["IP ", " has been banned. Ban was synced to other servers."], ["IP ", " has been banned. Ban was synced to other servers."])), ip));
+                            }
+                            (0, utils_1.updateBans)(function (player) { return "[scarlet]Player [yellow]".concat(player.name, "[scarlet] has been whacked by ").concat(sender.prefixedName, "."); });
+                            return [2 /*return*/];
+                        case 4: return [4 /*yield*/, menus_1.Menu.menu("[scarlet]BAN[]", "Choose a player to ban.", (0, funcs_5.setToArray)(Groups.player), sender, {
+                                includeCancel: true,
+                                optionStringifier: function (opt) { return opt.name; }
+                            })];
+                        case 5:
+                            option = _c.sent();
+                            if (option.admin)
+                                (0, commands_1.fail)("Cannot ban an admin.");
+                            return [4 /*yield*/, menus_1.Menu.confirmDangerous(sender, "Are you sure you want to ban ".concat(option.name, "?"))];
+                        case 6:
+                            _c.sent();
+                            admins.banPlayerIP(option.ip()); //this also bans the UUID
+                            api.ban({ ip: option.ip(), uuid: option.uuid() });
+                            Log.info("".concat(option.ip(), "/").concat(option.uuid(), " was banned."));
+                            (0, utils_1.logAction)("banned", sender, option.getInfo());
+                            outputSuccess(f(templateObject_33 || (templateObject_33 = __makeTemplateObject(["Banned player ", "."], ["Banned player ", "."])), option));
+                            (0, utils_1.updateBans)(function (player) { return "[scarlet]Player [yellow]".concat(player.name, "[scarlet] has been whacked by ").concat(sender.prefixedName, "."); });
+                            return [2 /*return*/];
                     }
-                    else {
-                        api.ban({ uuid: uuid_1 });
-                        Log.info("".concat(uuid_1, " was banned."));
-                        (0, utils_1.logAction)("banned", sender, uuid_1);
-                        outputSuccess(f(templateObject_30 || (templateObject_30 = __makeTemplateObject(["Banned player ", ". [yellow]Unable to determine IP.[]"], ["Banned player ", ". [yellow]Unable to determine IP.[]"])), uuid_1));
-                    }
-                    (0, utils_1.updateBans)(function (player) { return "[scarlet]Player [yellow]".concat(player.name, "[scarlet] has been whacked by ").concat(sender.prefixedName, "."); });
-                }, false);
-                return;
-            }
-            else if (args.uuid_or_ip && globals_2.ipPattern.test(args.uuid_or_ip)) {
-                //Overload 2: ban by uuid
-                var ip_1 = args.uuid_or_ip;
-                (0, menus_1.menu)("Confirm", "Are you sure you want to ban IP ".concat(ip_1, "?"), ["[red]Yes", "[green]Cancel"], sender, function (_a) {
-                    var confirm = _a.option;
-                    if (confirm != "[red]Yes")
-                        (0, commands_1.fail)("Cancelled.");
-                    api.ban({ ip: ip_1 });
-                    var info = admins.findByIP(ip_1);
-                    if (info)
-                        (0, utils_1.logAction)("banned", sender, info);
-                    else
-                        (0, utils_1.logAction)("banned ".concat(ip_1), sender);
-                    var alreadyBanned = admins.banPlayerIP(ip_1);
-                    if (alreadyBanned) {
-                        outputSuccess(f(templateObject_31 || (templateObject_31 = __makeTemplateObject(["IP ", " is already banned. Ban was synced to other servers."], ["IP ", " is already banned. Ban was synced to other servers."])), ip_1));
-                    }
-                    else {
-                        outputSuccess(f(templateObject_32 || (templateObject_32 = __makeTemplateObject(["IP ", " has been banned. Ban was synced to other servers."], ["IP ", " has been banned. Ban was synced to other servers."])), ip_1));
-                    }
-                    (0, utils_1.updateBans)(function (player) { return "[scarlet]Player [yellow]".concat(player.name, "[scarlet] has been whacked by ").concat(sender.prefixedName, "."); });
-                }, false);
-                return;
-            }
-            //Overload 3: ban by menu
-            (0, menus_1.menu)("[scarlet]BAN[]", "Choose a player to ban.", (0, funcs_5.setToArray)(Groups.player), sender, function (_a) {
-                var option = _a.option;
-                if (option.admin)
-                    (0, commands_1.fail)("Cannot ban an admin.");
-                (0, menus_1.menu)("Confirm", "Are you sure you want to ban ".concat(option.name, "?"), ["[red]Yes", "[green]Cancel"], sender, function (_a) {
-                    var confirm = _a.option;
-                    if (confirm != "[red]Yes")
-                        (0, commands_1.fail)("Cancelled.");
-                    admins.banPlayerIP(option.ip()); //this also bans the UUID
-                    api.ban({ ip: option.ip(), uuid: option.uuid() });
-                    Log.info("".concat(option.ip(), "/").concat(option.uuid(), " was banned."));
-                    (0, utils_1.logAction)("banned", sender, option.getInfo());
-                    outputSuccess(f(templateObject_33 || (templateObject_33 = __makeTemplateObject(["Banned player ", "."], ["Banned player ", "."])), option));
-                    (0, utils_1.updateBans)(function (player) { return "[scarlet]Player [yellow]".concat(player.name, "[scarlet] has been whacked by ").concat(sender.prefixedName, "."); });
-                }, false);
-            }, true, function (opt) { return opt.name; });
+                });
+            });
         }
     },
     kill: {
@@ -569,51 +643,51 @@ exports.commands = (0, commands_1.commandList)({
         description: "Kills all units, optionally specifying a team and unit type.",
         perm: commands_1.Perm.massKill,
         handler: function (_a) {
-            var _b = _a.args, team = _b.team, unit = _b.unit, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail, f = _a.f;
-            if (team) {
-                (0, menus_1.menu)("Confirm", "This will kill [scarlet]every ".concat(unit ? unit.localizedName : "unit", "[] on the team ").concat(team.coloredName(), "."), ["[orange]Kill units[]", "[green]Cancel[]"], sender, function (_a) {
-                    var option = _a.option;
-                    if (option == "[orange]Kill units[]") {
-                        if (unit) {
-                            var i_1 = 0;
-                            team.data().units.each(function (u) { return u.type == unit; }, function (u) {
-                                u.kill();
-                                i_1++;
-                            });
-                            outputSuccess(f(templateObject_36 || (templateObject_36 = __makeTemplateObject(["Killed ", " units on ", "."], ["Killed ", " units on ", "."])), i_1, team));
-                        }
-                        else {
-                            var before = team.data().units.size;
-                            team.data().units.each(function (u) { return u.kill(); });
-                            outputSuccess(f(templateObject_37 || (templateObject_37 = __makeTemplateObject(["Killed ", " units on ", "."], ["Killed ", " units on ", "."])), before, team));
-                        }
+            return __awaiter(this, arguments, void 0, function (_b) {
+                var i_1, before, i_2, before;
+                var _c = _b.args, team = _c.team, unit = _c.unit, sender = _b.sender, outputSuccess = _b.outputSuccess, outputFail = _b.outputFail, f = _b.f;
+                return __generator(this, function (_d) {
+                    switch (_d.label) {
+                        case 0:
+                            if (!team) return [3 /*break*/, 2];
+                            return [4 /*yield*/, menus_1.Menu.confirmDangerous(sender, "This will kill [scarlet]every ".concat(unit ? unit.localizedName : "unit", "[] on the team ").concat(team.coloredName(), "."), { confirmText: "[orange]Kill units[]" })];
+                        case 1:
+                            _d.sent();
+                            if (unit) {
+                                i_1 = 0;
+                                team.data().units.each(function (u) { return u.type == unit; }, function (u) {
+                                    u.kill();
+                                    i_1++;
+                                });
+                                outputSuccess(f(templateObject_36 || (templateObject_36 = __makeTemplateObject(["Killed ", " units on ", "."], ["Killed ", " units on ", "."])), i_1, team));
+                            }
+                            else {
+                                before = team.data().units.size;
+                                team.data().units.each(function (u) { return u.kill(); });
+                                outputSuccess(f(templateObject_37 || (templateObject_37 = __makeTemplateObject(["Killed ", " units on ", "."], ["Killed ", " units on ", "."])), before, team));
+                            }
+                            return [3 /*break*/, 4];
+                        case 2: return [4 /*yield*/, menus_1.Menu.confirmDangerous(sender, "This will kill [scarlet]every single ".concat(unit ? unit.localizedName : "unit", "[]."), { confirmText: "[orange]Kill all units[]" })];
+                        case 3:
+                            _d.sent();
+                            if (unit) {
+                                i_2 = 0;
+                                Groups.unit.each(function (u) { return u.type == unit; }, function (u) {
+                                    u.kill();
+                                    i_2++;
+                                });
+                                outputSuccess(f(templateObject_38 || (templateObject_38 = __makeTemplateObject(["Killed ", " units."], ["Killed ", " units."])), i_2));
+                            }
+                            else {
+                                before = Groups.unit.size();
+                                Groups.unit.each(function (u) { return u.kill(); });
+                                outputSuccess(f(templateObject_39 || (templateObject_39 = __makeTemplateObject(["Killed ", " units."], ["Killed ", " units."])), before));
+                            }
+                            _d.label = 4;
+                        case 4: return [2 /*return*/];
                     }
-                    else
-                        outputFail("Cancelled.");
-                }, false);
-            }
-            else {
-                (0, menus_1.menu)("Confirm", "This will kill [scarlet]every single ".concat(unit ? unit.localizedName : "unit", "[]."), ["[orange]Kill all units[]", "[green]Cancel[]"], sender, function (_a) {
-                    var option = _a.option;
-                    if (option == "[orange]Kill all units[]") {
-                        if (unit) {
-                            var i_2 = 0;
-                            Groups.unit.each(function (u) { return u.type == unit; }, function (u) {
-                                u.kill();
-                                i_2++;
-                            });
-                            outputSuccess(f(templateObject_38 || (templateObject_38 = __makeTemplateObject(["Killed ", " units."], ["Killed ", " units."])), i_2));
-                        }
-                        else {
-                            var before = Groups.unit.size();
-                            Groups.unit.each(function (u) { return u.kill(); });
-                            outputSuccess(f(templateObject_39 || (templateObject_39 = __makeTemplateObject(["Killed ", " units."], ["Killed ", " units."])), before));
-                        }
-                    }
-                    else
-                        outputFail("Cancelled.");
-                }, false);
-            }
+                });
+            });
         }
     },
     killbuildings: {
@@ -621,31 +695,31 @@ exports.commands = (0, commands_1.commandList)({
         description: "Kills all buildings (except cores), optionally specifying a team.",
         perm: commands_1.Perm.massKill,
         handler: function (_a) {
-            var team = _a.args.team, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail, f = _a.f;
-            if (team) {
-                (0, menus_1.menu)("Confirm", "This will kill [scarlet]every building[] on the team ".concat(team.coloredName(), ", except cores."), ["[orange]Kill buildings[]", "[green]Cancel[]"], sender, function (_a) {
-                    var option = _a.option;
-                    if (option == "[orange]Kill buildings[]") {
-                        var count = team.data().buildings.size;
-                        team.data().buildings.each(function (b) { return !(b.block instanceof CoreBlock); }, function (b) { return b.tile.remove(); });
-                        outputSuccess(f(templateObject_40 || (templateObject_40 = __makeTemplateObject(["Killed ", " buildings on ", ""], ["Killed ", " buildings on ", ""])), count, team));
+            return __awaiter(this, arguments, void 0, function (_b) {
+                var count, count;
+                var team = _b.args.team, sender = _b.sender, outputSuccess = _b.outputSuccess, outputFail = _b.outputFail, f = _b.f;
+                return __generator(this, function (_c) {
+                    switch (_c.label) {
+                        case 0:
+                            if (!team) return [3 /*break*/, 2];
+                            return [4 /*yield*/, menus_1.Menu.confirmDangerous(sender, "This will kill [scarlet]every building[] on the team ".concat(team.coloredName(), ", except cores."), { confirmText: "[orange]Kill buildings[]" })];
+                        case 1:
+                            _c.sent();
+                            count = team.data().buildings.size;
+                            team.data().buildings.each(function (b) { return !(b.block instanceof CoreBlock); }, function (b) { return b.tile.remove(); });
+                            outputSuccess(f(templateObject_40 || (templateObject_40 = __makeTemplateObject(["Killed ", " buildings on ", "."], ["Killed ", " buildings on ", "."])), count, team));
+                            return [3 /*break*/, 4];
+                        case 2: return [4 /*yield*/, menus_1.Menu.confirmDangerous(sender, "This will kill [scarlet]every building[] except cores.", { confirmText: "[orange]Kill buildings[]" })];
+                        case 3:
+                            _c.sent();
+                            count = Groups.build.size();
+                            Groups.build.each(function (b) { return !(b.block instanceof CoreBlock); }, function (b) { return b.tile.remove(); });
+                            outputSuccess(f(templateObject_41 || (templateObject_41 = __makeTemplateObject(["Killed ", " buildings."], ["Killed ", " buildings."])), count));
+                            _c.label = 4;
+                        case 4: return [2 /*return*/];
                     }
-                    else
-                        outputFail("Cancelled.");
-                }, false);
-            }
-            else {
-                (0, menus_1.menu)("Confirm", "This will kill [scarlet]every building[] except cores.", ["[orange]Kill buildings[]", "[green]Cancel[]"], sender, function (_a) {
-                    var option = _a.option;
-                    if (option == "[orange]Kill buildings[]") {
-                        var count = Groups.build.size();
-                        Groups.build.each(function (b) { return !(b.block instanceof CoreBlock); }, function (b) { return b.tile.remove(); });
-                        outputSuccess(f(templateObject_41 || (templateObject_41 = __makeTemplateObject(["Killed ", " buildings."], ["Killed ", " buildings."])), count));
-                    }
-                    else
-                        outputFail("Cancelled.");
-                }, false);
-            }
+                });
+            });
         }
     },
     respawn: {
@@ -971,39 +1045,52 @@ exports.commands = (0, commands_1.commandList)({
         description: "Searches playerinfo by name, IP, or UUID.",
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var input = _a.args.input, admins = _a.admins, output = _a.output, f = _a.f, sender = _a.sender;
-            if (globals_2.uuidPattern.test(input)) {
-                var fishP = players_1.FishPlayer.getById(input);
-                var info = admins.getInfoOptional(input);
-                if (fishP == null && info == null)
-                    (0, commands_1.fail)(f(templateObject_55 || (templateObject_55 = __makeTemplateObject(["No stored data matched uuid ", "."], ["No stored data matched uuid ", "."])), input));
-                else if (fishP == null && info)
-                    output(f(templateObject_56 || (templateObject_56 = __makeTemplateObject(["[accent]Found player info (but no fish player data) for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nFound player info (but no fish player data) for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), input, info.plainLastName(), (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", ")));
-                else if (fishP && info)
-                    output(f(templateObject_57 || (templateObject_57 = __makeTemplateObject(["[accent]Found fish player data for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nFound fish player data for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), input, fishP.name, (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", ")));
-                else
-                    (0, commands_1.fail)(f(templateObject_58 || (templateObject_58 = __makeTemplateObject(["Super weird edge case: found fish player data but no player info for uuid ", "."], ["Super weird edge case: found fish player data but no player info for uuid ", "."])), input));
-            }
-            else if (globals_2.ipPattern.test(input)) {
-                var matches = admins.findByIPs(input);
-                if (matches.isEmpty())
-                    (0, commands_1.fail)(f(templateObject_59 || (templateObject_59 = __makeTemplateObject(["No stored data matched IP ", ""], ["No stored data matched IP ", ""])), input));
-                output(f(templateObject_60 || (templateObject_60 = __makeTemplateObject(["[accent]Found ", " match", " for search \"", "\"."], ["[accent]Found ", " match", " for search \"", "\"."])), matches.size, matches.size == 1 ? "" : "es", input));
-                matches.each(function (info) { return output(f(templateObject_61 || (templateObject_61 = __makeTemplateObject(["[accent]Player with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nPlayer with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), info.id, info.plainLastName(), (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", "))); });
-            }
-            else {
-                var matches_1 = Vars.netServer.admins.searchNames(input);
-                if (matches_1.isEmpty())
-                    (0, commands_1.fail)(f(templateObject_62 || (templateObject_62 = __makeTemplateObject(["No stored data matched name ", ""], ["No stored data matched name ", ""])), input));
-                output(f(templateObject_63 || (templateObject_63 = __makeTemplateObject(["[accent]Found ", " match", " for search \"", "\"."], ["[accent]Found ", " match", " for search \"", "\"."])), matches_1.size, matches_1.size == 1 ? "" : "es", input));
-                var displayMatches = function () {
-                    matches_1.each(function (info) { return output(f(templateObject_64 || (templateObject_64 = __makeTemplateObject(["[accent]Player with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nPlayer with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), info.id, info.plainLastName(), (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", "))); });
-                };
-                if (matches_1.size > 20)
-                    (0, menus_1.menu)("Confirm", "Are you sure you want to view all ".concat(matches_1.size, " matches?"), ["Yes"], sender, displayMatches);
-                else
-                    displayMatches();
-            }
+            return __awaiter(this, arguments, void 0, function (_b) {
+                var fishP, info, matches, matches_1, displayMatches;
+                var input = _b.args.input, admins = _b.admins, output = _b.output, f = _b.f, sender = _b.sender;
+                return __generator(this, function (_c) {
+                    switch (_c.label) {
+                        case 0:
+                            if (!globals_2.uuidPattern.test(input)) return [3 /*break*/, 1];
+                            fishP = players_1.FishPlayer.getById(input);
+                            info = admins.getInfoOptional(input);
+                            if (fishP == null && info == null)
+                                (0, commands_1.fail)(f(templateObject_55 || (templateObject_55 = __makeTemplateObject(["No stored data matched uuid ", "."], ["No stored data matched uuid ", "."])), input));
+                            else if (fishP == null && info)
+                                output(f(templateObject_56 || (templateObject_56 = __makeTemplateObject(["[accent]Found player info (but no fish player data) for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nFound player info (but no fish player data) for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), input, info.plainLastName(), (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", ")));
+                            else if (fishP && info)
+                                output(f(templateObject_57 || (templateObject_57 = __makeTemplateObject(["[accent]Found fish player data for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nFound fish player data for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), input, fishP.name, (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", ")));
+                            else
+                                (0, commands_1.fail)(f(templateObject_58 || (templateObject_58 = __makeTemplateObject(["Super weird edge case: found fish player data but no player info for uuid ", "."], ["Super weird edge case: found fish player data but no player info for uuid ", "."])), input));
+                            return [3 /*break*/, 5];
+                        case 1:
+                            if (!globals_2.ipPattern.test(input)) return [3 /*break*/, 2];
+                            matches = admins.findByIPs(input);
+                            if (matches.isEmpty())
+                                (0, commands_1.fail)(f(templateObject_59 || (templateObject_59 = __makeTemplateObject(["No stored data matched IP ", ""], ["No stored data matched IP ", ""])), input));
+                            output(f(templateObject_60 || (templateObject_60 = __makeTemplateObject(["[accent]Found ", " match", " for search \"", "\"."], ["[accent]Found ", " match", " for search \"", "\"."])), matches.size, matches.size == 1 ? "" : "es", input));
+                            matches.each(function (info) { return output(f(templateObject_61 || (templateObject_61 = __makeTemplateObject(["[accent]Player with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nPlayer with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), info.id, info.plainLastName(), (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", "))); });
+                            return [3 /*break*/, 5];
+                        case 2:
+                            matches_1 = Vars.netServer.admins.searchNames(input);
+                            if (matches_1.isEmpty())
+                                (0, commands_1.fail)(f(templateObject_62 || (templateObject_62 = __makeTemplateObject(["No stored data matched name ", ""], ["No stored data matched name ", ""])), input));
+                            output(f(templateObject_63 || (templateObject_63 = __makeTemplateObject(["[accent]Found ", " match", " for search \"", "\"."], ["[accent]Found ", " match", " for search \"", "\"."])), matches_1.size, matches_1.size == 1 ? "" : "es", input));
+                            displayMatches = function () {
+                                matches_1.each(function (info) { return output(f(templateObject_64 || (templateObject_64 = __makeTemplateObject(["[accent]Player with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nPlayer with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), info.id, info.plainLastName(), (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", "))); });
+                            };
+                            if (!(matches_1.size > 20)) return [3 /*break*/, 4];
+                            return [4 /*yield*/, menus_1.Menu.confirm(sender, "Are you sure you want to view all ".concat(matches_1.size, " matches?"))];
+                        case 3:
+                            _c.sent();
+                            _c.label = 4;
+                        case 4:
+                            displayMatches();
+                            _c.label = 5;
+                        case 5: return [2 /*return*/];
+                    }
+                });
+            });
         }
     },
     peace: {

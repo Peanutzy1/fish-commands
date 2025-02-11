@@ -6,7 +6,7 @@ This file contains the commands system.
 
 import { FColor, Gamemode, GamemodeName, text } from "./config";
 import { ipPattern, uuidPattern } from "./globals";
-import { menu } from "./menus";
+import { Menu } from "./menus";
 import { FishPlayer } from "./players";
 import { Rank, RankName, RoleFlag } from "./ranks";
 import type { ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishCommandHandlerData, FishCommandHandlerUtils, FishConsoleCommandData, Formattable, PartialFormatString, SelectEnumClassKeys, ServerCommandHandler } from "./types";
@@ -548,14 +548,14 @@ export function register(commands:Record<string, FishCommandData<string, any> | 
 				}
 				
 				//Recursively resolve unresolved args (such as players that need to be determined through a menu)
-				resolveArgsRecursive(output.processedArgs, output.unresolvedArgs, fishSender, () => {
+				resolveArgsRecursive(output.processedArgs, output.unresolvedArgs, fishSender).then(async (resolvedArgs) => {
 					//Run the command handler
 					const usageData = fishSender.getUsageData(name);
 					let failed = false;
 					try {
 						const args:FishCommandHandlerData<string, any> & FishCommandHandlerUtils = {
 							rawArgs,
-							args: output.processedArgs,
+							args: resolvedArgs,
 							sender: fishSender,
 							data: data.data,
 							outputFail: message => {outputFail(message, sender); failed = true;},
@@ -577,11 +577,11 @@ export function register(commands:Record<string, FishCommandData<string, any> | 
 									fishSender.tapInfo.commandName = name;
 									fishSender.tapInfo.mode = mode;
 								}
-								fishSender.tapInfo.lastArgs = output.processedArgs;
+								fishSender.tapInfo.lastArgs = resolvedArgs;
 							},
 						};
 						data.requirements?.forEach(r => r(args));
-						data.handler(args);
+						await data.handler(args);
 						//Update usage data
 						if(!failed){
 							usageData.lastUsedSuccessfully = globalUsageData[name].lastUsedSuccessfully = Date.now();
@@ -665,9 +665,9 @@ export function registerConsole(commands:Record<string, FishConsoleCommandData<s
 }
 
 /** Recursively resolves args. This function is necessary to handle cases such as a command that accepts multiple players that all need to be selected through menus. */
-function resolveArgsRecursive(processedArgs: Record<string, FishCommandArgType>, unresolvedArgs:CommandArg[], sender:FishPlayer, callback:(args:Record<string, FishCommandArgType>) => void){
+async function resolveArgsRecursive(processedArgs: Record<string, FishCommandArgType>, unresolvedArgs:CommandArg[], sender:FishPlayer){
 	if(unresolvedArgs.length == 0){
-		callback(processedArgs);
+		return processedArgs;
 	} else {
 		const argToResolve = unresolvedArgs.shift()!;
 		let optionsList:mindustryPlayer[] = [];
@@ -676,13 +676,15 @@ function resolveArgsRecursive(processedArgs: Record<string, FishCommandArgType>,
 			case "player": Groups.player.each(player => optionsList.push(player)); break;
 			default: crash(`Unable to resolve arg of type ${argToResolve.type}`);
 		}
-		menu(`Select a player`, `Select a player for the argument "${argToResolve.name}"`, optionsList, sender, ({option}) => {
-			processedArgs[argToResolve.name] = FishPlayer.get(option);
-			resolveArgsRecursive(processedArgs, unresolvedArgs, sender, callback);
-		}, true, player => Strings.stripColors(player.name).length >= 3 ? Strings.stripColors(player.name) : escapeStringColorsClient(player.name))
-
+		const option = await Menu.menu(`Select a player`, `Select a player for the argument "${argToResolve.name}"`, optionsList, sender, {
+			includeCancel: true,
+			optionStringifier: player => Strings.stripColors(player.name).length >= 3 ?
+				player.name
+			: escapeStringColorsClient(player.name)
+		});
+		processedArgs[argToResolve.name] = FishPlayer.get(option);
+		return await resolveArgsRecursive(processedArgs, unresolvedArgs, sender);
 	}
-
 }
 
 export function initialize(){

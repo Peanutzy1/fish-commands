@@ -3,35 +3,32 @@ Copyright © BalaM314, 2025. All Rights Reserved.
 This file contains the menu system.
 */
 
-import { CommandError } from "./commands";
+import { CommandError, fail } from "./commands";
 import { FishPlayer } from "./players";
-import { outputFail, outputSuccess } from "./utils";
+import { outputFail } from "./utils";
 import { parseError } from './funcs';
 import { to2DArray } from './funcs';
+import { Promise } from "./promise";
 
+/** Used to change the behavior of adding another menu when being run in a menu callback. */
+let isInMenuCallback = false;
 /** Stores a mapping from name to the numeric id of a listener that has been registered. */
-const registeredListeners:{
-	[index:string]: number;
-} = {};
+const registeredListeners: Record<string, number> = {};
 /** Stores all listeners in use by fish-commands. */
-const listeners = (
-	<T extends Record<string, (player:mindustryPlayer, option:number) => void>>(d:T) => d
-)({
+const listeners = {
 	generic(player, option){
 		const fishSender = FishPlayer.get(player);
-		if(option === -1 || option === fishSender.activeMenu.cancelOptionId) return;
 
-		const prevCallback = fishSender.activeMenu.callback;
-		fishSender.activeMenu.callback?.(fishSender, option);
-		//if the callback wasn't modified, then clear it
-		if(fishSender.activeMenu.callback === prevCallback)
-			fishSender.activeMenu.callback = undefined;
-		//otherwise, the menu spawned another menu that needs to be handled
+		const prevCallback = fishSender.activeMenus.shift();
+		if(!prevCallback) return; //No menu to process, do nothing
+		isInMenuCallback = true;
+		prevCallback.callback(option);
+		isInMenuCallback = false;
 	},
 	none(player, option){
 		//do nothing
 	}
-});
+} satisfies Record<string, (player:mindustryPlayer, option:number) => void>;
 
 /** Registers all listeners, should be called on server load. */
 export function registerListeners(){
@@ -40,59 +37,71 @@ export function registerListeners(){
 	}
 }
 
-/** Displays a menu to a player. */
-function menu(title:string, description:string, options:string[], target:FishPlayer):void;
-/** Displays a menu to a player with callback. */
-function menu<const T>(
-	title:string, description:string, options:T[], target:FishPlayer,
-	callback: (opts: {
-		option:T, sender:FishPlayer, outputSuccess:(message:string) => void, outputFail:(message:string) => void;
-	}) => void,
-	includeCancel?:boolean, optionStringifier?:(opt:T) => string, columns?:number
-):void;
-//this is a minor abomination but theres no good way to do overloads in typescript
-function menu<T>(
-	title:string, description:string, options:T[], target:FishPlayer,
-	callback?: (opts: {
-		option:T, sender:FishPlayer, outputSuccess:(message:string) => void, outputFail:(message:string) => void;
-	}) => void,
-	includeCancel:boolean = true,
-	optionStringifier:(opt:T) => string = t => t as unknown as string, //this is dubious
-	columns:number = 3,
-){
+type MenuConfirmProps = {
+	/** This message is sent to the user (prefixed with /!\) if they cancel. */
+	cancelOutput?: string;
+	title?: string;
+	confirmText?: string;
+	cancelText?: string;
+};
 
-	if(!callback){
-		//overload 1, just display a menu with no callback
-		Call.menu(target.con, registeredListeners.none, title, description, options.length == 0 ? [["<no options>"]] : to2DArray(options.map(optionStringifier), columns));
-	} else {
-		//overload 2, display a menu with callback
+type MenuCancelOption = "ignore" | "reject" | "null";
+type MenuOptions<TOption, TCancelBehavior extends MenuCancelOption> = {
+	/** [red]Cancel[] will be added to the list of options. */
+	includeCancel?: boolean;
+	optionStringifier?: (opt: TOption) => string;
+	columns?: number;
+	/**
+	 * Specifies the behavior when the player cancels the menu (by clicking Cancel, or by pressing Escape).
+	 * @default "ignore"
+	 */
+	onCancel?: TCancelBehavior;
+	cancelOptionId?: number;
+};
 
-		//Set up the 2D array of options, and add cancel
-		//Use "<no options>" as a fallback, because Call.menu with an empty array of options causes a client crash
-		const arrangedOptions = (options.length == 0 && !includeCancel) ? [["<no options>"]] : to2DArray(options.map(optionStringifier), columns);
-		if(includeCancel){
-			arrangedOptions.push(["Cancel"]);
-			target.activeMenu.cancelOptionId = options.length;
-		} else {
-			target.activeMenu.cancelOptionId = -1;
-		}
+export const Menu = {
+	/** Displays a menu to a player, returning a Promise. */
+	raw<const TOption, TCancelBehavior extends MenuCancelOption = "ignore">(
+		this:void, title:string, description:string, arrangedOptions:TOption[][], target:FishPlayer,
+		{
+			optionStringifier = String,
+			onCancel = "ignore" as never,
+			cancelOptionId = -1,
+		}:{
+			optionStringifier?:(opt:TOption) => string;
+			/**
+			 * Specifies the behavior when the player cancels the menu (by clicking Cancel, or by pressing Escape).
+			 * @default "ignore"
+			 */
+			onCancel?: TCancelBehavior;
+			cancelOptionId?: number;
+		} = {}
+	){
+		const { promise, reject, resolve } = Promise.withResolvers<
+			(TCancelBehavior extends "null" ? null : never) | TOption,
+			TCancelBehavior extends "reject" ? "cancel" : never
+		>();
 	
 		//The target fishPlayer has a property called activeMenu, which stores information about the last menu triggered.
-		target.activeMenu.callback = (fishSender, option) => {
+		//If menu() is being called from a menu calback, add it to the front of the queue so it is processed before any other menus.
+		//Otherwise, two multi-step menus queued together would alternate, which would confuse the player.
+		target.activeMenus[isInMenuCallback ? "unshift" : "push"]({ callback(option){
 			//Additional permission validation could be done here, but the only way that callback() can be called is if the above statement executed,
 			//and on sensitive menus such as the stop menu, the only way to reach that is if menu() was called by the /stop command,
 			//which already checks permissions.
 			//Additionally, the callback is cleared by the generic menu listener after it is executed.
-
-			//We do need to validate option though, as it can be any number.
-			if(!(option in options)) return;
+	
 			try {
-				callback({
-					option: options[option],
-					sender: target,
-					outputFail: message => outputFail(message, target),
-					outputSuccess: message => outputSuccess(message, target),
-				});
+				const options = arrangedOptions.flat();
+				//We do need to validate option though, as it can be any number.
+				if(option === -1 || option === cancelOptionId || !(option in options)){
+					//Consider any invalid option to be a cancellation
+					if(onCancel == "null") resolve(null as never);
+					else if(onCancel == "reject") reject("cancel" as never);
+					else return;
+				} else {
+					resolve(options[option]);
+				}
 			} catch(err){
 				if(err instanceof CommandError){
 					//If the error is a command error, then just outputFail
@@ -104,14 +113,137 @@ function menu<T>(
 					Log.err(err as Error);
 				}
 			}
-		};
+		}});
 	
-		Call.menu(target.con, registeredListeners.generic, title, description, arrangedOptions);
-	}
+		let i = 0;
+		const stringifiedOptions = arrangedOptions.map(r => r.map(item => {
+			if(i === cancelOptionId) return item as string;
+			i ++;
+			return optionStringifier(item);
+		}));
+		Call.menu(target.con, registeredListeners.generic, title, description, stringifiedOptions);
+		return promise;
+	},
+	/** Displays a menu to a player, returning a Promise. Arranges options into a 2D array, and can add a Cancel option. */
+	menu<const TOption, TCancelBehavior extends MenuCancelOption = "ignore">(
+		this:void, title:string, description:string, options:TOption[], target:FishPlayer,
+		{
+			includeCancel = false,
+			optionStringifier = String,
+			columns = 3,
+			onCancel = "ignore" as never,
+			cancelOptionId = -1,
+		}:MenuOptions<TOption, TCancelBehavior> = {}
+	){
+		//Set up the 2D array of options, and maybe add cancel
+		//Call.menu() with [[]] will cause a client crash, make sure to pass [] instead
+		const arrangedOptions = (options.length == 0 && !includeCancel) ? [] : to2DArray(options, columns);
 
+		if(includeCancel){
+			arrangedOptions.push(["[red]Cancel[]" as never]);
+			//This is safe because cancelOptionId is set,
+			//so the handler will never get called with "Cancel".
+			cancelOptionId = options.length;
+		}
+
+		return Menu.raw(title, description, arrangedOptions, target, {
+			cancelOptionId, onCancel, optionStringifier
+		});
+	},
+	/** Rejects with a CommandError if the user chooses to cancel. */
+	confirm(target:FishPlayer, description:string, {
+		cancelOutput = "Cancelled.",
+		title = "Confirm",
+		confirmText = "[green]Confirm",
+		cancelText = "[red]Cancel",
+	}:MenuConfirmProps = {}){
+		return Menu.menu(
+			title, description, [confirmText, cancelText], target,
+			{ onCancel: "reject", cancelOptionId: 1 }
+		).catch(e => {
+			if(e === "cancel") fail(cancelOutput);
+			throw e; //some random error, rethrow it
+		});
+	},
+	/** Same as confirm(), but with inverted colors, for potentially dangerous actions. */
+	confirmDangerous(target:FishPlayer, description:string, {
+		confirmText = "[red]Confirm",
+		cancelText = "[green]Cancel",
+		...rest
+	}:MenuConfirmProps = {}){
+		return Menu.confirm(target, description, { cancelText, confirmText, ...rest });
+	},
+	buttons<TButtonData extends unknown, TCancelBehavior extends MenuCancelOption>(
+		this:void, target:FishPlayer, title:string, description:string,
+		options:{ data: TButtonData; text: string; }[][],
+		cfg: Omit<MenuOptions<TButtonData, TCancelBehavior>, "optionStringifier" | "columns"> = {},
+	){
+		return Menu.raw(title, description, options, target, {
+			...cfg,
+			optionStringifier: o => o.text,
+		}).then(o => o?.data as TButtonData | (TCancelBehavior extends "null" ? null : never));
+	},
+	pages<TOption extends unknown, TCancelBehavior extends MenuCancelOption>(
+		this:void, target:FishPlayer, title:string, description:string,
+		options:{ data: TOption; text: string; }[][][],
+		cfg: Pick<MenuOptions<TOption, TCancelBehavior>, "onCancel">,
+	){
+		const { promise, reject, resolve } = Promise.withResolvers<
+			(TCancelBehavior extends "null" ? null : never) | TOption,
+			TCancelBehavior extends "reject" ? "cancel" : never
+		>();
+		function showPage(index:number){
+			const opts:{ data: "left" | "numbers" | "right" | readonly [TOption]; text: string; }[][] = [
+				...options[index].map(r => r.map(d => ({ text: d.text, data: [d.data] as const }))),
+				[
+					{ data: "left", text: `[${index == 0 ? "gray" : "accent"}]<--` },
+					{ data: "numbers", text: `[accent]${index + 1}/${options.length}` },
+					{ data: "right", text: `[${index == options.length - 1 ? "gray" : "accent"}]-->` }
+				]
+			];
+			Menu.buttons(target, title, description, opts, cfg).then<unknown, never>(response => {
+				if(response instanceof Array) resolve(response[0]);
+				else if(response === "right") showPage(Math.min(index + 1, options.length - 1));
+				else if(response === "left") showPage(Math.max(index - 1, 0));
+				else {
+					//Treat numbers as cancel
+					if(cfg.onCancel == "null") resolve(null as never);
+					else if(cfg.onCancel == "reject") reject("cancel" as never);
+					//otherwise, just let the promise hang
+				}
+			});
+		}
+		showPage(0);
+		return promise;
+	},
+	pagedListButtons<TButtonData extends unknown, MenuCancelBehavior extends MenuCancelOption = "ignore">(
+		this:void, target:FishPlayer, title:string, description:string,
+		options:{ data: TButtonData; text: string; }[],
+		{ rowsPerPage = 10, columns = 3, ...cfg }: Pick<MenuOptions<TButtonData, MenuCancelBehavior>, "columns" | "onCancel"> & {
+			/** @default 10 */
+			rowsPerPage?:number;
+		},
+	){
+		//Generate pages
+		const pages = to2DArray(to2DArray(options, columns), rowsPerPage);
+		if(pages.length <= 1) return Menu.buttons(target, title, description, pages[0] ?? [], cfg);
+		return Menu.pages(target, title, description, pages, cfg);
+	},
+	pagedList<TButtonData extends unknown, MenuCancelBehavior extends MenuCancelOption = "ignore">(
+		this:void, target:FishPlayer, title:string, description:string,
+		options:TButtonData[],
+		{ rowsPerPage = 10, columns = 3, optionStringifier = String, ...cfg }: Pick<MenuOptions<TButtonData, MenuCancelBehavior>, "columns" | "onCancel" | "optionStringifier"> & {
+			/** @default 10 */
+			rowsPerPage?:number;
+		} = {},
+	){
+		//Generate pages
+		const pages = to2DArray(to2DArray(options.map(
+			o => ({ data: o, get text(){ return optionStringifier(o); }})
+		), columns), rowsPerPage);
+		if(pages.length <= 1) return Menu.buttons(target, title, description, pages[0] ?? [], cfg);
+		return Menu.pages(target, title, description, pages, cfg);
+	}
 }
 
-export {
-	registeredListeners as listeners,
-	menu
-};
+export { registeredListeners as listeners };
