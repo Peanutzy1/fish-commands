@@ -920,7 +920,7 @@ exports.commands = (0, commands_1.commandList)({
                 api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat(config_1.Gamemode.name(), " Player: ").concat((0, funcs_3.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
                 (0, commands_1.fail)("Authentication failure");
             }
-            fjsContext.runJS(javascript, output, outputFail);
+            fjsContext.runJS(javascript, output, outputFail, sender);
         }
     },
     antibot: {

@@ -758,7 +758,7 @@ Server: ${Gamemode.name()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${
 				fail(`Authentication failure`);
 			}
 
-			fjsContext.runJS(javascript, output, outputFail);
+			fjsContext.runJS(javascript, output, outputFail, sender);
 		}
 	},
 	antibot: {

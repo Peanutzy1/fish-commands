@@ -10,6 +10,7 @@ var commands = require("./commands");
 var config = require("./config");
 var consoleCommands = require("./consoleCommands").commands;
 var files = require("./files");
+var funcs = require("./funcs");
 var globals = require("./globals");
 var memberCommands = require("./memberCommands").commands;
 var menus = require("./menus");
@@ -26,7 +27,7 @@ var Perm = commands.Perm, allCommands = commands.allCommands;
 var FishPlayer = players.FishPlayer;
 var Rank = ranks.Rank, RoleFlag = ranks.RoleFlag;
 var Menu = menus.Menu;
-Object.assign(this, utils); //global scope goes brrrrr, I'm sure this will not cause any bugs whatsoever
+Object.assign(this, utils, funcs); //global scope goes brrrrr, I'm sure this will not cause any bugs whatsoever
 var Ranks = null;
 var $ = Object.assign(function $(input) {
     if (typeof input == "string") {
@@ -53,14 +54,22 @@ var $ = Object.assign(function $(input) {
         }
         return null;
     },
+    me: null,
+    meM: null,
 });
 /** Used to persist variables. */
 var vars = {};
-function runJS(input, outputFunction, errorFunction) {
-    if (outputFunction == undefined)
-        outputFunction = Log.info;
-    if (errorFunction == undefined)
-        errorFunction = Log.err;
+function runJS(input, outputFunction, errorFunction, player) {
+    if (outputFunction === void 0) { outputFunction = Log.info; }
+    if (errorFunction === void 0) { errorFunction = Log.err; }
+    if (player) {
+        $.me = player;
+        $.meM = player.player;
+    }
+    else if (Groups.player.size() == 1) {
+        $.meM = Groups.player.first();
+        $.me = players.FishPlayer.get($.meM);
+    }
     try {
         var admins = Vars.netServer.admins;
         var output = eval(input);

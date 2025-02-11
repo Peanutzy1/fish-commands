@@ -3,11 +3,15 @@ Copyright © BalaM314, 2025. All Rights Reserved.
 This file contains the context for the "fjs" command, which executes code with access to the plugin's internals.
 */
 
+import type { FishPlayer as tFishPlayer } from "./players";
+type FishPlayer = tFishPlayer; //absurd
+
 const api = require("./api");
 const commands = require("./commands");
 const config = require("./config");
 const { commands: consoleCommands } = require("./consoleCommands");
 const files = require("./files");
+const funcs = require("./funcs");
 const globals = require("./globals");
 const { commands: memberCommands } = require("./memberCommands");
 const menus = require("./menus");
@@ -26,7 +30,7 @@ const { FishPlayer } = players;
 const { Rank, RoleFlag } = ranks;
 const { Menu } = menus;
 
-Object.assign(this as never as typeof globalThis, utils); //global scope goes brrrrr, I'm sure this will not cause any bugs whatsoever
+Object.assign(this as never as typeof globalThis, utils, funcs); //global scope goes brrrrr, I'm sure this will not cause any bugs whatsoever
 
 const Ranks = null!;
 
@@ -57,15 +61,27 @@ const $ = Object.assign(
 			}
 			return null;
 		},
+		me: null as FishPlayer | null,
+		meM: null as mindustryPlayer | null,
 	}
 );
 
 /** Used to persist variables. */
 const vars = {};
 
-export function runJS(input:string, outputFunction?:(data:any) => unknown, errorFunction?:(data:any) => unknown){
-	if(outputFunction == undefined) outputFunction = Log.info;
-	if(errorFunction == undefined) errorFunction = Log.err;
+export function runJS(
+	input:string,
+	outputFunction:(data:any) => unknown = Log.info,
+	errorFunction:(data:any) => unknown = Log.err,
+	player?:FishPlayer
+){
+	if(player){
+		$.me = player;
+		$.meM = player.player;
+	} else if(Groups.player.size() == 1){
+		$.meM = Groups.player.first();
+		$.me = players.FishPlayer.get($.meM);
+	}
 	try {
 		const admins = Vars.netServer.admins;
 		const output = eval(input);
