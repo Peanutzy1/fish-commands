@@ -910,6 +910,7 @@ Win rate: ${target.stats.gamesWon / target.stats.gamesFinished}`
 		args: ["x:number?", "y:number?", "size:number?"],
 		perm: Perm.none,
 		description: "Views the world as a 2D scrollable menu.",
+		requirements: [Req.cooldown(4000)],
 		handler({sender, args:{size, x, y}}){
 			size ??= 7;
 			if(size > 20) fail(`Size ${size} is too high!`);

@@ -937,6 +937,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         args: ["x:number?", "y:number?", "size:number?"],
         perm: commands_1.Perm.none,
         description: "Views the world as a 2D scrollable menu.",
+        requirements: [commands_1.Req.cooldown(4000)],
         handler: function (_a) {
             var sender = _a.sender, _b = _a.args, size = _b.size, x = _b.x, y = _b.y;
             size !== null && size !== void 0 ? size : (size = 7);
