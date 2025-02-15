@@ -68,6 +68,10 @@ export function colorBadBoolean(val:boolean){
 	return val ? `[red]true[]` : `[green]false[]`
 }
 
+export function colorBadBooleanServer(val:boolean){
+	return val ? `&lrtrue&fr` : `&lgfalse&fr`
+}
+
 /** Attempts to parse a Color from the input. */
 export function getColor(input:string):Color | null {
 	try {

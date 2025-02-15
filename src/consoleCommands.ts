@@ -14,7 +14,7 @@ import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, tileHistory, uuidPattern } from "./globals";
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
-import { colorNumber, fishCommandsRootDirPath, formatTime, formatTimeRelative, formatTimestamp, getAntiBotInfo, getIPRange, logAction, serverRestartLoop, updateBans } from "./utils";
+import { colorBadBooleanServer, colorNumber, fishCommandsRootDirPath, formatTime, formatTimeRelative, formatTimestamp, getAntiBotInfo, getIPRange, logAction, serverRestartLoop, updateBans } from "./utils";
 import { setToArray } from './funcs';
 
 
@@ -74,7 +74,7 @@ export const commands = consoleCommandList({
 	USID: &c${fishP.usid}&fr
 	Rank: &c${fishP.rank.name}&fr
 	Marked: ${fishP.marked() ? `&runtil ${formatTimeRelative(fishP.unmarkTime)}` : fishP.autoflagged ? "&rautoflagged" : "&gfalse"}&fr
-	Muted: &c${fishP.muted}&fr`
+	Muted: &c${colorBadBooleanServer(fishP.muted)}&fr`
 : "")
 				);
 			}

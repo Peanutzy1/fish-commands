@@ -47,6 +47,7 @@ exports.formatTimestamp = formatTimestamp;
 exports.formatTimeRelative = formatTimeRelative;
 exports.colorBoolean = colorBoolean;
 exports.colorBadBoolean = colorBadBoolean;
+exports.colorBadBooleanServer = colorBadBooleanServer;
 exports.getColor = getColor;
 exports.nearbyEnemyTile = nearbyEnemyTile;
 exports.getTeam = getTeam;
@@ -135,6 +136,9 @@ function colorBoolean(val) {
 }
 function colorBadBoolean(val) {
     return val ? "[red]true[]" : "[green]false[]";
+}
+function colorBadBooleanServer(val) {
+    return val ? "&lrtrue&fr" : "&lgfalse&fr";
 }
 /** Attempts to parse a Color from the input. */
 function getColor(input) {
