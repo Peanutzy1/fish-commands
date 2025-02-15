@@ -22,5 +22,20 @@ List of notable features:
 
 Interested in contributing? See [CONTRIBUTING.md](CONTRIBUTING.md), and thanks in advance!
 
+Contributors:
+
+[<img width=100 alt="Brandons404" src="https://github.com/Brandons404.png">](https://github.com/Brandons404/)
+[<img width=100 alt="BalaM314" src="https://github.com/BalaM314.png">](https://github.com/BalaM314/)
+[<img width=100 alt="TheEt1234" src="https://github.com/TheEt1234.png">](https://github.com/TheEt1234/)
+[<img width=100 alt="buthed010203" src="https://github.com/buthed010203.png">](https://github.com/buthed010203/)
+
+[<img width=100 alt="Jurorno9" src="https://github.com/Jurorno9.png">](https://github.com/Jurorno9/)
+[<img width=100 alt="Dart25" src="https://github.com/Dart25.png">](https://github.com/Dart25/)
+[<img width=100 alt="kenos1" src="https://github.com/kenos1.png">](https://github.com/kenos1/)
+[<img width=100 alt="omnerom" src="https://github.com/omnerom.png">](https://github.com/omnerom/)
+
+[<img width=100 alt="Darthscion" src="https://github.com/Darthscion55.png">](https://github.com/Darthscion55/)
+[<img width=100 alt="cudspent" src="https://github.com/spentcud.png">](https://github.com/spentcud/)
+
 Join our Discord: [https://discord.gg/VpzcYSQ33Y](https://discord.gg/VpzcYSQ33Y)
 

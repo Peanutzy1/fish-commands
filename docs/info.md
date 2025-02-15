@@ -159,3 +159,5 @@ The `f` function also behaves differently if it is being run from a chat command
 * [Dart25](https://github.com/Dart25/)
 * [kenos1](https://github.com/kenos1/)
 * [omnerom](https://github.com/omnerom/)
+* [Darthscion](https://github.com/Darthscion55/)
+* [cudspent](https://github.com/spentcud/)
