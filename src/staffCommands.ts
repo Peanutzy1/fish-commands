@@ -13,7 +13,7 @@ import { fishState, ipPattern, uuidPattern } from "./globals";
 import { Menu } from './menus';
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
-import { addToTileHistory, colorBadBoolean, formatTime, formatTimeRelative, getAntiBotInfo, logAction, match, serverRestartLoop, untilForever, updateBans } from "./utils";
+import { addToTileHistory, formatTime, formatTimeRelative, getAntiBotInfo, logAction, match, serverRestartLoop, untilForever, updateBans } from "./utils";
 import { parseError } from './funcs';
 import { escapeStringColorsClient } from './funcs';
 import { escapeTextDiscord } from './funcs';
@@ -592,11 +592,11 @@ export const commands = commandList({
 [accent]Info for player ${args.target} [gray](${escapeStringColorsClient(args.target.name)}) (#${args.target.player!.id.toString()})
 	[accent]Rank: ${args.target.rank}
 	[accent]Role flags: ${Array.from(args.target.flags).map(f => f.coloredName()).join(" ")}
-	[accent]Stopped: ${colorBadBoolean(!args.target.hasPerm("play"))}
+	[accent]Stopped: ${f.boolBad(!args.target.hasPerm("play"))}
 	[accent]marked: ${args.target.marked() ? `until ${formatTimeRelative(args.target.unmarkTime)}` : "[green]false"}
-	[accent]muted: ${colorBadBoolean(args.target.muted)}
-	[accent]autoflagged: ${colorBadBoolean(args.target.autoflagged)}
-	[accent]VPN detected: ${colorBadBoolean(args.target.ipDetectedVpn)}
+	[accent]muted: ${f.boolBad(args.target.muted)}
+	[accent]autoflagged: ${f.boolBad(args.target.autoflagged)}
+	[accent]VPN detected: ${f.boolBad(args.target.ipDetectedVpn)}
 	[accent]times joined / kicked: ${info.timesJoined}/${info.timesKicked}
 	[accent]First joined: ${formatTimeRelative(args.target.firstJoined)}
 	[accent]Names used: [[${names}]`
@@ -765,15 +765,15 @@ Server: ${Gamemode.name()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${
 		args: ["state:boolean?"],
 		description: "Checks anti bot stats, or force enables anti bot mode, MAKE SURE TO TURN IT OFF",
 		perm: Perm.admin,
-		handler({args, outputSuccess, output}){
+		handler({args, outputSuccess, output, f}){
 			if(args.state !== null){
 				FishPlayer.antiBotModeOverride = args.state;
-				outputSuccess(`Set antibot mode override to ${colorBadBoolean(args.state)}.`);
+				outputSuccess(`Set antibot mode override to ${f.boolBad(args.state)}.`);
 				if(args.state) output(`[scarlet]MAKE SURE TO TURN IT OFF!!!`);
 			} else {
 				output(
 `[acid]Antibot status:
-[acid]Enabled: ${colorBadBoolean(FishPlayer.antiBotMode())}
+[acid]Enabled: ${f.boolBad(FishPlayer.antiBotMode())}
 ${getAntiBotInfo("client")}`
 				);
 			}

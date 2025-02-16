@@ -104,7 +104,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
         description: "Find player info(s). Displays all names and ips of a player.",
         handler: function (_a) {
             var e_1, _b;
-            var args = _a.args, output = _a.output, admins = _a.admins;
+            var args = _a.args, output = _a.output, admins = _a.admins, f = _a.f;
             var infoList = (0, funcs_1.setToArray)(admins.findByName(args.player));
             if (infoList.length == 0)
                 (0, commands_1.fail)("No players found.");
@@ -112,7 +112,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
             var _loop_1 = function (playerInfo) {
                 var fishP = players_1.FishPlayer.getById(playerInfo.id);
                 outputString.push("Trace info for player &y".concat(playerInfo.id, "&fr / &c\"").concat(Strings.stripColors(playerInfo.lastName), "\" &lk(").concat(playerInfo.lastName, ")&fr\n\tall names used: ").concat(playerInfo.names.map(function (n) { return "&c\"".concat(n, "\"&fr"); }).items.join(', '), "\n\tall IPs used: ").concat(playerInfo.ips.map(function (n) { return (n == playerInfo.lastIP ? '&c' : '&w') + n + '&fr'; }).items.join(", "), "\n\tjoined &c").concat(playerInfo.timesJoined, "&fr times, kicked &c").concat(playerInfo.timesKicked, "&fr times")
-                    + (fishP ? "\n\tUSID: &c".concat(fishP.usid, "&fr\n\tRank: &c").concat(fishP.rank.name, "&fr\n\tMarked: ").concat(fishP.marked() ? "&runtil ".concat((0, utils_1.formatTimeRelative)(fishP.unmarkTime)) : fishP.autoflagged ? "&rautoflagged" : "&gfalse", "&fr\n\tMuted: &c").concat((0, utils_1.colorBadBooleanServer)(fishP.muted), "&fr")
+                    + (fishP ? "\n\tUSID: &c".concat(fishP.usid, "&fr\n\tRank: &c").concat(fishP.rank.name, "&fr\n\tMarked: ").concat(fishP.marked() ? "&runtil ".concat((0, utils_1.formatTimeRelative)(fishP.unmarkTime)) : fishP.autoflagged ? "&rautoflagged" : "&gfalse", "&fr\n\tMuted: &c").concat(f.boolBad(fishP.muted), "&fr")
                         : ""));
             };
             try {

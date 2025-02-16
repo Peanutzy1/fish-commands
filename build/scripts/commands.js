@@ -590,6 +590,36 @@ var outputFormatter_client = (0, funcs_1.tagProcessorPartial)(function (chunk, i
         return chunk; //allow it to get stringified by the engine
     }
 });
+var fFunctions = {
+    boolGood: function (value) {
+        return [
+            value ? "[green]true[]" : "[red]false[]",
+            value ? "&lgtrue&fr" : "&lrfalse&fr",
+        ];
+    },
+    boolBad: function (value) {
+        return [
+            value ? "[red]true[]" : "[green]false[]",
+            value ? "&lrtrue&fr" : "&lgfalse&fr",
+        ];
+    },
+};
+var processedFFunctions = [0, 1].map(function (i) {
+    return Object.fromEntries(Object.entries(fFunctions).map(function (_a) {
+        var _b = __read(_a, 2), k = _b[0], v = _b[1];
+        return [k,
+            function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i] = arguments[_i];
+                }
+                return v.apply(processedFFunctions[i], args)[i];
+            }
+        ];
+    }));
+});
+var f_client = Object.assign(outputFormatter_client, processedFFunctions[0]);
+var f_server = Object.assign(outputFormatter_server, processedFFunctions[1]);
 exports.CommandError = (function () { });
 Object.setPrototypeOf(exports.CommandError.prototype, Error.prototype);
 function fail(message) {
@@ -714,7 +744,7 @@ function register(commands, clientHandler, serverHandler) {
                                     outputFail: function (message) { (0, utils_1.outputFail)(message, sender); failed = true; },
                                     outputSuccess: function (message) { return (0, utils_1.outputSuccess)(message, sender); },
                                     output: function (message) { return (0, utils_1.outputMessage)(message, sender); },
-                                    f: outputFormatter_client,
+                                    f: f_client,
                                     execServer: function (command) { return serverHandler.handleMessage(command); },
                                     admins: Vars.netServer.admins,
                                     lastUsedSender: usageData.lastUsed,
@@ -806,7 +836,7 @@ function registerConsole(commands, serverHandler) {
                 var usageData = ((_a = globalUsageData[_b = "_console_" + name]) !== null && _a !== void 0 ? _a : (globalUsageData[_b] = { lastUsed: -1, lastUsedSuccessfully: -1 }));
                 try {
                     var failed_2 = false;
-                    data.handler(__assign({ rawArgs: rawArgs, args: output.processedArgs, data: data.data, outputFail: function (message) { (0, utils_1.outputConsole)(message, Log.err); failed_2 = true; }, outputSuccess: utils_1.outputConsole, output: utils_1.outputConsole, f: outputFormatter_server, execServer: function (command) { return serverHandler.handleMessage(command); }, admins: Vars.netServer.admins }, usageData));
+                    data.handler(__assign({ rawArgs: rawArgs, args: output.processedArgs, data: data.data, outputFail: function (message) { (0, utils_1.outputConsole)(message, Log.err); failed_2 = true; }, outputSuccess: utils_1.outputConsole, output: utils_1.outputConsole, f: f_server, execServer: function (command) { return serverHandler.handleMessage(command); }, admins: Vars.netServer.admins }, usageData));
                     usageData.lastUsed = Date.now();
                     if (!failed_2)
                         usageData.lastUsedSuccessfully = Date.now();

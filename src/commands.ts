@@ -9,7 +9,7 @@ import { ipPattern, uuidPattern } from "./globals";
 import { Menu } from "./menus";
 import { FishPlayer } from "./players";
 import { Rank, RankName, RoleFlag } from "./ranks";
-import type { ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishCommandHandlerData, FishCommandHandlerUtils, FishConsoleCommandData, Formattable, PartialFormatString, SelectEnumClassKeys, ServerCommandHandler } from "./types";
+import type { ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishCommandHandlerData, FishCommandHandlerUtils, FishConsoleCommandData, Formattable, PartialFormatString, SelectEnumClassKeys, ServerCommandHandler, TagFunction } from "./types";
 import { formatModeName, getBlock, getItem, getMap, getTeam, getUnitType, outputConsole, outputFail, outputMessage, outputSuccess, parseTimeString } from "./utils";
 import { tagProcessorPartial } from './funcs';
 import { parseError } from './funcs';
@@ -429,10 +429,38 @@ const outputFormatter_client = tagProcessorPartial<Formattable, string | null>((
 	}
 });
 
-
+type DeduplicateTupleFunction<T extends TupleFunction> =
+	T extends (...args:infer Args) => [client:infer Out, server:infer Out] ?
+		(...args:Args) => Out
+	: never;
+type TupleFunction = (...args: any[]) => [client: string, server: string];
+const fFunctions = {
+	boolGood(value:boolean){
+		return [
+			value ? `[green]true[]` : `[red]false[]`,
+			value ? `&lgtrue&fr` : `&lrfalse&fr`,
+		];
+	},
+	boolBad(value:boolean){
+		return [
+			value ? `[red]true[]` : `[green]false[]`,
+			value ? `&lrtrue&fr` : `&lgfalse&fr`,
+		];
+	},
+} satisfies Record<string, TupleFunction>;
+const processedFFunctions = ([0, 1] as const).map(i =>
+	Object.fromEntries(Object.entries(fFunctions).map(([k, v]) => [k,
+		(...args:any) => v.apply(processedFFunctions[i], args)[i]
+	])) as {
+		[K in keyof typeof fFunctions]: DeduplicateTupleFunction<(typeof fFunctions)[K]>;
+	}
+);
+export type FFunction = TagFunction<Formattable, PartialFormatString<string | null>> & typeof processedFFunctions[0];
+const f_client = Object.assign(outputFormatter_client, processedFFunctions[0]);
+const f_server = Object.assign(outputFormatter_server, processedFFunctions[1]);
 
 //Shenanigans were once necessary due to odd behavior of Typescript's compiled error subclass
-//however it morphed into something ungodly
+//however it morphed into something bizarre
 declare class _FAKE_CommandError { //oh god no why
 	data: string | PartialFormatString;
 }
@@ -561,7 +589,7 @@ export function register(commands:Record<string, FishCommandData<string, any> | 
 							outputFail: message => {outputFail(message, sender); failed = true;},
 							outputSuccess: message => outputSuccess(message, sender),
 							output: message => outputMessage(message, sender),
-							f: outputFormatter_client,
+							f: f_client,
 							execServer: command => serverHandler.handleMessage(command),
 							admins: Vars.netServer.admins,
 							lastUsedSender: usageData.lastUsed,
@@ -642,7 +670,7 @@ export function registerConsole(commands:Record<string, FishConsoleCommandData<s
 						outputFail: message => {outputConsole(message, Log.err); failed = true;},
 						outputSuccess: outputConsole,
 						output: outputConsole,
-						f: outputFormatter_server,
+						f: f_server,
 						execServer: command => serverHandler.handleMessage(command),
 						admins: Vars.netServer.admins,
 						...usageData

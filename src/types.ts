@@ -3,7 +3,7 @@ Copyright © BalaM314, 2025. All Rights Reserved.
 This file contains type definitions that are shared across files.
 */
 
-import type { CommandArgType, Perm } from "./commands";
+import type { CommandArgType, FFunction, Perm } from "./commands";
 import type { FishPlayer } from "./players";
 import type { Rank, RoleFlag } from "./ranks";
 
@@ -113,7 +113,7 @@ export type FishCommandHandlerUtils = {
 	/** Outputs text to the sender. Tab characters are replaced with 4 spaces. */
 	output(message:string | PartialFormatString):void;
 	/** Use to tag template literals, formatting players, numbers, ranks, and more */
-	f:TagFunction<Formattable, PartialFormatString>;
+	f:FFunction;
 	/** Executes a server console command. Be careful! */
 	execServer(message:string):void;
 	/** Call this function to set tap handling mode. */
@@ -141,7 +141,7 @@ export interface FishConsoleCommandRunner<ArgType extends string, StoredData> {
 		/** Outputs text to the console. Tab characters are replaced with 4 spaces. */
 		output(message:string | PartialFormatString):void;
 		/** Use to tag template literals, formatting players, numbers, ranks, and more */
-		f:TagFunction<Formattable, PartialFormatString>;
+		f:FFunction;
 		/** Executes a server console command. Be careful to not commit recursion as that will cause a crash.*/
 		execServer(message:string):void;
 		/** Vars.netServer.admins */
