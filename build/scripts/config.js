@@ -59,7 +59,7 @@ exports.bannedWords = {
         "nig" + "ger", "nig" + "ga", "niger", "ni8" + "8er", "nig" + "gre", //our apologies to citizens of the Republic of Niger
         "re" + "tard",
         'kill yourself', 'kill urself', /\bkys\b/,
-        /\bkill blacks\b/,
+        "kill blacks", "heil hitler", "heil nazis", "heil the nazis", "sieg heil",
         ["co" + "ck", "cockroach", "poppycock"],
         "iamasussyimposter",
         ["cu" + "nt", "scunthorpe"],
@@ -81,7 +81,9 @@ exports.bannedWords = {
         globals_1.uuidPattern, globals_1.ipPattern, globals_1.ipPortPattern
     ]),
     /** autoWhack: new players saying one of these words will be automatically stopped and muted. */
-    autoWhack: ["nig" + "ger", "nig" + "ga", "ni8" + "8er", "hit" + "ler", "fa" + "gg" + "ot"],
+    autoWhack: [
+        "nig" + "ger", "nig" + "ga", "ni8" + "8er", "hit" + "ler", "fa" + "gg" + "ot", "nazis",
+    ],
 };
 //for some reason the external mindustry server does not read the files correctly, so we can only use ASCII
 exports.substitutions = Object.fromEntries(Object.entries({
