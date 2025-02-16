@@ -97,7 +97,6 @@ var funcs_2 = require("./funcs");
 var funcs_3 = require("./funcs");
 var funcs_4 = require("./funcs");
 var funcs_5 = require("./funcs");
-var spawnedUnits = [];
 exports.commands = (0, commands_1.commandList)({
     warn: {
         args: ['player:player', 'message:string?'],
@@ -761,14 +760,15 @@ exports.commands = (0, commands_1.commandList)({
         args: ["type:unittype", "x:number?", "y:number?", "team:team?"],
         description: "Spawns a unit of specified type at your position. [scarlet]Usage will be logged.[]",
         perm: commands_1.Perm.admin,
+        data: [],
         handler: function (_a) {
             var _b;
-            var sender = _a.sender, args = _a.args, outputSuccess = _a.outputSuccess, f = _a.f;
+            var sender = _a.sender, args = _a.args, data = _a.data, outputSuccess = _a.outputSuccess, f = _a.f;
             var x = args.x ? (args.x * 8) : sender.player.x;
             var y = args.y ? (args.y * 8) : sender.player.y;
             var team = (_b = args.team) !== null && _b !== void 0 ? _b : sender.team();
             var unit = args.type.spawn(team, x, y);
-            spawnedUnits.push(unit);
+            data.push(unit);
             if (!config_1.Gamemode.sandbox())
                 (0, utils_1.logAction)("spawned unit ".concat(args.type.name, " at ").concat(Math.round(x / 8), ", ").concat(Math.round(y / 8)), sender);
             outputSuccess(f(templateObject_45 || (templateObject_45 = __makeTemplateObject(["Spawned unit ", " at (", ", ", ")"], ["Spawned unit ", " at (", ", ", ")"])), args.type, Math.round(x / 8), Math.round(y / 8)));
@@ -852,9 +852,9 @@ exports.commands = (0, commands_1.commandList)({
         description: "Removes all spawned units.",
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
+            var sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f, allCommands = _a.allCommands;
             var numKilled = 0;
-            spawnedUnits.forEach(function (u) {
+            allCommands.spawn.data.forEach(function (u) {
                 if (u.isAdded() && !u.dead) {
                     u.kill();
                     numKilled++;

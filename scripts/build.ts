@@ -1,5 +1,5 @@
 import * as esbuild from "esbuild";
-import * as fs from "fs";
+import fs from "node:fs";
 
 if(/scripts(\/\\)?$/.test(process.cwd())) process.chdir("..");
 

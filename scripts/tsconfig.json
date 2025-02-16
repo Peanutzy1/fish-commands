@@ -3,7 +3,8 @@
 		"lib": ["ES2023", "DOM"], //for fetch()
 		"target": "ES2023",
 		"skipLibCheck": true,
-		"module": "CommonJS"
+		"module": "CommonJS",
+		"esModuleInterop": true,
 	},
 	"include": [
 		"./**.ts"

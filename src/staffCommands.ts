@@ -20,8 +20,6 @@ import { escapeTextDiscord } from './funcs';
 import { crash } from './funcs';
 import { setToArray } from './funcs';
 
-const spawnedUnits:Unit[] = [];
-
 export const commands = commandList({
 	warn: {
 		args: ['player:player', 'message:string?'],
@@ -613,12 +611,13 @@ export const commands = commandList({
 		args: ["type:unittype", "x:number?", "y:number?", "team:team?"],
 		description: "Spawns a unit of specified type at your position. [scarlet]Usage will be logged.[]",
 		perm: Perm.admin,
-		handler({sender, args, outputSuccess, f}){
+		data: [],
+		handler({sender, args, data, outputSuccess, f}){
 			const x = args.x ? (args.x * 8) : sender.player!.x;
 			const y = args.y ? (args.y * 8) : sender.player!.y;
 			const team = args.team ?? sender.team();
 			const unit = args.type.spawn(team, x, y);
-			spawnedUnits.push(unit);
+			data.push(unit);
 			if(!Gamemode.sandbox()) logAction(`spawned unit ${args.type.name} at ${Math.round(x / 8)}, ${Math.round(y / 8)}`, sender);
 			outputSuccess(f`Spawned unit ${args.type} at (${Math.round(x / 8)}, ${Math.round(y / 8)})`);
 		}
@@ -687,9 +686,9 @@ export const commands = commandList({
 		args: [],
 		description: "Removes all spawned units.",
 		perm: Perm.admin,
-		handler({sender, outputSuccess, f}){
+		handler({sender, outputSuccess, f, allCommands}){
 			let numKilled = 0;
-			spawnedUnits.forEach(u => {
+			(allCommands.spawn.data as Unit[]).forEach(u => {
 				if(u.isAdded() && !u.dead){
 					u.kill();
 					numKilled ++;
