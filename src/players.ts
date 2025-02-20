@@ -532,6 +532,7 @@ export class FishPlayer {
 	/** Updates the mindustry player's name, using the prefixes of the current rank and role flags. */
 	updateName(){
 		if(!this.connected() || !this.shouldUpdateName) return;//No player, no need to update
+		if(this.marked()) this.showRankPrefix = false;
 		let prefix = '';
 		if(!this.hasPerm("bypassNameCheck") && isImpersonator(this.name, this.ranksAtLeast("admin"))) prefix += "[scarlet]SUSSY IMPOSTOR[]";
 		if(this.marked()) prefix += prefixes.marked;
