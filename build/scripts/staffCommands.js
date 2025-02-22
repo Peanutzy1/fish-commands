@@ -929,7 +929,7 @@ exports.commands = (0, commands_1.commandList)({
         perm: commands_1.Perm.admin,
         handler: function (_a) {
             var args = _a.args, outputSuccess = _a.outputSuccess, output = _a.output, f = _a.f;
-            if (args.state !== null) {
+            if (args.state != undefined) {
                 players_1.FishPlayer.antiBotModeOverride = args.state;
                 outputSuccess("Set antibot mode override to ".concat(f.boolBad(args.state), "."));
                 if (args.state)

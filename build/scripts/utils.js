@@ -468,6 +468,7 @@ function getMap(name) {
     //no filters returned a result
     return "none";
 }
+//static cache
 var buildableBlocks = null;
 var validUnits = null;
 function getBlock(block, filter) {

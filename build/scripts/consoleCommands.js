@@ -388,8 +388,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
         args: ["on:boolean?"],
         description: "Toggles the join bell function.",
         handler: function (_a) {
-            var on = _a.args.on;
-            on !== null && on !== void 0 ? on : (on = !globals_2.fishState.joinBell);
+            var _b = _a.args.on, on = _b === void 0 ? !globals_2.fishState.joinBell : _b;
             globals_2.fishState.joinBell = on;
             if (globals_2.fishState.joinBell) {
                 Log.info("Enabled sound on new player join. Run \"joinbell\" again to turn it off.");

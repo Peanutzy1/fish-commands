@@ -765,7 +765,7 @@ Server: ${Gamemode.name()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${
 		description: "Checks anti bot stats, or force enables anti bot mode, MAKE SURE TO TURN IT OFF",
 		perm: Perm.admin,
 		handler({args, outputSuccess, output, f}){
-			if(args.state !== null){
+			if(args.state != undefined){
 				FishPlayer.antiBotModeOverride = args.state;
 				outputSuccess(`Set antibot mode override to ${f.boolBad(args.state)}.`);
 				if(args.state) output(`[scarlet]MAKE SURE TO TURN IT OFF!!!`);

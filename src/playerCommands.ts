@@ -144,15 +144,14 @@ export const commands = commandList({
 		args: ['target:player?'],
 		description: `Toggles visibility of your rank and flags.`,
 		perm: Perm.vanish,
-		handler({ args, sender, outputSuccess }){
+		handler({ sender, args: {target = sender}, outputSuccess }){
 			if(sender.stelled()) fail(`Marked players may not hide flags.`);
 			if(sender.muted) fail(`Muted players may not hide flags.`);
-			args.target ??= sender;
-			if(sender != args.target && args.target.hasPerm("blockTrolling")) fail(`Target is insufficentlly trollable.`);
-			if(sender != args.target && !sender.ranksAtLeast("mod")) fail(`You do not have permission to vanish other players.`);
-			args.target.showRankPrefix = !args.target.showRankPrefix;
+			if(sender != target && target.hasPerm("blockTrolling")) fail(`Target is insufficentlly trollable.`);
+			if(sender != target && !sender.ranksAtLeast("mod")) fail(`You do not have permission to vanish other players.`);
+			target.showRankPrefix = !target.showRankPrefix;
 			outputSuccess(
-`${args.target == sender ? `Your` : `${args.target.name}'s`} rank prefix is now ${args.target.showRankPrefix ? "visible" : "hidden"}.`
+`${target == sender ? `Your` : `${target.name}'s`} rank prefix is now ${target.showRankPrefix ? "visible" : "hidden"}.`
 			);
 		},
 	},
@@ -297,22 +296,21 @@ export const commands = commandList({
 			args: ["target:player?"],
 			description: `Toggles spectator mode in PVP games.`,
 			perm: Perm.play,
-			handler({args, sender, outputSuccess, f}){
-				args.target ??= sender;
+			handler({sender, args: {target = sender}, outputSuccess, f}){
 				if(!Gamemode.pvp() && !sender.hasPerm("mod")) fail(`You do not have permission to spectate on a non-pvp server.`);
-				if(args.target !== sender && args.target.hasPerm("blockTrolling")) fail(`Target player is insufficiently trollable.`);
-				if(args.target !== sender && !sender.ranksAtLeast("admin")) fail(`You do not have permission to force other players to spectate.`);
-				if(spectators.has(args.target)){
-					resume(args.target);
-					outputSuccess(args.target == sender
-						? f`Rejoining game as team ${args.target.team()}.`
-						: f`Forced ${args.target} out of spectator mode.`
+				if(target !== sender && target.hasPerm("blockTrolling")) fail(`Target player is insufficiently trollable.`);
+				if(target !== sender && !sender.ranksAtLeast("admin")) fail(`You do not have permission to force other players to spectate.`);
+				if(spectators.has(target)){
+					resume(target);
+					outputSuccess(target == sender
+						? f`Rejoining game as team ${target.team()}.`
+						: f`Forced ${target} out of spectator mode.`
 					);
 				} else {
-					spectate(args.target);
-					outputSuccess(args.target == sender
+					spectate(target);
+					outputSuccess(target == sender
 						? f`Now spectating. Run /spectate again to resume gameplay.`
-						: f`Forced ${args.target} into spectator mode.`)
+						: f`Forced ${target} into spectator mode.`)
 					;
 				}
 			}
@@ -322,7 +320,7 @@ export const commands = commandList({
 		args: ['name:string?'],
 		description: 'Displays a list of all commands.',
 		perm: Perm.none,
-		handler({ args, output, outputFail, sender, allCommands }) {
+		handler({ args, output, sender, allCommands }) {
 			const formatCommand = (name: string, color: string) =>
 				new StringBuilder()
 					.add(`${color}/${name}`)
@@ -339,9 +337,7 @@ export const commands = commandList({
 	Usage: [sky]/${args.name} [white]${allCommands[args.name].args.map(formatArg).join(' ')}
 	Permission required: ${allCommands[args.name].perm.name}`
 					);
-				} else {
-					outputFail(`Command "${args.name}" does not exist.`);
-				}
+				} else fail(`Command "${args.name}" does not exist.`);
 			} else {
 				const commands: {
 					[P in 'player' | 'mod' | 'admin' | 'member']: string[];
@@ -368,12 +364,9 @@ export const commands = commandList({
 						output(`${Perm.member.color}-- Member commands --\n` + formatList(commands.member, Perm.member.color));
 						break;
 					default:
-						const pageNumber = args.name !== null ? parseInt(args.name) : 1;
-						if (pageNumber - 1 in chunkedPlayerCommands) {
-							output(`[sky]-- Commands page [lightgrey]${pageNumber}/${chunkedPlayerCommands.length}[sky] --\n` + formatList(chunkedPlayerCommands[pageNumber - 1], '[sky]'));
-						} else {
-							outputFail(`"${args.name}" is an invalid page number.`);
-						}
+						const pageNumber = args.name != undefined ? parseInt(args.name) : 1;
+						const page = chunkedPlayerCommands[pageNumber - 1] ?? fail(`"${args.name}" is an invalid page number.`);
+						output(`[sky]-- Commands page [lightgrey]${pageNumber}/${chunkedPlayerCommands.length}[sky] --\n` + formatList(page, '[sky]'));
 				}
 			}
 		},
@@ -584,19 +577,18 @@ Please stop attacking and [lime]build defenses[] first!`
 		args: ['team:team', 'target:player?'],
 		description: 'Changes the team of a player.',
 		perm: Perm.changeTeam,
-		handler({args, sender, outputSuccess, f}){
-			args.target ??= sender;
-			if(!sender.canModerate(args.target, true, "mod", true)) fail(f`You do not have permission to change the team of ${args.target}`);
+		handler({sender, args: {team, target = sender}, outputSuccess, f}){
+			if(!sender.canModerate(target, true, "mod", true)) fail(f`You do not have permission to change the team of ${target}`);
 			if(Gamemode.sandbox() && fishState.peacefulMode && !sender.hasPerm("admin")) fail(`You do not have permission to change teams because peaceful mode is on.`);
 			if(!sender.hasPerm("changeTeamExternal")){
-				if(args.team.data().cores.size <= 0) fail(`You do not have permission to change to a team with no cores.`);
+				if(team.data().cores.size <= 0) fail(`You do not have permission to change to a team with no cores.`);
 				if(!sender.player!.dead() && !sender.unit()?.spawnedByCore)
-					args.target.forceRespawn();
+					target.forceRespawn();
 			}
-			if(!sender.hasPerm("mod")) args.target.changedTeam = true;
-			args.target.setTeam(args.team);
-			if(args.target === sender) outputSuccess(f`Changed your team to ${args.team}.`);
-			else outputSuccess(f`Changed team of player ${args.target} to ${args.team}.`);
+			if(!sender.hasPerm("mod")) target.changedTeam = true;
+			target.setTeam(team);
+			if(target === sender) outputSuccess(f`Changed your team to ${team}.`);
+			else outputSuccess(f`Changed team of player ${target} to ${team}.`);
 		},
 	},
 
@@ -614,8 +606,7 @@ Please stop attacking and [lime]build defenses[] first!`
 		args: ["force:boolean?"],
 		description: 'Force skip to the next wave.',
 		perm: Perm.admin,
-		handler({allCommands, sender, args:{force}}){
-			force ??= true;
+		handler({allCommands, sender, args:{force = true}}){
 			if(allCommands.vnw.data.manager.session == null){
 				if(force == false) fail(`Cannot clear votes for VNW because no vote is currently ongoing.`);
 				skipWaves(1, false);
@@ -670,8 +661,7 @@ Please stop attacking and [lime]build defenses[] first!`
 		args: ["force:boolean?"],
 		description: 'Force skip to the next map.',
 		perm: Perm.admin,
-		handler({args:{force}, sender, allCommands}){
-			force ??= true;
+		handler({args:{force = true}, sender, allCommands}){
 			if(allCommands.rtv.data.manager.session == null){
 				if(force == false) fail(`Cannot clear votes for RTV because no vote is currently ongoing.`);
 				allCommands.rtv.data.manager.forceVote(true);
@@ -911,8 +901,7 @@ Win rate: ${target.stats.gamesWon / target.stats.gamesFinished}`
 		perm: Perm.none,
 		description: "Views the world as a 2D scrollable menu.",
 		requirements: [Req.cooldown(4000)],
-		handler({sender, args:{size, x, y}}){
-			size ??= 7;
+		handler({sender, args:{size = 7, x, y}}){
 			if(size > 20) fail(`Size ${size} is too high!`);
 			if(Vars.state.rules.fog) fail(`This command is disabled when fog is enabled.`);
 			const options = to2DArray((Reflect.get(Vars.world.tiles, "array") as Tile[]).map(tile => ({

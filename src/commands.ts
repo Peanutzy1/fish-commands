@@ -233,9 +233,9 @@ function processArgs(args:string[], processedCmdArgs:CommandArg[], allowMenus:bo
 		if(!(i in args) || args[i] === ""){
 			//if the arg was not provided or it was empty
 			if(cmdArg.isOptional){
-				outputArgs[cmdArg.name] = null;
+				outputArgs[cmdArg.name] = undefined;
 			} else if(cmdArg.type == "player" && allowMenus){
-				outputArgs[cmdArg.name] = null;
+				outputArgs[cmdArg.name] = undefined;
 				unresolvedArgs.push(cmdArg);
 			} else return {error: `No value specified for arg ${cmdArg.name}. Did you type two spaces instead of one?`};
 			continue;

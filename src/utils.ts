@@ -337,6 +337,7 @@ export function getMap(name:string):MMap | "none" | "multiple" {
 	return "none";
 }
 
+//static cache
 let buildableBlocks:Seq<Block> | null = null;
 let validUnits:Seq<UnitType> | null = null;
 

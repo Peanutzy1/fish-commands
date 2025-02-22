@@ -217,19 +217,17 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         description: "Toggles visibility of your rank and flags.",
         perm: commands_1.Perm.vanish,
         handler: function (_a) {
-            var _b;
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            var sender = _a.sender, _b = _a.args.target, target = _b === void 0 ? sender : _b, outputSuccess = _a.outputSuccess;
             if (sender.stelled())
                 (0, commands_1.fail)("Marked players may not hide flags.");
             if (sender.muted)
                 (0, commands_1.fail)("Muted players may not hide flags.");
-            (_b = args.target) !== null && _b !== void 0 ? _b : (args.target = sender);
-            if (sender != args.target && args.target.hasPerm("blockTrolling"))
+            if (sender != target && target.hasPerm("blockTrolling"))
                 (0, commands_1.fail)("Target is insufficentlly trollable.");
-            if (sender != args.target && !sender.ranksAtLeast("mod"))
+            if (sender != target && !sender.ranksAtLeast("mod"))
                 (0, commands_1.fail)("You do not have permission to vanish other players.");
-            args.target.showRankPrefix = !args.target.showRankPrefix;
-            outputSuccess("".concat(args.target == sender ? "Your" : "".concat(args.target.name, "'s"), " rank prefix is now ").concat(args.target.showRankPrefix ? "visible" : "hidden", "."));
+            target.showRankPrefix = !target.showRankPrefix;
+            outputSuccess("".concat(target == sender ? "Your" : "".concat(target.name, "'s"), " rank prefix is now ").concat(target.showRankPrefix ? "visible" : "hidden", "."));
         },
     }, tileid: {
         args: [],
@@ -375,24 +373,22 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             description: "Toggles spectator mode in PVP games.",
             perm: commands_1.Perm.play,
             handler: function (_a) {
-                var _b;
-                var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
-                (_b = args.target) !== null && _b !== void 0 ? _b : (args.target = sender);
+                var sender = _a.sender, _b = _a.args.target, target = _b === void 0 ? sender : _b, outputSuccess = _a.outputSuccess, f = _a.f;
                 if (!config_1.Gamemode.pvp() && !sender.hasPerm("mod"))
                     (0, commands_1.fail)("You do not have permission to spectate on a non-pvp server.");
-                if (args.target !== sender && args.target.hasPerm("blockTrolling"))
+                if (target !== sender && target.hasPerm("blockTrolling"))
                     (0, commands_1.fail)("Target player is insufficiently trollable.");
-                if (args.target !== sender && !sender.ranksAtLeast("admin"))
+                if (target !== sender && !sender.ranksAtLeast("admin"))
                     (0, commands_1.fail)("You do not have permission to force other players to spectate.");
-                if (spectators.has(args.target)) {
-                    resume(args.target);
-                    outputSuccess(args.target == sender
-                        ? f(templateObject_3 || (templateObject_3 = __makeTemplateObject(["Rejoining game as team ", "."], ["Rejoining game as team ", "."])), args.target.team()) : f(templateObject_4 || (templateObject_4 = __makeTemplateObject(["Forced ", " out of spectator mode."], ["Forced ", " out of spectator mode."])), args.target));
+                if (spectators.has(target)) {
+                    resume(target);
+                    outputSuccess(target == sender
+                        ? f(templateObject_3 || (templateObject_3 = __makeTemplateObject(["Rejoining game as team ", "."], ["Rejoining game as team ", "."])), target.team()) : f(templateObject_4 || (templateObject_4 = __makeTemplateObject(["Forced ", " out of spectator mode."], ["Forced ", " out of spectator mode."])), target));
                 }
                 else {
-                    spectate(args.target);
-                    outputSuccess(args.target == sender
-                        ? f(templateObject_5 || (templateObject_5 = __makeTemplateObject(["Now spectating. Run /spectate again to resume gameplay."], ["Now spectating. Run /spectate again to resume gameplay."]))) : f(templateObject_6 || (templateObject_6 = __makeTemplateObject(["Forced ", " into spectator mode."], ["Forced ", " into spectator mode."])), args.target));
+                    spectate(target);
+                    outputSuccess(target == sender
+                        ? f(templateObject_5 || (templateObject_5 = __makeTemplateObject(["Now spectating. Run /spectate again to resume gameplay."], ["Now spectating. Run /spectate again to resume gameplay."]))) : f(templateObject_6 || (templateObject_6 = __makeTemplateObject(["Forced ", " into spectator mode."], ["Forced ", " into spectator mode."])), target));
                 }
             }
         };
@@ -401,7 +397,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         description: 'Displays a list of all commands.',
         perm: commands_1.Perm.none,
         handler: function (_a) {
-            var args = _a.args, output = _a.output, outputFail = _a.outputFail, sender = _a.sender, allCommands = _a.allCommands;
+            var _b;
+            var args = _a.args, output = _a.output, sender = _a.sender, allCommands = _a.allCommands;
             var formatCommand = function (name, color) {
                 return new funcs_2.StringBuilder()
                     .add("".concat(color, "/").concat(name))
@@ -414,9 +411,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
                 if (args.name in allCommands && (!allCommands[args.name].isHidden || allCommands[args.name].perm.check(sender))) {
                     output("Help for command ".concat(args.name, ":\n\t").concat(allCommands[args.name].description, "\n\tUsage: [sky]/").concat(args.name, " [white]").concat(allCommands[args.name].args.map(commands_1.formatArg).join(' '), "\n\tPermission required: ").concat(allCommands[args.name].perm.name));
                 }
-                else {
-                    outputFail("Command \"".concat(args.name, "\" does not exist."));
-                }
+                else
+                    (0, commands_1.fail)("Command \"".concat(args.name, "\" does not exist."));
             }
             else {
                 var commands_2 = {
@@ -442,13 +438,9 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
                         output("".concat(commands_1.Perm.member.color, "-- Member commands --\n") + formatList(commands_2.member, commands_1.Perm.member.color));
                         break;
                     default:
-                        var pageNumber = args.name !== null ? parseInt(args.name) : 1;
-                        if (pageNumber - 1 in chunkedPlayerCommands) {
-                            output("[sky]-- Commands page [lightgrey]".concat(pageNumber, "/").concat(chunkedPlayerCommands.length, "[sky] --\n") + formatList(chunkedPlayerCommands[pageNumber - 1], '[sky]'));
-                        }
-                        else {
-                            outputFail("\"".concat(args.name, "\" is an invalid page number."));
-                        }
+                        var pageNumber = args.name != undefined ? parseInt(args.name) : 1;
+                        var page = (_b = chunkedPlayerCommands[pageNumber - 1]) !== null && _b !== void 0 ? _b : (0, commands_1.fail)("\"".concat(args.name, "\" is an invalid page number."));
+                        output("[sky]-- Commands page [lightgrey]".concat(pageNumber, "/").concat(chunkedPlayerCommands.length, "[sky] --\n") + formatList(page, '[sky]'));
                 }
             }
         },
@@ -637,26 +629,25 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         description: 'Changes the team of a player.',
         perm: commands_1.Perm.changeTeam,
         handler: function (_a) {
-            var _b, _c;
-            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
-            (_b = args.target) !== null && _b !== void 0 ? _b : (args.target = sender);
-            if (!sender.canModerate(args.target, true, "mod", true))
-                (0, commands_1.fail)(f(templateObject_12 || (templateObject_12 = __makeTemplateObject(["You do not have permission to change the team of ", ""], ["You do not have permission to change the team of ", ""])), args.target));
+            var _b;
+            var sender = _a.sender, _c = _a.args, team = _c.team, _d = _c.target, target = _d === void 0 ? sender : _d, outputSuccess = _a.outputSuccess, f = _a.f;
+            if (!sender.canModerate(target, true, "mod", true))
+                (0, commands_1.fail)(f(templateObject_12 || (templateObject_12 = __makeTemplateObject(["You do not have permission to change the team of ", ""], ["You do not have permission to change the team of ", ""])), target));
             if (config_1.Gamemode.sandbox() && globals_1.fishState.peacefulMode && !sender.hasPerm("admin"))
                 (0, commands_1.fail)("You do not have permission to change teams because peaceful mode is on.");
             if (!sender.hasPerm("changeTeamExternal")) {
-                if (args.team.data().cores.size <= 0)
+                if (team.data().cores.size <= 0)
                     (0, commands_1.fail)("You do not have permission to change to a team with no cores.");
-                if (!sender.player.dead() && !((_c = sender.unit()) === null || _c === void 0 ? void 0 : _c.spawnedByCore))
-                    args.target.forceRespawn();
+                if (!sender.player.dead() && !((_b = sender.unit()) === null || _b === void 0 ? void 0 : _b.spawnedByCore))
+                    target.forceRespawn();
             }
             if (!sender.hasPerm("mod"))
-                args.target.changedTeam = true;
-            args.target.setTeam(args.team);
-            if (args.target === sender)
-                outputSuccess(f(templateObject_13 || (templateObject_13 = __makeTemplateObject(["Changed your team to ", "."], ["Changed your team to ", "."])), args.team));
+                target.changedTeam = true;
+            target.setTeam(team);
+            if (target === sender)
+                outputSuccess(f(templateObject_13 || (templateObject_13 = __makeTemplateObject(["Changed your team to ", "."], ["Changed your team to ", "."])), team));
             else
-                outputSuccess(f(templateObject_14 || (templateObject_14 = __makeTemplateObject(["Changed team of player ", " to ", "."], ["Changed team of player ", " to ", "."])), args.target, args.team));
+                outputSuccess(f(templateObject_14 || (templateObject_14 = __makeTemplateObject(["Changed team of player ", " to ", "."], ["Changed team of player ", " to ", "."])), target, team));
         },
     }, rank: {
         args: ['player:player'],
@@ -671,8 +662,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         description: 'Force skip to the next wave.',
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var allCommands = _a.allCommands, sender = _a.sender, force = _a.args.force;
-            force !== null && force !== void 0 ? force : (force = true);
+            var allCommands = _a.allCommands, sender = _a.sender, _b = _a.args.force, force = _b === void 0 ? true : _b;
             if (allCommands.vnw.data.manager.session == null) {
                 if (force == false)
                     (0, commands_1.fail)("Cannot clear votes for VNW because no vote is currently ongoing.");
@@ -737,8 +727,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         description: 'Force skip to the next map.',
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var force = _a.args.force, sender = _a.sender, allCommands = _a.allCommands;
-            force !== null && force !== void 0 ? force : (force = true);
+            var _b = _a.args.force, force = _b === void 0 ? true : _b, sender = _a.sender, allCommands = _a.allCommands;
             if (allCommands.rtv.data.manager.session == null) {
                 if (force == false)
                     (0, commands_1.fail)("Cannot clear votes for RTV because no vote is currently ongoing.");
@@ -939,8 +928,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         description: "Views the world as a 2D scrollable menu.",
         requirements: [commands_1.Req.cooldown(4000)],
         handler: function (_a) {
-            var sender = _a.sender, _b = _a.args, size = _b.size, x = _b.x, y = _b.y;
-            size !== null && size !== void 0 ? size : (size = 7);
+            var sender = _a.sender, _b = _a.args, _c = _b.size, size = _c === void 0 ? 7 : _c, x = _b.x, y = _b.y;
             if (size > 20)
                 (0, commands_1.fail)("Size ".concat(size, " is too high!"));
             if (Vars.state.rules.fog)

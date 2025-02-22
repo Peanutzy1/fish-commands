@@ -29,7 +29,7 @@ export type SelectEnumClassKeys<C extends Function,
 	: never
 ) : never;
 
-export type FishCommandArgType = TypeOfArgType<CommandArgType> | null;
+export type FishCommandArgType = TypeOfArgType<CommandArgType> | undefined;
 
 /** Maps an arg type string to the TS type used to store it. Example: returns `number` for "time". */
 export type TypeOfArgType<T> =
@@ -63,7 +63,7 @@ export type KeyFor<ArgString> = ArgString extends `${infer K}:${string}` ? K : n
 /** Reads the value from an arg string, and determines whether it is optional. */
 export type ValueFor<ArgString> =
 	//optional
-	ArgString extends `${string}:${infer V}?` ? TypeOfArgType<V> | null :
+	ArgString extends `${string}:${infer V}?` ? TypeOfArgType<V> | undefined :
 	//required
 	ArgString extends `${string}:${infer V}` ? TypeOfArgType<V> :
 	never;
