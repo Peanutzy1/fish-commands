@@ -746,32 +746,6 @@ exports.commands = (0, commands_1.consoleCommandList)({
             });
         }
     },
-    loadmap: {
-        args: ["filename:string", "map:string"],
-        description: "Downloads a map from URL.",
-        handler: function (_a) {
-            var _b = _a.args, filename = _b.filename, map = _b.map, output = _a.output, outputFail = _a.outputFail, outputSuccess = _a.outputSuccess;
-            (0, commands_1.fail)("This command was removed, please add it to the github repo: ".concat(config_2.mapRepoURLs[config_2.Gamemode.name()]));
-            if (!/^https?:\/\//i.test(map))
-                (0, commands_1.fail)("Argument must be a URL starting with https:// or http://");
-            if (!/\.msav$/.test(filename))
-                (0, commands_1.fail)("Filename must end with .msav");
-            if (Strings.sanitizeFilename(filename) != filename)
-                (0, commands_1.fail)("Filename contains special characters, please use \"".concat(Strings.sanitizeFilename(filename), "\" instead"));
-            filename = filename.toLowerCase();
-            var file = Vars.customMapDirectory.child(filename);
-            if (file.exists())
-                output("File ".concat(filename, " will be overwritten"));
-            output("Downloading map...");
-            Http.get(map, function (res) {
-                output("Writing file...");
-                file.writeBytes(res.getResult());
-                output("Loading map...");
-                Vars.maps.reload();
-                outputSuccess("Successfully loaded the map. Please check for duplicates.");
-            }, function () { return outputFail("Download failed"); });
-        },
-    },
     updateMaps: {
         args: [],
         description: 'Attempt to fetch and update all map files',
