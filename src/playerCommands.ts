@@ -12,7 +12,7 @@ import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
 import type { FishCommandData } from './types';
 import { formatTime, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover, skipWaves, teleportPlayer } from './utils';
-import { capitalizeText } from './funcs';
+import { capitalizeText, escapeTextDiscord } from './funcs';
 import { StringBuilder, StringIO } from './funcs';
 import { to2DArray } from './funcs';
 import { VoteManager } from './votes';
@@ -574,21 +574,38 @@ Please stop attacking and [lime]build defenses[] first!`
 	},
 
 	team: {
-		args: ['team:team', 'target:player?'],
+		args: ['team:team', 'reason:string'],
+		description: 'Changes your team.',
+		perm: Perm.changeTeam,
+		handler({sender, args: {team, reason}, outputSuccess, f}){
+			if(Gamemode.sandbox() && fishState.peacefulMode && !sender.hasPerm("admin"))
+				fail(`You do not have permission to change teams because peaceful mode is on.`);
+			if(!sender.hasPerm("changeTeamExternal")){
+				if(team.data().cores.size <= 0) fail(`You do not have permission to change to a team with no cores.`);
+				if(!sender.player!.dead() && !sender.unit()?.spawnedByCore)
+					sender.forceRespawn();
+			}
+			if(!sender.hasPerm("mod")) sender.changedTeam = true;
+			sender.setTeam(team);
+			outputSuccess(f`Changed your team to ${team}.`);
+			logAction(`changed team to ${team.name} on ${escapeTextDiscord(Vars.state.map.plainName())} with reason ${escapeTextDiscord(reason)}`, sender)
+		},
+	},
+
+	teamp: {
+		args: ['team:team', 'target:player'],
 		description: 'Changes the team of a player.',
 		perm: Perm.changeTeam,
-		handler({sender, args: {team, target = sender}, outputSuccess, f}){
+		handler({sender, args: {team, target}, outputSuccess, f}){
 			if(!sender.canModerate(target, true, "mod", true)) fail(f`You do not have permission to change the team of ${target}`);
 			if(Gamemode.sandbox() && fishState.peacefulMode && !sender.hasPerm("admin")) fail(`You do not have permission to change teams because peaceful mode is on.`);
 			if(!sender.hasPerm("changeTeamExternal")){
 				if(team.data().cores.size <= 0) fail(`You do not have permission to change to a team with no cores.`);
-				if(!sender.player!.dead() && !sender.unit()?.spawnedByCore)
+				if(!target.player!.dead() && !target.unit()?.spawnedByCore)
 					target.forceRespawn();
 			}
-			if(!sender.hasPerm("mod")) target.changedTeam = true;
 			target.setTeam(team);
-			if(target === sender) outputSuccess(f`Changed your team to ${team}.`);
-			else outputSuccess(f`Changed team of player ${target} to ${team}.`);
+			outputSuccess(f`Changed team of player ${target} to ${team}.`);
 		},
 	},
 

@@ -625,29 +625,45 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             }
         },
     }, team: {
-        args: ['team:team', 'target:player?'],
-        description: 'Changes the team of a player.',
+        args: ['team:team', 'reason:string'],
+        description: 'Changes your team.',
         perm: commands_1.Perm.changeTeam,
         handler: function (_a) {
             var _b;
-            var sender = _a.sender, _c = _a.args, team = _c.team, _d = _c.target, target = _d === void 0 ? sender : _d, outputSuccess = _a.outputSuccess, f = _a.f;
-            if (!sender.canModerate(target, true, "mod", true))
-                (0, commands_1.fail)(f(templateObject_12 || (templateObject_12 = __makeTemplateObject(["You do not have permission to change the team of ", ""], ["You do not have permission to change the team of ", ""])), target));
+            var sender = _a.sender, _c = _a.args, team = _c.team, reason = _c.reason, outputSuccess = _a.outputSuccess, f = _a.f;
             if (config_1.Gamemode.sandbox() && globals_1.fishState.peacefulMode && !sender.hasPerm("admin"))
                 (0, commands_1.fail)("You do not have permission to change teams because peaceful mode is on.");
             if (!sender.hasPerm("changeTeamExternal")) {
                 if (team.data().cores.size <= 0)
                     (0, commands_1.fail)("You do not have permission to change to a team with no cores.");
                 if (!sender.player.dead() && !((_b = sender.unit()) === null || _b === void 0 ? void 0 : _b.spawnedByCore))
-                    target.forceRespawn();
+                    sender.forceRespawn();
             }
             if (!sender.hasPerm("mod"))
-                target.changedTeam = true;
+                sender.changedTeam = true;
+            sender.setTeam(team);
+            outputSuccess(f(templateObject_12 || (templateObject_12 = __makeTemplateObject(["Changed your team to ", "."], ["Changed your team to ", "."])), team));
+            (0, utils_1.logAction)("changed team to ".concat(team.name, " on ").concat((0, funcs_1.escapeTextDiscord)(Vars.state.map.plainName()), " with reason ").concat((0, funcs_1.escapeTextDiscord)(reason)), sender);
+        },
+    }, teamp: {
+        args: ['team:team', 'target:player'],
+        description: 'Changes the team of a player.',
+        perm: commands_1.Perm.changeTeam,
+        handler: function (_a) {
+            var _b;
+            var sender = _a.sender, _c = _a.args, team = _c.team, target = _c.target, outputSuccess = _a.outputSuccess, f = _a.f;
+            if (!sender.canModerate(target, true, "mod", true))
+                (0, commands_1.fail)(f(templateObject_13 || (templateObject_13 = __makeTemplateObject(["You do not have permission to change the team of ", ""], ["You do not have permission to change the team of ", ""])), target));
+            if (config_1.Gamemode.sandbox() && globals_1.fishState.peacefulMode && !sender.hasPerm("admin"))
+                (0, commands_1.fail)("You do not have permission to change teams because peaceful mode is on.");
+            if (!sender.hasPerm("changeTeamExternal")) {
+                if (team.data().cores.size <= 0)
+                    (0, commands_1.fail)("You do not have permission to change to a team with no cores.");
+                if (!target.player.dead() && !((_b = target.unit()) === null || _b === void 0 ? void 0 : _b.spawnedByCore))
+                    target.forceRespawn();
+            }
             target.setTeam(team);
-            if (target === sender)
-                outputSuccess(f(templateObject_13 || (templateObject_13 = __makeTemplateObject(["Changed your team to ", "."], ["Changed your team to ", "."])), team));
-            else
-                outputSuccess(f(templateObject_14 || (templateObject_14 = __makeTemplateObject(["Changed team of player ", " to ", "."], ["Changed team of player ", " to ", "."])), target, team));
+            outputSuccess(f(templateObject_14 || (templateObject_14 = __makeTemplateObject(["Changed team of player ", " to ", "."], ["Changed team of player ", " to ", "."])), target, team));
         },
     }, rank: {
         args: ['player:player'],
