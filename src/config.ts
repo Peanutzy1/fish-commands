@@ -183,7 +183,7 @@ export class FishServer {
 	);
 	static pvp = new FishServer(
 		"pvp",
-		"162.248.100.133", "6567",
+		"162.248.102.101", "6567",
 		["pv", "p", "v", "playerversusplayer"]
 	);
 	static sandbox = new FishServer(
@@ -193,7 +193,7 @@ export class FishServer {
 	);
 	static hexed = new FishServer(
 		"hexed",
-		"162.248.102.101", "6567",
+		"162.248.100.133", "6567",
 		["h", "hx", "hxd", "hpvp", "hxpvp", "hexpvp"]
 	);
 	static byName(input:string):FishServer | null {

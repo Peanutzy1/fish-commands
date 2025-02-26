@@ -193,9 +193,9 @@ var FishServer = /** @class */ (function () {
     FishServer.all = [];
     FishServer.attack = new FishServer("attack", "162.248.100.98", "6567", ["attac", "atack", "atak", "atck", "atk", "a"]);
     FishServer.survival = new FishServer("survival", "162.248.101.95", "6567", ["surviv", "surv", "sur", "su", "s", "sl"]);
-    FishServer.pvp = new FishServer("pvp", "162.248.100.133", "6567", ["pv", "p", "v", "playerversusplayer"]);
+    FishServer.pvp = new FishServer("pvp", "162.248.102.101", "6567", ["pv", "p", "v", "playerversusplayer"]);
     FishServer.sandbox = new FishServer("sandbox", "162.248.101.53", "6567", ["sand", "box", "sa", "sb"]);
-    FishServer.hexed = new FishServer("hexed", "162.248.102.101", "6567", ["h", "hx", "hxd", "hpvp", "hxpvp", "hexpvp"]);
+    FishServer.hexed = new FishServer("hexed", "162.248.100.133", "6567", ["h", "hx", "hxd", "hpvp", "hxpvp", "hexpvp"]);
     return FishServer;
 }());
 exports.FishServer = FishServer;
