@@ -53,7 +53,7 @@ function initializeTimers() {
     }, 10, 300);
     //Memory corruption prank
     Timer.schedule(function () {
-        if (Math.random() < 0.2 && !config_1.Gamemode.hexed()) {
+        if (Math.random() < 0.2 && !config_1.FishGamemode.hexed()) {
             //Timer triggers every 17 hours, and the random chance is 20%, so the average interval between pranks is 85 hours
             (0, utils_1.definitelyRealMemoryCorruption)();
         }

@@ -33,6 +33,7 @@ const NetServer: {
 const Vars: {
 	logic: {
 		skipWave():void;
+		play():void;
 	}
 	netServer: {
 		admins: Administration;
@@ -43,22 +44,16 @@ const Vars: {
 		votesRequired():number;
 	}
 	net: {
+		closeServer():void;
 		send(object:any, reliable:boolean):void;
+
 	}
 	mods: {
 		getScripts(): Scripts;
 	}
 	maps: Maps;
 	state: {
-		rules: {
-			mode():Gamemode;
-			defaultTeam:Team;
-			waveTeam:Team;
-			waves:boolean;
-			waitEnemies:boolean;
-			env:number;
-			fog:boolean;
-		}
+		rules:Rules;
 		set(state:State):void;
 		gameOver:boolean;
 		wave:number;
@@ -98,6 +93,8 @@ class World {
 	tiles: {
 		eachTile(func:(tile:Tile) => unknown):void;
 	}
+	loadMap(map:MMap):void
+	loadMap(map:MMap, rules:Rules):void
 }
 class Gamemode {
 	static survival:Gamemode;
@@ -554,6 +551,16 @@ class Maps {
 	reload():void;
 	saveMap(baseTags:MapTags):MMap;
 }
+class Rules {
+	mode():Gamemode;
+	defaultTeam:Team;
+	waveTeam:Team;
+	waves:boolean;
+	waitEnemies:boolean;
+	env:number;
+	fog:boolean;
+}
+
 class MMap {
 	readonly custom:boolean;
 	readonly file:Fi;
@@ -566,6 +573,7 @@ class MMap {
 	plainName():string;
 	plainAuthor():string;
 	plainDescription():string;
+	applyRules(mode:Gamemode):Rules;
 }
 
 class Sort {
@@ -576,6 +584,7 @@ class Sort {
 class ServerControl {
 	static instance: ServerControl;
 	handler: CommandHandler;
+	cancelPlayTask():void;
 }
 
 class VoteSession {

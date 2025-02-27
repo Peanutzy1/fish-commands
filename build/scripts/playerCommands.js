@@ -374,7 +374,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             perm: commands_1.Perm.play,
             handler: function (_a) {
                 var sender = _a.sender, _b = _a.args.target, target = _b === void 0 ? sender : _b, outputSuccess = _a.outputSuccess, f = _a.f;
-                if (!config_1.Gamemode.pvp() && !sender.hasPerm("mod"))
+                if (!config_1.FishGamemode.pvp() && !sender.hasPerm("mod"))
                     (0, commands_1.fail)("You do not have permission to spectate on a non-pvp server.");
                 if (target !== sender && target.hasPerm("blockTrolling"))
                     (0, commands_1.fail)("Target player is insufficiently trollable.");
@@ -631,7 +631,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         handler: function (_a) {
             var _b;
             var sender = _a.sender, _c = _a.args, team = _c.team, reason = _c.reason, outputSuccess = _a.outputSuccess, f = _a.f;
-            if (config_1.Gamemode.sandbox() && globals_1.fishState.peacefulMode && !sender.hasPerm("admin"))
+            if (config_1.FishGamemode.sandbox() && globals_1.fishState.peacefulMode && !sender.hasPerm("admin"))
                 (0, commands_1.fail)("You do not have permission to change teams because peaceful mode is on.");
             if (!sender.hasPerm("changeTeamExternal")) {
                 if (team.data().cores.size <= 0)
@@ -654,7 +654,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             var sender = _a.sender, _c = _a.args, team = _c.team, target = _c.target, outputSuccess = _a.outputSuccess, f = _a.f;
             if (!sender.canModerate(target, true, "mod", true))
                 (0, commands_1.fail)(f(templateObject_13 || (templateObject_13 = __makeTemplateObject(["You do not have permission to change the team of ", ""], ["You do not have permission to change the team of ", ""])), target));
-            if (config_1.Gamemode.sandbox() && globals_1.fishState.peacefulMode && !sender.hasPerm("admin"))
+            if (config_1.FishGamemode.sandbox() && globals_1.fishState.peacefulMode && !sender.hasPerm("admin"))
                 (0, commands_1.fail)("You do not have permission to change teams because peaceful mode is on.");
             if (!sender.hasPerm("changeTeamExternal")) {
                 if (team.data().cores.size <= 0)
@@ -762,7 +762,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         description: 'Rock the vote to change map.',
         perm: commands_1.Perm.play,
         init: function () { return ({
-            manager: new votes_1.VoteManager(1.5 * 60000, config_1.Gamemode.hexed() ? 1 : undefined) //Require unanimity in Hexed, as it is often 1 v everyone
+            manager: new votes_1.VoteManager(1.5 * 60000, config_1.FishGamemode.hexed() ? 1 : undefined) //Require unanimity in Hexed, as it is often 1 v everyone
                 .on("success", function () { return (0, utils_1.neutralGameover)(); })
                 .on("vote passed", function () { return Call.sendMessage("RTV: [green]Vote has passed, changing map."); })
                 .on("vote failed", function () { return Call.sendMessage("RTV: [red]Vote failed."); })
@@ -909,7 +909,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
     }), surrender: (0, commands_1.command)(function () {
         var prefix = "[orange]Surrender[white]: ";
         var managers = Team.all.map(function (team) {
-            return new votes_1.VoteManager(1.5 * 60000, config_1.Gamemode.hexed() ? 1 : 3 / 4, function (p) { return p.team() == team && !p.afk(); })
+            return new votes_1.VoteManager(1.5 * 60000, config_1.FishGamemode.hexed() ? 1 : 3 / 4, function (p) { return p.team() == team && !p.afk(); })
                 .on("success", function () { return team.cores().copy().each(function (c) { return c.kill(); }); })
                 .on("vote passed", function () { return Call.sendMessage(prefix + "Team ".concat(team.coloredName(), " has voted to forfeit this match.")); })
                 .on("vote failed", function (t) { return t.messageEligibleVoters(prefix + "Team ".concat(team.coloredName(), " has chosen not to forfeit this match.")); })

@@ -147,7 +147,7 @@ export const Mode = {
 //#region servers
 export const backendIP = '45.79.202.111:5082';
 /** Stores the repository url for the maps for each gamemode. */
-export const mapRepoURLs:Record<GamemodeName, string> = {
+export const mapRepoURLs:Record<FishGamemodeName, string> = {
 	attack: "https://api.github.com/repos/Fish-Community/fish-maps/contents/attack",
 	survival: "https://api.github.com/repos/Fish-Community/fish-maps/contents/survival",
 	pvp: "https://api.github.com/repos/Fish-Community/fish-maps/contents/pvp",
@@ -202,17 +202,17 @@ export class FishServer {
 	}
 };
 
-export type GamemodeName = keyof typeof Gamemode extends infer K extends keyof typeof Gamemode ? K extends unknown ?
-	(typeof Gamemode)[K] extends (() => boolean) ? K : never
-: never : never;
-/** Stores functions that return whether the specified gamemode is the current gamemode. */
-export const Gamemode = {
-	attack: () => Gamemode.name() == "attack",
-	survival: () => Gamemode.name() == "survival",
-	pvp: () => Gamemode.name() == "pvp" || Gamemode.name() == "hexed",
-	sandbox: () => Gamemode.name() == "sandbox",
-	hexed: () => Gamemode.name() == "hexed",
-	hardcore: () => Gamemode.name() == "hardcore",
+export type FishGamemodeName = {
+	[K in keyof typeof FishGamemode]: (typeof FishGamemode)[K] extends (() => boolean) ? K : never;
+}[keyof typeof FishGamemode];
+/** Stores functions that return whether the specified gamemode is the current fish gamemode. */
+export const FishGamemode = {
+	attack: () => FishGamemode.name() == "attack",
+	survival: () => FishGamemode.name() == "survival",
+	pvp: () => FishGamemode.name() == "pvp" || FishGamemode.name() == "hexed",
+	sandbox: () => FishGamemode.name() == "sandbox",
+	hexed: () => FishGamemode.name() == "hexed",
+	hardcore: () => FishGamemode.name() == "hardcore",
 	name: () => Core.settings.get("mode", Vars.state.rules.mode().name()) as "attack" | "survival" | "pvp" | "sandbox" | "hexed" | "hardcore",
 };
 //#endregion

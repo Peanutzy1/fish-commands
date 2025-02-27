@@ -1054,9 +1054,9 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.onBotWhack = function () {
         this.antiBotModePersist = true;
         if (Date.now() - this.lastBotWhacked > 3600000) //1 hour since last bot whack
-            api.sendModerationMessage("!!! <@&1040193678817378305> Possible ongoing bot attack in **".concat(config_1.Gamemode.name(), "**"));
+            api.sendModerationMessage("!!! <@&1040193678817378305> Possible ongoing bot attack in **".concat(config_1.FishGamemode.name(), "**"));
         else if (Date.now() - this.lastBotWhacked > 600000) //10 minutes
-            api.sendModerationMessage("!!! Possible ongoing bot attack in **".concat(config_1.Gamemode.name(), "**"));
+            api.sendModerationMessage("!!! Possible ongoing bot attack in **".concat(config_1.FishGamemode.name(), "**"));
         this.lastBotWhacked = Date.now();
         this.whackFlaggedPlayers();
     };
@@ -1429,7 +1429,7 @@ var FishPlayer = /** @class */ (function () {
     //#region heuristics
     FishPlayer.prototype.activateHeuristics = function () {
         var _this = this;
-        if (config_1.Gamemode.hexed() || config_1.Gamemode.sandbox())
+        if (config_1.FishGamemode.hexed() || config_1.FishGamemode.sandbox())
             return;
         //Blocks broken check
         if (this.joinsLessThan(5)) {

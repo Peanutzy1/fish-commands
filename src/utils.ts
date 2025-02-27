@@ -5,7 +5,7 @@ This file contains many utility functions.
 
 import * as api from './api';
 import { fail } from './commands';
-import { Gamemode, GamemodeName, adminNames, bannedWords, text, multiCharSubstitutions, substitutions } from "./config";
+import { FishGamemode, FishGamemodeName, adminNames, bannedWords, text, multiCharSubstitutions, substitutions } from "./config";
 import { crash, escapeStringColorsServer, escapeTextDiscord, parseError, StringIO } from './funcs';
 import { maxTime } from "./globals";
 import { fishState, ipPattern, ipPortPattern, ipRangeCIDRPattern, ipRangeWildcardPattern, tileHistory, uuidPattern } from './globals';
@@ -33,7 +33,7 @@ export function formatTime(time:number){
 }
 
 //TODO move this data to be right next to Mode
-export function formatModeName(name:GamemodeName){
+export function formatModeName(name:FishGamemodeName){
 	return {
 		"attack": "Attack",
 		"survival": "Survival",
@@ -216,14 +216,14 @@ export function logAction(action:string, by?:FishPlayer | string, to?:FishPlayer
 	if(by === undefined){ //overload 1
 		api.sendModerationMessage(
 `${action}
-**Server:** ${Gamemode.name()}`
+**Server:** ${FishGamemode.name()}`
 		);
 		return;
 	}
 	if(to === undefined){ //overload 2
 		api.sendModerationMessage(
 `${escapeTextDiscord(Strings.stripColors((by as FishPlayer).name))} ${action}
-**Server:** ${Gamemode.name()}`
+**Server:** ${FishGamemode.name()}`
 		);
 		return;
 	}
@@ -251,7 +251,7 @@ export function logAction(action:string, by?:FishPlayer | string, to?:FishPlayer
 		}
 		api.sendModerationMessage(
 `${actor} ${action} ${name} ${duration ? `for ${formatTime(duration)} ` : ""}${reason ? `with reason ${escapeTextDiscord(reason)}` : ""}
-**Server:** ${Gamemode.name()}
+**Server:** ${FishGamemode.name()}
 **uuid:** \`${uuid}\`
 **ip**: \`${ip}\``
 		);
@@ -389,13 +389,13 @@ export function definitelyRealMemoryCorruption(){
 }
 
 export function getEnemyTeam():Team {
-	if(Gamemode.pvp()) return Team.derelict;
+	if(FishGamemode.pvp()) return Team.derelict;
 	else return Vars.state.rules.waveTeam;
 }
 
 export function neutralGameover(){
 	FishPlayer.ignoreGameover(() => {
-		if(Gamemode.hexed()) serverRestartLoop(15);
+		if(FishGamemode.hexed()) serverRestartLoop(15);
 		else Events.fire(new EventType.GameOverEvent(getEnemyTeam()));
 	});
 }
@@ -415,7 +415,7 @@ export function skipWaves(wavesToSkip:number, runIntermediateWaves:boolean){
 export function logHTrip(player:FishPlayer, name:string, message?:string){
 	Log.warn(`&yPlayer &b"${player.cleanedName}"&y (&b${player.uuid}&y/&b${player.ip()}&y) tripped &c${name}&y` + (message ? `: ${message}` : ""));
 	FishPlayer.messageStaff(`[yellow]Player [blue]"${player.cleanedName}"[] tripped [cyan]${name}[]` + (message ? `: ${message}` : ""));
-	api.sendModerationMessage(`Player \`${player.cleanedName}\` (\`${player.uuid}\`/\`${player.ip()}\`) tripped **${name}**${message ? `: ${message}` : ""}\n**Server:** ${Gamemode.name()}`);
+	api.sendModerationMessage(`Player \`${player.cleanedName}\` (\`${player.uuid}\`/\`${player.ip()}\`) tripped **${name}**${message ? `: ${message}` : ""}\n**Server:** ${FishGamemode.name()}`);
 }
 
 export function setType<T>(input:unknown):asserts input is T {}
@@ -548,7 +548,7 @@ export const addToTileHistory = logErrors("Error while saving a tilelog entry", 
 		action = "killed";
 		type = e.unit.type.name;
 	} else if(e instanceof EventType.BlockDestroyEvent){
-		if(Gamemode.attack() && e.tile.build?.team != Vars.state.rules.defaultTeam) return; //Don't log destruction of enemy blocks
+		if(FishGamemode.attack() && e.tile.build?.team != Vars.state.rules.defaultTeam) return; //Don't log destruction of enemy blocks
 		tile = e.tile;
 		uuid = "[[something]";
 		action = "killed";

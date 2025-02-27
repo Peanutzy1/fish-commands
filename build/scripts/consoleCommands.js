@@ -511,7 +511,7 @@ exports.commands = (0, commands_1.consoleCommandList)({
         handler: function (_a) {
             var _b;
             var args = _a.args;
-            if (config_2.Gamemode.pvp()) {
+            if (config_2.FishGamemode.pvp()) {
                 if (Groups.player.isEmpty()) {
                     Log.info("Restarting immediately as no players are online.");
                     (0, utils_1.serverRestartLoop)(0);

@@ -769,7 +769,7 @@ exports.commands = (0, commands_1.commandList)({
             var team = (_b = args.team) !== null && _b !== void 0 ? _b : sender.team();
             var unit = args.type.spawn(team, x, y);
             data.push(unit);
-            if (!config_1.Gamemode.sandbox())
+            if (!config_1.FishGamemode.sandbox())
                 (0, utils_1.logAction)("spawned unit ".concat(args.type.name, " at ").concat(Math.round(x / 8), ", ").concat(Math.round(y / 8)), sender);
             outputSuccess(f(templateObject_45 || (templateObject_45 = __makeTemplateObject(["Spawned unit ", " at (", ", ", ")"], ["Spawned unit ", " at (", ", ", ")"])), args.type, Math.round(x / 8), Math.round(y / 8)));
         }
@@ -794,7 +794,7 @@ exports.commands = (0, commands_1.commandList)({
                 action: "setblocked",
                 type: args.block.localizedName
             });
-            if (!config_1.Gamemode.sandbox())
+            if (!config_1.FishGamemode.sandbox())
                 (0, utils_1.logAction)("set block to ".concat(args.block.localizedName, " at ").concat(args.x, ",").concat(args.y), sender);
             outputSuccess(f(templateObject_48 || (templateObject_48 = __makeTemplateObject(["Set block at ", ", ", " to ", ""], ["Set block at ", ", ", " to ", ""])), args.x, args.y, args.block));
         }
@@ -821,7 +821,7 @@ exports.commands = (0, commands_1.commandList)({
                 action: "setblocked",
                 type: args.block.localizedName
             });
-            if (!config_1.Gamemode.sandbox())
+            if (!config_1.FishGamemode.sandbox())
                 (0, utils_1.logAction)("set block to ".concat(args.block.localizedName, " at ").concat(x, ",").concat(y), sender);
             outputSuccess(f(templateObject_51 || (templateObject_51 = __makeTemplateObject(["Set block at ", ", ", " to ", ""], ["Set block at ", ", ", " to ", ""])), x, y, args.block));
         },
@@ -860,7 +860,7 @@ exports.commands = (0, commands_1.commandList)({
                     numKilled++;
                 }
             });
-            if (!config_1.Gamemode.sandbox())
+            if (!config_1.FishGamemode.sandbox())
                 (0, utils_1.logAction)("exterminated ".concat(numKilled, " units"), sender);
             outputSuccess(f(templateObject_53 || (templateObject_53 = __makeTemplateObject(["Exterminated ", " units."], ["Exterminated ", " units."])), numKilled));
         }
@@ -875,7 +875,7 @@ exports.commands = (0, commands_1.commandList)({
             //Additional validation couldn't hurt...
             var playerInfo_AdminUsid = sender.info().adminUsid;
             if (!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player.usid() || sender.usid != sender.player.usid()) {
-                api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat(config_1.Gamemode.name(), " Player: ").concat((0, funcs_3.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
+                api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat(config_1.FishGamemode.name(), " Player: ").concat((0, funcs_3.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
                 (0, commands_1.fail)("Authentication failure");
             }
             if (javascript == "Timer.instance().clear()")
@@ -917,7 +917,7 @@ exports.commands = (0, commands_1.commandList)({
             //Additional validation couldn't hurt...
             var playerInfo_AdminUsid = sender.info().adminUsid;
             if (!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player.usid() || sender.usid != sender.player.usid()) {
-                api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat(config_1.Gamemode.name(), " Player: ").concat((0, funcs_3.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
+                api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat(config_1.FishGamemode.name(), " Player: ").concat((0, funcs_3.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
                 (0, commands_1.fail)("Authentication failure");
             }
             fjsContext.runJS(javascript, output, outputFail, sender);
@@ -989,7 +989,7 @@ exports.commands = (0, commands_1.commandList)({
                 var emanate = UnitTypes.emanate.spawn(sender.team(), sender.player.x, sender.player.y);
                 sender.player.unit(emanate);
                 unitMapping[sender.uuid] = emanate;
-                if (!config_1.Gamemode.sandbox())
+                if (!config_1.FishGamemode.sandbox())
                     (0, utils_1.logAction)("spawned an emanate", sender);
                 outputSuccess("Spawned an emanate.");
             }
@@ -1192,7 +1192,7 @@ exports.commands = (0, commands_1.commandList)({
                 finally { if (e_2) throw e_2.error; }
             }
             outputSuccess("Applied effects.");
-            if (!config_1.Gamemode.sandbox())
+            if (!config_1.FishGamemode.sandbox())
                 (0, utils_1.logAction)("applied ".concat(args.mode, " effects"), sender, target);
         }
     },
@@ -1206,7 +1206,7 @@ exports.commands = (0, commands_1.commandList)({
             var core = (_b = team.data().cores.firstOpt()) !== null && _b !== void 0 ? _b : (0, commands_1.fail)(f(templateObject_67 || (templateObject_67 = __makeTemplateObject(["Team ", " has no cores."], ["Team ", " has no cores."])), team));
             core.items.add(item, amount);
             outputSuccess(f(templateObject_68 || (templateObject_68 = __makeTemplateObject(["Gave ", " ", " to ", "."], ["Gave ", " ", " to ", "."])), amount, item, team));
-            if (!config_1.Gamemode.sandbox())
+            if (!config_1.FishGamemode.sandbox())
                 (0, utils_1.logAction)("gave items to ".concat(team.name), sender);
         }
     }

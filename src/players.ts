@@ -6,7 +6,7 @@ This file contains the FishPlayer class, and many player-related functions.
 import * as api from "./api";
 import { Perm, PermType } from "./commands";
 import * as globals from "./globals";
-import { FColor, Gamemode, heuristics, Mode, prefixes, rules, stopAntiEvadeTime, text, tips } from "./config";
+import { FColor, FishGamemode, heuristics, Mode, prefixes, rules, stopAntiEvadeTime, text, tips } from "./config";
 import { uuidPattern } from "./globals";
 import { Menu } from "./menus";
 import { Rank, RankName, RoleFlag, RoleFlagName } from "./ranks";
@@ -961,9 +961,9 @@ We apologize for the inconvenience.`
 	static onBotWhack(){
 		this.antiBotModePersist = true;
 		if(Date.now() - this.lastBotWhacked > 3600000) //1 hour since last bot whack
-			api.sendModerationMessage(`!!! <@&1040193678817378305> Possible ongoing bot attack in **${Gamemode.name()}**`);
+			api.sendModerationMessage(`!!! <@&1040193678817378305> Possible ongoing bot attack in **${FishGamemode.name()}**`);
 		else if(Date.now() - this.lastBotWhacked > 600000) //10 minutes
-			api.sendModerationMessage(`!!! Possible ongoing bot attack in **${Gamemode.name()}**`);
+			api.sendModerationMessage(`!!! Possible ongoing bot attack in **${FishGamemode.name()}**`);
 		this.lastBotWhacked = Date.now();
 		this.whackFlaggedPlayers();
 	}
@@ -1313,7 +1313,7 @@ We apologize for the inconvenience.`
 
 	//#region heuristics
 	activateHeuristics(){
-		if(Gamemode.hexed() || Gamemode.sandbox()) return;
+		if(FishGamemode.hexed() || FishGamemode.sandbox()) return;
 		//Blocks broken check
 		if(this.joinsLessThan(5)){
 			let tripped = false;

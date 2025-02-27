@@ -3,7 +3,7 @@ Copyright © BalaM314, 2025. All Rights Reserved.
 This file contains a wrapper over the API calls to the backend server.
 */
 
-import { Gamemode, backendIP, Mode } from './config';
+import { FishGamemode, backendIP, Mode } from './config';
 import { maxTime } from "./globals";
 import { FishPlayer } from './players';
 
@@ -101,7 +101,7 @@ export function sendModerationMessage(message: string) {
 /** Get staff messages from discord. */
 export function getStaffMessages(callback: (messages: string) => unknown) {
 	if(Mode.localDebug) return;
-	const req = Http.post(`http://${backendIP}/api/getStaffMessages`, JSON.stringify({ server: Gamemode.name() }))
+	const req = Http.post(`http://${backendIP}/api/getStaffMessages`, JSON.stringify({ server: FishGamemode.name() }))
 		.header('Content-Type', 'application/json').header('Accept', '*/*');
 	req.timeout = 10000;
 	req.error(() => Log.err(`[API] Network error when trying to call api.getStaffMessages()`));
@@ -118,7 +118,7 @@ export function sendStaffMessage(message:string, playerName:string, callback?: (
 	const req = Http.post(
 		`http://${backendIP}/api/sendStaffMessage`,
 		// need to send both name variants so one can be sent to the other servers with color and discord can use the clean one
-		JSON.stringify({ message, playerName, cleanedName: Strings.stripColors(playerName), server: Gamemode.name() })
+		JSON.stringify({ message, playerName, cleanedName: Strings.stripColors(playerName), server: FishGamemode.name() })
 	).header('Content-Type', 'application/json').header('Accept', '*/*');
 	req.timeout = 10000;
 	req.error(() => {

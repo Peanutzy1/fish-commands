@@ -33,7 +33,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.rules = exports.tips = exports.FColor = exports.text = exports.prefixes = exports.Gamemode = exports.FishServer = exports.mapRepoURLs = exports.backendIP = exports.Mode = exports.stopAntiEvadeTime = exports.heuristics = exports.adminNames = exports.multiCharSubstitutions = exports.substitutions = exports.bannedWords = void 0;
+exports.rules = exports.tips = exports.FColor = exports.text = exports.prefixes = exports.FishGamemode = exports.FishServer = exports.mapRepoURLs = exports.backendIP = exports.Mode = exports.stopAntiEvadeTime = exports.heuristics = exports.adminNames = exports.multiCharSubstitutions = exports.substitutions = exports.bannedWords = void 0;
 var globals_1 = require("./globals");
 var ranks_1 = require("./ranks");
 var funcs_1 = require("./funcs");
@@ -200,14 +200,14 @@ var FishServer = /** @class */ (function () {
 }());
 exports.FishServer = FishServer;
 ;
-/** Stores functions that return whether the specified gamemode is the current gamemode. */
-exports.Gamemode = {
-    attack: function () { return exports.Gamemode.name() == "attack"; },
-    survival: function () { return exports.Gamemode.name() == "survival"; },
-    pvp: function () { return exports.Gamemode.name() == "pvp" || exports.Gamemode.name() == "hexed"; },
-    sandbox: function () { return exports.Gamemode.name() == "sandbox"; },
-    hexed: function () { return exports.Gamemode.name() == "hexed"; },
-    hardcore: function () { return exports.Gamemode.name() == "hardcore"; },
+/** Stores functions that return whether the specified gamemode is the current fish gamemode. */
+exports.FishGamemode = {
+    attack: function () { return exports.FishGamemode.name() == "attack"; },
+    survival: function () { return exports.FishGamemode.name() == "survival"; },
+    pvp: function () { return exports.FishGamemode.name() == "pvp" || exports.FishGamemode.name() == "hexed"; },
+    sandbox: function () { return exports.FishGamemode.name() == "sandbox"; },
+    hexed: function () { return exports.FishGamemode.name() == "hexed"; },
+    hardcore: function () { return exports.FishGamemode.name() == "hardcore"; },
     name: function () { return Core.settings.get("mode", Vars.state.rules.mode().name()); },
 };
 //#endregion

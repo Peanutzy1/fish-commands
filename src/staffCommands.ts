@@ -5,7 +5,7 @@ This file contains the in-game chat commands that can be run by trusted staff.
 
 import * as api from "./api";
 import { Perm, Req, command, commandList, fail } from "./commands";
-import { Gamemode, Mode, rules, stopAntiEvadeTime } from "./config";
+import { FishGamemode, Mode, rules, stopAntiEvadeTime } from "./config";
 import { maxTime } from "./globals";
 import { updateMaps } from "./files";
 import * as fjsContext from "./fjsContext";
@@ -618,7 +618,7 @@ export const commands = commandList({
 			const team = args.team ?? sender.team();
 			const unit = args.type.spawn(team, x, y);
 			data.push(unit);
-			if(!Gamemode.sandbox()) logAction(`spawned unit ${args.type.name} at ${Math.round(x / 8)}, ${Math.round(y / 8)}`, sender);
+			if(!FishGamemode.sandbox()) logAction(`spawned unit ${args.type.name} at ${Math.round(x / 8)}, ${Math.round(y / 8)}`, sender);
 			outputSuccess(f`Spawned unit ${args.type} at (${Math.round(x / 8)}, ${Math.round(y / 8)})`);
 		}
 	},
@@ -639,7 +639,7 @@ export const commands = commandList({
 				action: `setblocked`,
 				type: args.block.localizedName
 			});
-			if(!Gamemode.sandbox()) logAction(`set block to ${args.block.localizedName} at ${args.x},${args.y}`, sender);
+			if(!FishGamemode.sandbox()) logAction(`set block to ${args.block.localizedName} at ${args.x},${args.y}`, sender);
 			outputSuccess(f`Set block at ${args.x}, ${args.y} to ${args.block}`);
 		}
 	},
@@ -661,7 +661,7 @@ export const commands = commandList({
 				action: `setblocked`,
 				type: args.block.localizedName
 			});
-			if(!Gamemode.sandbox()) logAction(`set block to ${args.block.localizedName} at ${x},${y}`, sender);
+			if(!FishGamemode.sandbox()) logAction(`set block to ${args.block.localizedName} at ${x},${y}`, sender);
 			outputSuccess(f`Set block at ${x}, ${y} to ${args.block}`);
 		},
 		handler({args, outputSuccess, handleTaps, currentTapMode, f}){
@@ -694,7 +694,7 @@ export const commands = commandList({
 					numKilled ++;
 				}
 			});
-			if(!Gamemode.sandbox()) logAction(`exterminated ${numKilled} units`, sender);
+			if(!FishGamemode.sandbox()) logAction(`exterminated ${numKilled} units`, sender);
 			outputSuccess(f`Exterminated ${numKilled} units.`);
 		}
 	},
@@ -710,7 +710,7 @@ export const commands = commandList({
 			if(!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player!.usid() || sender.usid != sender.player!.usid()){
 				api.sendModerationMessage(
 `# !!!!! /js authentication failed !!!!!
-Server: ${Gamemode.name()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${sender.uuid}\`
+Server: ${FishGamemode.name()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${sender.uuid}\`
 <@!709904412033810533>`
 				);
 				fail(`Authentication failure`);
@@ -751,7 +751,7 @@ Server: ${Gamemode.name()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${
 			if(!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player!.usid() || sender.usid != sender.player!.usid()){
 				api.sendModerationMessage(
 `# !!!!! /js authentication failed !!!!!
-Server: ${Gamemode.name()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${sender.uuid}\`
+Server: ${FishGamemode.name()} Player: ${escapeTextDiscord(sender.cleanedName)}/\`${sender.uuid}\`
 <@!709904412033810533>`
 				);
 				fail(`Authentication failure`);
@@ -811,7 +811,7 @@ ${getAntiBotInfo("client")}`
 				const emanate = UnitTypes.emanate.spawn(sender.team(), sender.player!.x, sender.player!.y);
 				sender.player!.unit(emanate);
 				unitMapping[sender.uuid] = emanate;
-				if(!Gamemode.sandbox()) logAction("spawned an emanate", sender);
+				if(!FishGamemode.sandbox()) logAction("spawned an emanate", sender);
 				outputSuccess("Spawned an emanate.");
 			}
 		};
@@ -987,7 +987,7 @@ IPs used: ${info.ips.map(i => `[blue]${i}[]`).toString(", ")}`
 				unit.apply(effect, ticks);
 			}
 			outputSuccess(`Applied effects.`);
-			if(!Gamemode.sandbox()) logAction(`applied ${args.mode} effects`, sender, target);
+			if(!FishGamemode.sandbox()) logAction(`applied ${args.mode} effects`, sender, target);
 		}
 	},
 	items: {
@@ -998,7 +998,7 @@ IPs used: ${info.ips.map(i => `[blue]${i}[]`).toString(", ")}`
 			const core = team.data().cores.firstOpt() ?? fail(f`Team ${team} has no cores.`);
 			core.items.add(item, amount);
 			outputSuccess(f`Gave ${amount} ${item} to ${team}.`);
-			if(!Gamemode.sandbox()) logAction(`gave items to ${team.name}`, sender);
+			if(!FishGamemode.sandbox()) logAction(`gave items to ${team.name}`, sender);
 		}
 	}
 });

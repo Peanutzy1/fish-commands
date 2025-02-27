@@ -4,7 +4,7 @@ This file contains the commands system.
 */
 //Behold, the power of typescript!
 
-import { FColor, Gamemode, GamemodeName, text } from "./config";
+import { FColor, FishGamemode, FishGamemodeName, text } from "./config";
 import { ipPattern, uuidPattern } from "./globals";
 import { Menu } from "./menus";
 import { FishPlayer } from "./players";
@@ -78,7 +78,7 @@ export function command(input:unknown){
 export class Perm {
 	static perms:Partial<Record<string, Perm>> = {};
 
-	static none = new Perm("all", fishP => true, "[sky]");
+	static none = new Perm("all", _fishP => true, "[sky]");
 	static trusted = Perm.fromRank(Rank.trusted);
 	static mod = Perm.fromRank(Rank.mod);
 	static admin = Perm.fromRank(Rank.admin);
@@ -133,9 +133,9 @@ export class Perm {
 	}
 
 	/** Creates a new Perm with overrides for specified gamemodes. */
-	exceptModes(modes:Partial<Record<GamemodeName, Perm>>, unauthorizedMessage:string = this.unauthorizedMessage){
+	exceptModes(modes:Partial<Record<FishGamemodeName, Perm>>, unauthorizedMessage:string = this.unauthorizedMessage){
 		return new Perm(this.name, (fishP) => {
-			const effectivePerm = modes[Gamemode.name()] ?? this;
+			const effectivePerm = modes[FishGamemode.name()] ?? this;
 			return effectivePerm.check(fishP);
 		}, this.color, unauthorizedMessage);
 	}
@@ -150,11 +150,11 @@ export class Perm {
 export type PermType = SelectEnumClassKeys<typeof Perm>;
 
 export const Req = {
-	mode: (mode:GamemodeName) => () =>
-		Gamemode[mode]()
+	mode: (mode:FishGamemodeName) => () =>
+		FishGamemode[mode]()
 			|| fail(`This command is only available in ${formatModeName(mode)}`),
-	modeNot: (mode:GamemodeName) => () =>
-		!Gamemode[mode]()
+	modeNot: (mode:FishGamemodeName) => () =>
+		!FishGamemode[mode]()
 			|| fail(`This command is disabled in ${formatModeName(mode)}`),
 	moderate: <T extends string>(argName:T, allowSameRank:boolean = false, minimumLevel:PermType = "mod", allowSelfIfUnauthorized = false) =>
 		({args, sender}:{args:Record<T, FishPlayer>, sender:FishPlayer}) =>

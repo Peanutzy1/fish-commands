@@ -5,7 +5,7 @@ Original contributor: @author Jurorno9
 Maintenance: @author BalaM314
 */
 
-import { mapRepoURLs, Gamemode } from "./config";
+import { mapRepoURLs, FishGamemode } from "./config";
 import { Promise } from "./promise";
 import { getHash } from "./utils";
 import { crash } from './funcs';
@@ -28,7 +28,7 @@ type GitHubFile = {
 //if we switch to a self-hosted setup, just make it respond with the githubfile object for a drop-in replacement
 function fetchGithubContents(){
 	return new Promise<GitHubFile[], string>((resolve, reject) => {
-		const url = mapRepoURLs[Gamemode.name()];
+		const url = mapRepoURLs[FishGamemode.name()];
 		if(!url) return reject(`No recognized gamemode detected. please enter "host <map> <gamemode>" and try again`);
 		Http.get(url, (res) => {
 			try {

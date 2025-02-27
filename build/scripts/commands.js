@@ -164,7 +164,7 @@ var Perm = /** @class */ (function () {
         if (unauthorizedMessage === void 0) { unauthorizedMessage = this.unauthorizedMessage; }
         return new Perm(this.name, function (fishP) {
             var _a;
-            var effectivePerm = (_a = modes[config_1.Gamemode.name()]) !== null && _a !== void 0 ? _a : _this;
+            var effectivePerm = (_a = modes[config_1.FishGamemode.name()]) !== null && _a !== void 0 ? _a : _this;
             return effectivePerm.check(fishP);
         }, this.color, unauthorizedMessage);
     };
@@ -176,7 +176,7 @@ var Perm = /** @class */ (function () {
         return (_a = Perm.perms[name]) !== null && _a !== void 0 ? _a : (0, funcs_4.crash)("Invalid requiredPerm");
     };
     Perm.perms = {};
-    Perm.none = new Perm("all", function (fishP) { return true; }, "[sky]");
+    Perm.none = new Perm("all", function (_fishP) { return true; }, "[sky]");
     Perm.trusted = Perm.fromRank(ranks_1.Rank.trusted);
     Perm.mod = Perm.fromRank(ranks_1.Rank.mod);
     Perm.admin = Perm.fromRank(ranks_1.Rank.admin);
@@ -217,11 +217,11 @@ var Perm = /** @class */ (function () {
 exports.Perm = Perm;
 exports.Req = {
     mode: function (mode) { return function () {
-        return config_1.Gamemode[mode]()
+        return config_1.FishGamemode[mode]()
             || fail("This command is only available in ".concat((0, utils_1.formatModeName)(mode)));
     }; },
     modeNot: function (mode) { return function () {
-        return !config_1.Gamemode[mode]()
+        return !config_1.FishGamemode[mode]()
             || fail("This command is disabled in ".concat((0, utils_1.formatModeName)(mode)));
     }; },
     moderate: function (argName, allowSameRank, minimumLevel, allowSelfIfUnauthorized) {

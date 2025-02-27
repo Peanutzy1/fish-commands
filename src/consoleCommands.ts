@@ -7,7 +7,7 @@ import * as api from "./api";
 import { consoleCommandList, fail } from "./commands";
 import { Mode } from "./config";
 import * as globals from "./globals";
-import { Gamemode, mapRepoURLs } from "./config";
+import { FishGamemode, mapRepoURLs } from "./config";
 import { maxTime } from "./globals";
 import { updateMaps } from "./files";
 import * as fjsContext from "./fjsContext";
@@ -405,7 +405,7 @@ export const commands = consoleCommandList({
 		args: ["time:number?"],
 		description: "Restarts the server.",
 		handler({args}){
-			if(Gamemode.pvp()){
+			if(FishGamemode.pvp()){
 				if(Groups.player.isEmpty()){
 					Log.info(`Restarting immediately as no players are online.`);
 					serverRestartLoop(0);

@@ -5,13 +5,13 @@ This file contains most in-game chat commands that can be run by untrusted playe
 
 import * as api from './api';
 import { command, commandList, fail, formatArg, Perm, Req } from './commands';
-import { FishServer, Gamemode, rules, text } from './config';
+import { FishServer, FishGamemode, rules, text } from './config';
 import { FishEvents, fishPlugin, fishState, ipPortPattern, recentWhispers, tileHistory, uuidPattern } from './globals';
 import { Menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
 import type { FishCommandData } from './types';
-import { formatTime, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover, skipWaves, teleportPlayer } from './utils';
+import { formatTime, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover, serverRestartLoop, skipWaves, teleportPlayer } from './utils';
 import { capitalizeText, escapeTextDiscord } from './funcs';
 import { StringBuilder, StringIO } from './funcs';
 import { to2DArray } from './funcs';
@@ -297,7 +297,7 @@ export const commands = commandList({
 			description: `Toggles spectator mode in PVP games.`,
 			perm: Perm.play,
 			handler({sender, args: {target = sender}, outputSuccess, f}){
-				if(!Gamemode.pvp() && !sender.hasPerm("mod")) fail(`You do not have permission to spectate on a non-pvp server.`);
+				if(!FishGamemode.pvp() && !sender.hasPerm("mod")) fail(`You do not have permission to spectate on a non-pvp server.`);
 				if(target !== sender && target.hasPerm("blockTrolling")) fail(`Target player is insufficiently trollable.`);
 				if(target !== sender && !sender.ranksAtLeast("admin")) fail(`You do not have permission to force other players to spectate.`);
 				if(spectators.has(target)){
@@ -578,7 +578,7 @@ Please stop attacking and [lime]build defenses[] first!`
 		description: 'Changes your team.',
 		perm: Perm.changeTeam,
 		handler({sender, args: {team, reason}, outputSuccess, f}){
-			if(Gamemode.sandbox() && fishState.peacefulMode && !sender.hasPerm("admin"))
+			if(FishGamemode.sandbox() && fishState.peacefulMode && !sender.hasPerm("admin"))
 				fail(`You do not have permission to change teams because peaceful mode is on.`);
 			if(!sender.hasPerm("changeTeamExternal")){
 				if(team.data().cores.size <= 0) fail(`You do not have permission to change to a team with no cores.`);
@@ -598,7 +598,7 @@ Please stop attacking and [lime]build defenses[] first!`
 		perm: Perm.changeTeam,
 		handler({sender, args: {team, target}, outputSuccess, f}){
 			if(!sender.canModerate(target, true, "mod", true)) fail(f`You do not have permission to change the team of ${target}`);
-			if(Gamemode.sandbox() && fishState.peacefulMode && !sender.hasPerm("admin")) fail(`You do not have permission to change teams because peaceful mode is on.`);
+			if(FishGamemode.sandbox() && fishState.peacefulMode && !sender.hasPerm("admin")) fail(`You do not have permission to change teams because peaceful mode is on.`);
 			if(!sender.hasPerm("changeTeamExternal")){
 				if(team.data().cores.size <= 0) fail(`You do not have permission to change to a team with no cores.`);
 				if(!target.player!.dead() && !target.unit()?.spawnedByCore)
@@ -695,7 +695,7 @@ Please stop attacking and [lime]build defenses[] first!`
 		description: 'Rock the vote to change map.',
 		perm: Perm.play,
 		init: () => ({
-			manager: new VoteManager(1.5 * 60_000, Gamemode.hexed() ? 1 : undefined) //Require unanimity in Hexed, as it is often 1 v everyone
+			manager: new VoteManager(1.5 * 60_000, FishGamemode.hexed() ? 1 : undefined) //Require unanimity in Hexed, as it is often 1 v everyone
 				.on("success", () => neutralGameover())
 				.on("vote passed", () => Call.sendMessage(`RTV: [green]Vote has passed, changing map.`))
 				.on("vote failed", () => Call.sendMessage(`RTV: [red]Vote failed.`))
@@ -864,7 +864,7 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 	surrender: command(() => {
 		const prefix = "[orange]Surrender[white]: ";
 		const managers = Team.all.map(team =>
-			new VoteManager<number>(1.5 * 60_000, Gamemode.hexed() ? 1 : 3/4, p => p.team() == team && !p.afk())
+			new VoteManager<number>(1.5 * 60_000, FishGamemode.hexed() ? 1 : 3/4, p => p.team() == team && !p.afk())
 				.on("success", () => team.cores().copy().each(c => c.kill()))
 				.on("vote passed", () => Call.sendMessage(
 					prefix + `Team ${team.coloredName()} has voted to forfeit this match.`
@@ -935,4 +935,35 @@ Win rate: ${target.stats.gamesWon / target.stats.gamesFinished}`
 			});
 		}
 	},
+/*
+	gamemode: {
+		args:["gamemode:string"],
+		perm:Perm.admin,
+		description: " Changes the gamemode of the current server",
+		requirements: [Req.cooldownGlobal(30000)],
+		handler({sender, args}){
+			
+			Object.entries(Gamemode).forEach(([name, mode]) => {
+				if(args.gamemode == name){
+					switchMode(mode)
+				}
+			});
+
+			fail(`Invalid Gamemode ${args.gamemode}.`);
+
+			function switchMode(gamemode:Gamemode){
+				Call.sendMessage(`[Orange]Server Gamemode Set to [white]${args.gamemode}[] by ${sender.name}[Orange].`);
+				let map:MMap = Vars.state.map
+
+				// the following sequence mimics the console commands /stop -> /hos
+				Vars.net.closeServer();
+            	ServerControl.instance.cancelPlayTask();
+				Vars.world.loadMap(map, map.applyRules(gamemode));
+                Vars.state.rules = map.applyRules(gamemode);
+                Vars.logic.play();;
+			}
+
+		}
+	}
+		*/
 });

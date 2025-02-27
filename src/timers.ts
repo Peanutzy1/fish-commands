@@ -5,7 +5,7 @@ This file contains timers that run code at regular intervals.
 
 import { getStaffMessages } from './api';
 import * as config from "./config";
-import { Gamemode } from "./config";
+import { FishGamemode } from "./config";
 import { updateMaps } from './files';
 import { ipJoins } from "./globals";
 import { FishPlayer } from "./players";
@@ -31,7 +31,7 @@ export function initializeTimers(){
 	}, 10, 300);
 	//Memory corruption prank
 	Timer.schedule(() => {
-		if(Math.random() < 0.2 && !Gamemode.hexed()){
+		if(Math.random() < 0.2 && !FishGamemode.hexed()){
 			//Timer triggers every 17 hours, and the random chance is 20%, so the average interval between pranks is 85 hours
 			definitelyRealMemoryCorruption();
 		}

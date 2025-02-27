@@ -14,7 +14,7 @@ var funcs_1 = require("./funcs");
 //if we switch to a self-hosted setup, just make it respond with the githubfile object for a drop-in replacement
 function fetchGithubContents() {
     return new promise_1.Promise(function (resolve, reject) {
-        var url = config_1.mapRepoURLs[config_1.Gamemode.name()];
+        var url = config_1.mapRepoURLs[config_1.FishGamemode.name()];
         if (!url)
             return reject("No recognized gamemode detected. please enter \"host <map> <gamemode>\" and try again");
         Http.get(url, function (res) {

@@ -321,11 +321,11 @@ function isImpersonator(name, isAdmin) {
 }
 function logAction(action, by, to, reason, duration) {
     if (by === undefined) { //overload 1
-        api.sendModerationMessage("".concat(action, "\n**Server:** ").concat(config_1.Gamemode.name()));
+        api.sendModerationMessage("".concat(action, "\n**Server:** ").concat(config_1.FishGamemode.name()));
         return;
     }
     if (to === undefined) { //overload 2
-        api.sendModerationMessage("".concat((0, funcs_1.escapeTextDiscord)(Strings.stripColors(by.name)), " ").concat(action, "\n**Server:** ").concat(config_1.Gamemode.name()));
+        api.sendModerationMessage("".concat((0, funcs_1.escapeTextDiscord)(Strings.stripColors(by.name)), " ").concat(action, "\n**Server:** ").concat(config_1.FishGamemode.name()));
         return;
     }
     if (to) { //overload 3
@@ -353,7 +353,7 @@ function logAction(action, by, to, reason, duration) {
             uuid = to.id;
             ip = to.lastIP;
         }
-        api.sendModerationMessage("".concat(actor, " ").concat(action, " ").concat(name, " ").concat(duration ? "for ".concat(formatTime(duration), " ") : "").concat(reason ? "with reason ".concat((0, funcs_1.escapeTextDiscord)(reason)) : "", "\n**Server:** ").concat(config_1.Gamemode.name(), "\n**uuid:** `").concat(uuid, "`\n**ip**: `").concat(ip, "`"));
+        api.sendModerationMessage("".concat(actor, " ").concat(action, " ").concat(name, " ").concat(duration ? "for ".concat(formatTime(duration), " ") : "").concat(reason ? "with reason ".concat((0, funcs_1.escapeTextDiscord)(reason)) : "", "\n**Server:** ").concat(config_1.FishGamemode.name(), "\n**uuid:** `").concat(uuid, "`\n**ip**: `").concat(ip, "`"));
         return;
     }
 }
@@ -524,14 +524,14 @@ function definitelyRealMemoryCorruption() {
     Call.sendMessage("[scarlet]Error: memory corruption: mindustry.world.modules.ItemModule@".concat(hexString));
 }
 function getEnemyTeam() {
-    if (config_1.Gamemode.pvp())
+    if (config_1.FishGamemode.pvp())
         return Team.derelict;
     else
         return Vars.state.rules.waveTeam;
 }
 function neutralGameover() {
     players_1.FishPlayer.ignoreGameover(function () {
-        if (config_1.Gamemode.hexed())
+        if (config_1.FishGamemode.hexed())
             serverRestartLoop(15);
         else
             Events.fire(new EventType.GameOverEvent(getEnemyTeam()));
@@ -552,7 +552,7 @@ function skipWaves(wavesToSkip, runIntermediateWaves) {
 function logHTrip(player, name, message) {
     Log.warn("&yPlayer &b\"".concat(player.cleanedName, "\"&y (&b").concat(player.uuid, "&y/&b").concat(player.ip(), "&y) tripped &c").concat(name, "&y") + (message ? ": ".concat(message) : ""));
     players_1.FishPlayer.messageStaff("[yellow]Player [blue]\"".concat(player.cleanedName, "\"[] tripped [cyan]").concat(name, "[]") + (message ? ": ".concat(message) : ""));
-    api.sendModerationMessage("Player `".concat(player.cleanedName, "` (`").concat(player.uuid, "`/`").concat(player.ip(), "`) tripped **").concat(name, "**").concat(message ? ": ".concat(message) : "", "\n**Server:** ").concat(config_1.Gamemode.name()));
+    api.sendModerationMessage("Player `".concat(player.cleanedName, "` (`").concat(player.uuid, "`/`").concat(player.ip(), "`) tripped **").concat(name, "**").concat(message ? ": ".concat(message) : "", "\n**Server:** ").concat(config_1.FishGamemode.name()));
 }
 function setType(input) { }
 function untilForever() {
@@ -674,7 +674,7 @@ exports.addToTileHistory = logErrors("Error while saving a tilelog entry", funct
         type = e.unit.type.name;
     }
     else if (e instanceof EventType.BlockDestroyEvent) {
-        if (config_1.Gamemode.attack() && ((_u = e.tile.build) === null || _u === void 0 ? void 0 : _u.team) != Vars.state.rules.defaultTeam)
+        if (config_1.FishGamemode.attack() && ((_u = e.tile.build) === null || _u === void 0 ? void 0 : _u.team) != Vars.state.rules.defaultTeam)
             return; //Don't log destruction of enemy blocks
         tile = e.tile;
         uuid = "[[something]";
