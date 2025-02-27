@@ -279,6 +279,14 @@ const Core: {
 		exit():void;
 		getJavaHeap():number;
 		listeners: any[];
+		addListener(listener:Partial<{
+			init():void;
+			update():void;
+			pause():void;
+			resume():void;
+			dispose():void;
+			exit():void;
+		}>):void;
 	}
 	graphics: {
 		getFramesPerSecond():number;

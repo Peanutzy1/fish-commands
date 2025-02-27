@@ -175,6 +175,12 @@ Events.on(EventType.ServerLoadEvent, function (e) {
         Log.err("Failed to get fish plugin information.");
         Log.err(err);
     }
+    Core.app.addListener({
+        dispose: function () {
+            players_1.FishPlayer.saveAll();
+            Log.info("Saved on exit.");
+        }
+    });
 });
 // Keeps track of any action performed on a tile for use in tilelog.
 Events.on(EventType.BlockBuildBeginEvent, utils_1.addToTileHistory);
@@ -211,7 +217,4 @@ Events.on(EventType.GameOverEvent, function (e) {
 });
 Events.on(EventType.PlayerChatEvent, function (e) {
     players_1.FishPlayer.onPlayerChat(e.player, e.message);
-});
-Events.on(EventType.DisposeEvent, function (e) {
-    players_1.FishPlayer.saveAll();
 });

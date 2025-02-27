@@ -172,6 +172,12 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 		Log.err("Failed to get fish plugin information.");
 		Log.err(err);
 	}
+	Core.app.addListener({
+		dispose(){
+			FishPlayer.saveAll();
+			Log.info("Saved on exit.");
+		}
+	});
 
 });
 
@@ -203,8 +209,5 @@ Events.on(EventType.GameOverEvent, (e) => {
 });
 Events.on(EventType.PlayerChatEvent, e => {
 	FishPlayer.onPlayerChat(e.player, e.message);
-});
-Events.on(EventType.DisposeEvent, (e) => { //TODO does not actually work...
-	FishPlayer.saveAll();
 });
 
