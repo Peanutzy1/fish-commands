@@ -641,7 +641,7 @@ Please stop attacking and [lime]build defenses[] first!`
 		perm: Perm.play,
 		init: () => ({
 			manager: new VoteManager<number>(1.5 * 60_000)
-				.on("success", (t) => skipWaves(t.session!.data - 1, true))
+				.on("success", (t) => skipWaves(t.session!.data, true))
 				.on("vote passed", () => Call.sendMessage('VNW: [green]Vote passed, skipping to next wave.'))
 				.on("vote failed", () => Call.sendMessage('VNW: [red]Vote failed.'))
 				.on("player vote change", (t, player) => Call.sendMessage(`VNW: ${player.name} [white] has voted on skipping [accent]${t.session!.data}[white] wave(s). [green]${t.currentVotes()}[white] votes, [green]${t.requiredVotes()}[white] required.`))
