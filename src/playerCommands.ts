@@ -574,12 +574,13 @@ Please stop attacking and [lime]build defenses[] first!`
 	},
 
 	team: {
-		args: ['team:team', 'reason:string'],
+		args: ['team:team', 'reason:string?'],
 		description: 'Changes your team.',
 		perm: Perm.changeTeam,
 		handler({sender, args: {team, reason}, outputSuccess, f}){
 			if(Gamemode.sandbox() && fishState.peacefulMode && !sender.hasPerm("admin"))
 				fail(`You do not have permission to change teams because peaceful mode is on.`);
+			if(!Gamemode.sandbox() && !reason) fail(`Please specify a reason for changing teams.`);
 			if(!sender.hasPerm("changeTeamExternal")){
 				if(team.data().cores.size <= 0) fail(`You do not have permission to change to a team with no cores.`);
 				if(!sender.player!.dead() && !sender.unit()?.spawnedByCore)
@@ -588,7 +589,7 @@ Please stop attacking and [lime]build defenses[] first!`
 			if(!sender.hasPerm("mod")) sender.changedTeam = true;
 			sender.setTeam(team);
 			outputSuccess(f`Changed your team to ${team}.`);
-			logAction(`changed team to ${team.name} on ${escapeTextDiscord(Vars.state.map.plainName())} with reason ${escapeTextDiscord(reason)}`, sender)
+			if(reason) logAction(`changed team to ${team.name} on ${escapeTextDiscord(Vars.state.map.plainName())} with reason ${escapeTextDiscord(reason)}`, sender)
 		},
 	},
 

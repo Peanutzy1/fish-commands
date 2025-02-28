@@ -625,7 +625,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             }
         },
     }, team: {
-        args: ['team:team', 'reason:string'],
+        args: ['team:team', 'reason:string?'],
         description: 'Changes your team.',
         perm: commands_1.Perm.changeTeam,
         handler: function (_a) {
@@ -633,6 +633,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             var sender = _a.sender, _c = _a.args, team = _c.team, reason = _c.reason, outputSuccess = _a.outputSuccess, f = _a.f;
             if (config_1.Gamemode.sandbox() && globals_1.fishState.peacefulMode && !sender.hasPerm("admin"))
                 (0, commands_1.fail)("You do not have permission to change teams because peaceful mode is on.");
+            if (!config_1.Gamemode.sandbox() && !reason)
+                (0, commands_1.fail)("Please specify a reason for changing teams.");
             if (!sender.hasPerm("changeTeamExternal")) {
                 if (team.data().cores.size <= 0)
                     (0, commands_1.fail)("You do not have permission to change to a team with no cores.");
@@ -643,7 +645,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
                 sender.changedTeam = true;
             sender.setTeam(team);
             outputSuccess(f(templateObject_12 || (templateObject_12 = __makeTemplateObject(["Changed your team to ", "."], ["Changed your team to ", "."])), team));
-            (0, utils_1.logAction)("changed team to ".concat(team.name, " on ").concat((0, funcs_1.escapeTextDiscord)(Vars.state.map.plainName()), " with reason ").concat((0, funcs_1.escapeTextDiscord)(reason)), sender);
+            if (reason)
+                (0, utils_1.logAction)("changed team to ".concat(team.name, " on ").concat((0, funcs_1.escapeTextDiscord)(Vars.state.map.plainName()), " with reason ").concat((0, funcs_1.escapeTextDiscord)(reason)), sender);
         },
     }, teamp: {
         args: ['team:team', 'target:player'],
