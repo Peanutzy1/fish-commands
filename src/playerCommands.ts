@@ -626,7 +626,7 @@ Please stop attacking and [lime]build defenses[] first!`
 		handler({allCommands, sender, args:{force = true}}){
 			if(allCommands.vnw.data.manager.session == null){
 				if(force == false) fail(`Cannot clear votes for VNW because no vote is currently ongoing.`);
-				skipWaves(1, false);
+				skipWaves(1, true);
 			} else {
 				if(force) Call.sendMessage(`VNW: [green]Vote was forced by admin [yellow]${sender.name}[green], skipping wave.`);
 				else Call.sendMessage(`VNW: [red]Votes cleared by admin [yellow]${sender.name}[red].`);
@@ -641,7 +641,7 @@ Please stop attacking and [lime]build defenses[] first!`
 		perm: Perm.play,
 		init: () => ({
 			manager: new VoteManager<number>(1.5 * 60_000)
-				.on("success", (t) => skipWaves(t.session!.data - 1, false))
+				.on("success", (t) => skipWaves(t.session!.data, true))
 				.on("vote passed", () => Call.sendMessage('VNW: [green]Vote passed, skipping to next wave.'))
 				.on("vote failed", () => Call.sendMessage('VNW: [red]Vote failed.'))
 				.on("player vote change", (t, player) => Call.sendMessage(`VNW: ${player.name} [white] has voted on skipping [accent]${t.session!.data}[white] wave(s). [green]${t.currentVotes()}[white] votes, [green]${t.requiredVotes()}[white] required.`))

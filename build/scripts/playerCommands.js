@@ -682,7 +682,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             if (allCommands.vnw.data.manager.session == null) {
                 if (force == false)
                     (0, commands_1.fail)("Cannot clear votes for VNW because no vote is currently ongoing.");
-                (0, utils_1.skipWaves)(1, false);
+                (0, utils_1.skipWaves)(1, true);
             }
             else {
                 if (force)
@@ -698,7 +698,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         perm: commands_1.Perm.play,
         init: function () { return ({
             manager: new votes_1.VoteManager(1.5 * 60000)
-                .on("success", function (t) { return (0, utils_1.skipWaves)(t.session.data - 1, false); })
+                .on("success", function (t) { return (0, utils_1.skipWaves)(t.session.data, true); })
                 .on("vote passed", function () { return Call.sendMessage('VNW: [green]Vote passed, skipping to next wave.'); })
                 .on("vote failed", function () { return Call.sendMessage('VNW: [red]Vote failed.'); })
                 .on("player vote change", function (t, player) { return Call.sendMessage("VNW: ".concat(player.name, " [white] has voted on skipping [accent]").concat(t.session.data, "[white] wave(s). [green]").concat(t.currentVotes(), "[white] votes, [green]").concat(t.requiredVotes(), "[white] required.")); })
