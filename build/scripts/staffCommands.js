@@ -1209,6 +1209,29 @@ exports.commands = (0, commands_1.commandList)({
             if (!config_1.Gamemode.sandbox())
                 (0, utils_1.logAction)("gave items to ".concat(team.name), sender);
         }
+    },
+    explosion: {
+        args: ["radius:number", "x:number", "y:number", "team:team?", "damage:number?", "damageMode:string?"],
+        description: "Causes an explosion at specified coordinates.",
+        perm: commands_1.Perm.admin,
+        handler: function (_a) {
+            var _b;
+            var _c = _a.args, radius = _c.radius, x = _c.x, y = _c.y, _d = _c.team, team = _d === void 0 ? Team.derelict : _d, _e = _c.damage, damage = _e === void 0 ? 1e12 : _e, _f = _c.damageMode, damageMode = _f === void 0 ? "both" : _f, outputSuccess = _a.outputSuccess;
+            var _g = __read((_b = (0, utils_1.match)(damageMode, {
+                air: [true, false],
+                ground: [false, true],
+                both: [true, true],
+                none: [false, false],
+            })) !== null && _b !== void 0 ? _b : (0, commands_1.fail)("Valid values of damageMode: air, ground, both, none"), 2), air = _g[0], ground = _g[1];
+            if (radius > 100)
+                (0, commands_1.fail)("Maximum radius is 100");
+            if (damage < 0)
+                Call.effect(Fx.dynamicSpikes, x * 8, y * 8, radius * 8, Pal.heal);
+            else
+                Call.effect(Fx.dynamicExplosion, x * 8, y * 8, Math.max(radius, 8) / 7, Color.white);
+            Damage.damage(team, x * 8, y * 8, radius * 8, damage, true, air, ground);
+            outputSuccess("Created an explosion at (".concat(x, ", ").concat(y, ")."));
+        }
     }
 });
 var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11, templateObject_12, templateObject_13, templateObject_14, templateObject_15, templateObject_16, templateObject_17, templateObject_18, templateObject_19, templateObject_20, templateObject_21, templateObject_22, templateObject_23, templateObject_24, templateObject_25, templateObject_26, templateObject_27, templateObject_28, templateObject_29, templateObject_30, templateObject_31, templateObject_32, templateObject_33, templateObject_34, templateObject_35, templateObject_36, templateObject_37, templateObject_38, templateObject_39, templateObject_40, templateObject_41, templateObject_42, templateObject_43, templateObject_44, templateObject_45, templateObject_46, templateObject_47, templateObject_48, templateObject_49, templateObject_50, templateObject_51, templateObject_52, templateObject_53, templateObject_54, templateObject_55, templateObject_56, templateObject_57, templateObject_58, templateObject_59, templateObject_60, templateObject_61, templateObject_62, templateObject_63, templateObject_64, templateObject_65, templateObject_66, templateObject_67, templateObject_68;

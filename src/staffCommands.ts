@@ -1000,5 +1000,27 @@ IPs used: ${info.ips.map(i => `[blue]${i}[]`).toString(", ")}`
 			outputSuccess(f`Gave ${amount} ${item} to ${team}.`);
 			if(!Gamemode.sandbox()) logAction(`gave items to ${team.name}`, sender);
 		}
+	},
+	explosion: {
+		args: ["radius:number", "x:number", "y:number", "team:team?", "damage:number?", "damageMode:string?"],
+		description: "Causes an explosion at specified coordinates.",
+		perm: Perm.admin,
+		handler({args:{
+			radius, x, y,
+			team = Team.derelict, damage = 1e12,
+			damageMode = "both",
+		}, outputSuccess}){
+			const [air, ground] = match(damageMode, {
+				air: [true, false],
+				ground: [false, true],
+				both: [true, true],
+				none: [false, false],
+			}) ?? fail(`Valid values of damageMode: air, ground, both, none`);
+			if(radius > 100) fail(`Maximum radius is 100`);
+			if(damage < 0) Call.effect(Fx.dynamicSpikes, x * 8, y * 8, radius * 8, Pal.heal);
+			else Call.effect(Fx.dynamicExplosion, x * 8, y * 8, Math.max(radius, 8) / 7, Color.white);
+			Damage.damage(team, x * 8, y * 8, radius * 8, damage, true, air, ground);
+			outputSuccess(`Created an explosion at (${x}, ${y}).`);
+		}
 	}
 });

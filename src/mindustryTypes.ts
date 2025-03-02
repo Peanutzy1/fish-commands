@@ -264,6 +264,7 @@ class Color {
 	static HSVtoRGB(hue:number, saturation:number, value:number):Color;
 	rand():Color;
 }
+const Pal: Record<"orangeSpark" | "adminChat" | "logicBlocks" | "vent" | "lightishGray" | "darkishGray" | "thoriumPink" | "shadow" | "boostFrom" | "sapBullet" | "darkestGray" | "lightishOrange" | "placing" | "unitBack" | "lightFlame" | "bar" | "freeze" | "plastanium" | "plastaniumFront" | "breakInvalid" | "boostTo" | "logicControl" | "surge" | "redLight" | "darkMetal" | "powerLight" | "meltdownHit" | "reactorPurple" | "darkerMetal" | "logicUnits" | "plastaniumBack" | "vent2" | "techBlue" | "darkPyraFlame" | "turretHeat" | "logicOperations" | "bulletYellow" | "negativeStat" | "accentBack" | "items" | "plasticBurn" | "shield" | "missileYellowBack" | "logicIo" | "darkerGray" | "lightPyraFlame" | "regen" | "range" | "redSpark" | "logicWorld" | "lighterOrange" | "remove" | "noplace" | "gray" | "engine" | "lightOrange" | "heal" | "freezeBack" | "rubble" | "place" | "power" | "coalBlack" | "missileYellow" | "metalGrayDark" | "neoplasmOutline" | "slagOrange" | "plasticSmoke" | "berylShot" | "sapBulletBack" | "stat" | "powerBar" | "redDust" | "sap" | "ammo" | "placeRotate" | "darkOutline" | "lightTrail" | "muddy" | "stoneGray" | "health" | "darkestMetal" | "darkFlame" | "suppress" | "redderDust" | "spore" | "accent" | "command" | "reactorPurple2" | "lancerLaser" | "bulletYellowBack" | "removeBack" | "neoplasm1" | "tungstenShot" | "neoplasm2" | "unitFront" | "neoplasmMid", Color>;
 const Core: {
 	settings: {
 		get<T = unknown>(key:string, defaultValue?:T):T;
@@ -292,6 +293,9 @@ const Core: {
 		getFramesPerSecond():number;
 		getDeltaTime():number;
 	}
+}
+const Damage: {
+	damage(team:Team, x:number, y:number, radius:number, damage:number, pierce:boolean, air:boolean, ground:boolean):void;
 }
 const Mathf: {
 	halfPi: number;
