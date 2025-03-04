@@ -7,7 +7,7 @@ import * as api from "./api";
 import { consoleCommandList, fail } from "./commands";
 import { Mode } from "./config";
 import * as globals from "./globals";
-import { FishGamemode, mapRepoURLs } from "./config";
+import { FishGamemode } from "./config";
 import { maxTime } from "./globals";
 import { updateMaps } from "./files";
 import * as fjsContext from "./fjsContext";
