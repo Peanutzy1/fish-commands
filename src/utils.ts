@@ -395,8 +395,7 @@ export function getEnemyTeam():Team {
 
 export function neutralGameover(){
 	FishPlayer.ignoreGameover(() => {
-		if(Gamemode.hexed()) serverRestartLoop(15);
-		else Events.fire(new EventType.GameOverEvent(getEnemyTeam()));
+		Events.fire(new EventType.GameOverEvent(getEnemyTeam()));
 	});
 }
 

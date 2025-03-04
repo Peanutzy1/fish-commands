@@ -531,10 +531,7 @@ function getEnemyTeam() {
 }
 function neutralGameover() {
     players_1.FishPlayer.ignoreGameover(function () {
-        if (config_1.Gamemode.hexed())
-            serverRestartLoop(15);
-        else
-            Events.fire(new EventType.GameOverEvent(getEnemyTeam()));
+        Events.fire(new EventType.GameOverEvent(getEnemyTeam()));
     });
 }
 /** Please validate wavesToSkip to ensure it is not huge */
