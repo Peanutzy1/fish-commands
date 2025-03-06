@@ -569,7 +569,7 @@ var FishPlayer = /** @class */ (function () {
         if (!this.connected() || !this.shouldUpdateName)
             return; //No player, no need to update
         if (this.marked())
-            this.showRankPrefix = false;
+            this.showRankPrefix = true;
         var prefix = '';
         if (!this.hasPerm("bypassNameCheck") && (0, utils_1.isImpersonator)(this.name, this.ranksAtLeast("admin")))
             prefix += "[scarlet]SUSSY IMPOSTOR[]";
