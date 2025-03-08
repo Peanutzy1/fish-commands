@@ -14,7 +14,7 @@ import { FishPlayer } from './players';
 /** point in which effects will refuse to render */
 const MIN_EFFECT_TPS = 20;
 /** maximum duration for user-created labels (seconds) */
-const MAX_LABEL_TIME = 30;
+const MAX_LABEL_TIME = 20;
 
 //info tracker
 let lastLabel = '';
@@ -280,7 +280,8 @@ function handleLabel(player:mindustryPlayer, content:string, isSingle:boolean):b
 	}
 
 	let duration = Number(parts[0]);
-	if(Number.isNaN(duration) || duration > MAX_LABEL_TIME){
+	const x = Number(parts[1]), y = Number(parts[2]);
+	if(Number.isNaN(duration) || duration > MAX_LABEL_TIME || Number.isNaN(x) || Number.isNaN(y)){
 		player.sendMessage(invalidReq);
 		return false;
 	}
@@ -292,9 +293,9 @@ function handleLabel(player:mindustryPlayer, content:string, isSingle:boolean):b
 		Number(parts[2]) //y
 	);*/
 	tmpLabelPacket.message = message;
-	tmpLabelPacket.duration = Number(parts[0]);
-	tmpLabelPacket.worldx = Number(parts[1]);
-	tmpLabelPacket.worldy = Number(parts[2]);
+	tmpLabelPacket.duration = duration;
+	tmpLabelPacket.worldx = x;
+	tmpLabelPacket.worldy = y;
 	Vars.net.send(tmpLabelPacket, false);
 	return true;
 }
@@ -323,7 +324,7 @@ function handleLine(content:string, player:mindustryPlayer):boolean {
 	return true;
 }
 
-function bulkInfoMsg(messages:string[], conn:NetConnection) {
+export function bulkInfoMsg(messages:string[], conn:NetConnection) {
 	for (let i = messages.length - 1; i >= 0; i--) {
 		Call.infoMessage(conn, messages[i]);
 	}

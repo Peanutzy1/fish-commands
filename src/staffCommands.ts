@@ -374,6 +374,23 @@ export const commands = commandList({
 		}
 	},
 
+	labelsticky: {
+		args: ["time:time", "message:string"],
+		description: "Places a label at the bottom left corner of everyone's screen.",
+		perm: Perm.admin,
+		handler({args, outputSuccess, f}){
+			if(args.time > 36000_000) fail(`Time must be less than 10 hours.`);
+			let timeRemaining = args.time / 1000;
+			fishState.labels.push(Timer.schedule(() => {
+				if(timeRemaining > 0){
+					Call.label(args.message, 5, NaN, NaN);
+					timeRemaining -= 5;
+				}
+			}, 0, 5, Math.ceil(args.time / 5)));
+			outputSuccess(f`Placed label "${args.message}" for ${timeRemaining} seconds.`);
+		}
+	},
+
 	clearlabels: {
 		args: [],
 		description: "Removes all labels.",

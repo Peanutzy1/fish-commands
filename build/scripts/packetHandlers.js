@@ -10,13 +10,14 @@ Fixes: @author Jurorno9
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
 exports.loadPacketHandlers = loadPacketHandlers;
+exports.bulkInfoMsg = bulkInfoMsg;
 var commands_1 = require("./commands");
 var players_1 = require("./players");
 //some much needed restrictions
 /** point in which effects will refuse to render */
 var MIN_EFFECT_TPS = 20;
 /** maximum duration for user-created labels (seconds) */
-var MAX_LABEL_TIME = 30;
+var MAX_LABEL_TIME = 20;
 //info tracker
 var lastLabel = '';
 var lastAccessedBulkLabel = null;
@@ -230,7 +231,8 @@ function handleLabel(player, content, isSingle) {
         lastLabel = message;
     }
     var duration = Number(parts[0]);
-    if (Number.isNaN(duration) || duration > MAX_LABEL_TIME) {
+    var x = Number(parts[1]), y = Number(parts[2]);
+    if (Number.isNaN(duration) || duration > MAX_LABEL_TIME || Number.isNaN(x) || Number.isNaN(y)) {
         player.sendMessage(invalidReq);
         return false;
     }
@@ -241,9 +243,9 @@ function handleLabel(player, content, isSingle) {
         Number(parts[2]) //y
     );*/
     tmpLabelPacket.message = message;
-    tmpLabelPacket.duration = Number(parts[0]);
-    tmpLabelPacket.worldx = Number(parts[1]);
-    tmpLabelPacket.worldy = Number(parts[2]);
+    tmpLabelPacket.duration = duration;
+    tmpLabelPacket.worldx = x;
+    tmpLabelPacket.worldy = y;
     Vars.net.send(tmpLabelPacket, false);
     return true;
 }
