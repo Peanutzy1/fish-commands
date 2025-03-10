@@ -171,7 +171,8 @@ exports.mapRepoURLs = {
     pvp: "https://api.github.com/repos/Fish-Community/fish-maps/contents/pvp",
     hexed: "https://api.github.com/repos/Fish-Community/fish-maps/contents/hexed",
     sandbox: "https://api.github.com/repos/Fish-Community/fish-maps/contents/sandbox",
-    hardcore: "https://api.github.com/repos/Fish-Community/fish-maps/contents/hardcore"
+    hardcore: "https://api.github.com/repos/Fish-Community/fish-maps/contents/hardcore",
+    testsrv: "https://api.github.com/repos/Fish-Community/fish-maps/contents/testsrv",
 };
 /** Stores the names and addresses of each active server. */
 var FishServer = /** @class */ (function () {
@@ -208,6 +209,7 @@ exports.Gamemode = {
     sandbox: function () { return exports.Gamemode.name() == "sandbox"; },
     hexed: function () { return exports.Gamemode.name() == "hexed"; },
     hardcore: function () { return exports.Gamemode.name() == "hardcore"; },
+    testsrv: function () { return exports.Gamemode.name() == "testsrv"; },
     name: function () { return Core.settings.get("mode", Vars.state.rules.mode().name()); },
 };
 //#endregion

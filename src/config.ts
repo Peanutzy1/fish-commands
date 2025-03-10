@@ -153,7 +153,8 @@ export const mapRepoURLs:Record<GamemodeName, string> = {
 	pvp: "https://api.github.com/repos/Fish-Community/fish-maps/contents/pvp",
 	hexed: "https://api.github.com/repos/Fish-Community/fish-maps/contents/hexed",
 	sandbox: "https://api.github.com/repos/Fish-Community/fish-maps/contents/sandbox",
-	hardcore: "https://api.github.com/repos/Fish-Community/fish-maps/contents/hardcore"
+	hardcore: "https://api.github.com/repos/Fish-Community/fish-maps/contents/hardcore",
+	testsrv: "https://api.github.com/repos/Fish-Community/fish-maps/contents/testsrv",
 };
 
 
@@ -213,7 +214,8 @@ export const Gamemode = {
 	sandbox: () => Gamemode.name() == "sandbox",
 	hexed: () => Gamemode.name() == "hexed",
 	hardcore: () => Gamemode.name() == "hardcore",
-	name: () => Core.settings.get("mode", Vars.state.rules.mode().name()) as "attack" | "survival" | "pvp" | "sandbox" | "hexed" | "hardcore",
+	testsrv: () => Gamemode.name() == "testsrv",
+	name: () => Core.settings.get("mode", Vars.state.rules.mode().name()) as "attack" | "survival" | "pvp" | "sandbox" | "hexed" | "hardcore" | "testsrv",
 };
 //#endregion
 //#region text content

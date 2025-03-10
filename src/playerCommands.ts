@@ -734,7 +734,9 @@ Please stop attacking and [lime]build defenses[] first!`
 	forcenextmap: {
 		args: ["map:map"],
 		description: 'Override the next map in queue.',
-		perm: Perm.admin,
+		perm: Perm.admin.exceptModes({
+			testsrv: Perm.play
+		}),
 		handler({allCommands, args, sender, outputSuccess, f}){
 			Vars.maps.setNextMapOverride(args.map);
 			if(allCommands.nextmap.data.voteEndTime() > -1){
@@ -847,6 +849,7 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 			data: {votes, voteEndTime: () => voteEndTime, resetVotes, endVote},
 			requirements: [Req.cooldown(10000)],
 			handler({args:{map}, sender}){
+				if(Gamemode.testsrv()) fail(`Please use /forcenextmap instead.`);
 				if(votes.get(sender)) fail(`You have already voted.`);
 				
 				votes.set(sender, map);

@@ -801,7 +801,9 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
     forcenextmap: {
         args: ["map:map"],
         description: 'Override the next map in queue.',
-        perm: commands_1.Perm.admin,
+        perm: commands_1.Perm.admin.exceptModes({
+            testsrv: commands_1.Perm.play
+        }),
         handler: function (_a) {
             var allCommands = _a.allCommands, args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
             Vars.maps.setNextMapOverride(args.map);
@@ -893,6 +895,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             requirements: [commands_1.Req.cooldown(10000)],
             handler: function (_a) {
                 var map = _a.args.map, sender = _a.sender;
+                if (config_1.Gamemode.testsrv())
+                    (0, commands_1.fail)("Please use /forcenextmap instead.");
                 if (votes.get(sender))
                     (0, commands_1.fail)("You have already voted.");
                 votes.set(sender, map);
