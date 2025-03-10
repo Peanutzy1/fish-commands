@@ -53,7 +53,7 @@ var funcs_2 = require("./funcs");
 var VoteManager = /** @class */ (function (_super) {
     __extends(VoteManager, _super);
     function VoteManager(voteTime, goal, isEligible) {
-        if (goal === void 0) { goal = 0.50001; }
+        if (goal === void 0) { goal = ["fractionOfVoters", 0.50001]; }
         if (isEligible === void 0) { isEligible = function () { return true; }; }
         var _this = _super.call(this) || this;
         _this.voteTime = voteTime;
@@ -61,6 +61,14 @@ var VoteManager = /** @class */ (function (_super) {
         _this.isEligible = isEligible;
         /** The ongoing voting session, if there is one. */
         _this.session = null;
+        if (goal[0] == "fractionOfVoters") {
+            if (goal[1] < 0 || goal[1] > 1)
+                (0, funcs_1.crash)("Invalid goal: fractionOfVoters must be between 0 and 1 inclusive");
+        }
+        else if (goal[0] == "absolute") {
+            if (goal[1] < 0)
+                (0, funcs_1.crash)("Invalid goal: absolute must be greater than 0");
+        }
         Events.on(EventType.PlayerLeave, function (_a) {
             var player = _a.player;
             //Run once the player has been removed, but resolve the player first in case the connection gets nulled
@@ -119,7 +127,10 @@ var VoteManager = /** @class */ (function (_super) {
         this.session = null;
     };
     VoteManager.prototype.requiredVotes = function () {
-        return Math.max(Math.ceil(this.goal * this.getEligibleVoters().length), 1);
+        if (this.goal[0] == "absolute")
+            return this.goal[1];
+        else
+            return Math.max(Math.ceil(this.goal[1] * this.getEligibleVoters().length), 1);
     };
     VoteManager.prototype.currentVotes = function () {
         return this.session ? __spreadArray([], __read(this.session.votes), false).reduce(function (acc, _a) {
@@ -128,7 +139,10 @@ var VoteManager = /** @class */ (function (_super) {
         }, 0) : 0;
     };
     VoteManager.prototype.getEligibleVoters = function () {
-        return players_1.FishPlayer.getAllOnline().filter(this.isEligible);
+        var _this = this;
+        if (!this.session)
+            return [];
+        return players_1.FishPlayer.getAllOnline().filter(function (p) { return _this.isEligible(p, _this.session.data); });
     };
     VoteManager.prototype.messageEligibleVoters = function (message) {
         this.getEligibleVoters().forEach(function (p) { return p.sendMessage(message); });

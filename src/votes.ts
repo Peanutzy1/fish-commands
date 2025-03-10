@@ -33,10 +33,15 @@ export class VoteManager<SessionData extends {}> extends EventEmitter<VoteEventM
 
 	constructor(
 		public voteTime:number,
-		public goal:number = 0.50001,
-		public isEligible:(fishP:FishPlayer) => boolean = () => true
+		public goal:["fractionOfVoters", number] | ["absolute", number] = ["fractionOfVoters", 0.50001],
+		public isEligible:(fishP:FishPlayer, data: SessionData) => boolean = () => true
 	){
 		super();
+		if(goal[0] == "fractionOfVoters"){
+			if(goal[1] < 0 || goal[1] > 1) crash(`Invalid goal: fractionOfVoters must be between 0 and 1 inclusive`);
+		} else if(goal[0] == "absolute"){
+			if(goal[1] < 0) crash(`Invalid goal: absolute must be greater than 0`);
+		}
 		Events.on(EventType.PlayerLeave, ({player}) => {
 			//Run once the player has been removed, but resolve the player first in case the connection gets nulled
 			const fishP = FishPlayer.get(player);
@@ -92,7 +97,10 @@ export class VoteManager<SessionData extends {}> extends EventEmitter<VoteEventM
 	}
 	
 	requiredVotes():number {
-		return Math.max(Math.ceil(this.goal * this.getEligibleVoters().length), 1);
+		if(this.goal[0] == "absolute")
+			return this.goal[1];
+		else
+			return Math.max(Math.ceil(this.goal[1] * this.getEligibleVoters().length), 1);
 	}
 
 	currentVotes():number {
@@ -100,7 +108,8 @@ export class VoteManager<SessionData extends {}> extends EventEmitter<VoteEventM
 	}
 
 	getEligibleVoters():FishPlayer[] {
-		return FishPlayer.getAllOnline().filter(this.isEligible);
+		if(!this.session) return [];
+		return FishPlayer.getAllOnline().filter(p => this.isEligible(p, this.session!.data));
 	}
 	messageEligibleVoters(message:string){
 		this.getEligibleVoters().forEach(p => p.sendMessage(message));

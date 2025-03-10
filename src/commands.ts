@@ -116,6 +116,7 @@ export class Perm {
 	static massKill = new Perm("massKill", "admin").exceptModes({
 		sandbox: Perm.mod,
 	});
+	static voteOtherTeams = new Perm("voteOtherTeams", "trusted");
 
 	check:(fishP:FishPlayer) => boolean;
 	constructor(

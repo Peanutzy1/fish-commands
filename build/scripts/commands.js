@@ -212,6 +212,7 @@ var Perm = /** @class */ (function () {
     Perm.massKill = new Perm("massKill", "admin").exceptModes({
         sandbox: Perm.mod,
     });
+    Perm.voteOtherTeams = new Perm("voteOtherTeams", "trusted");
     return Perm;
 }());
 exports.Perm = Perm;

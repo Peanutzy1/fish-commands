@@ -765,7 +765,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         description: 'Rock the vote to change map.',
         perm: commands_1.Perm.play,
         init: function () { return ({
-            manager: new votes_1.VoteManager(1.5 * 60000, config_1.Gamemode.hexed() ? 1 : undefined) //Require unanimity in Hexed, as it is often 1 v everyone
+            manager: new votes_1.VoteManager(1.5 * 60000, config_1.Gamemode.hexed() ? ["fractionOfVoters", 1] : undefined) //Require unanimity in Hexed, as it is often 1 v everyone
                 .on("success", function () { return (0, utils_1.neutralGameover)(); })
                 .on("vote passed", function () { return Call.sendMessage("RTV: [green]Vote has passed, changing map."); })
                 .on("vote failed", function () { return Call.sendMessage("RTV: [red]Vote failed."); })
@@ -912,7 +912,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
     }), surrender: (0, commands_1.command)(function () {
         var prefix = "[orange]Surrender[white]: ";
         var managers = Team.all.map(function (team) {
-            return new votes_1.VoteManager(1.5 * 60000, config_1.Gamemode.hexed() ? 1 : 3 / 4, function (p) { return p.team() == team && !p.afk(); })
+            return new votes_1.VoteManager(1.5 * 60000, ["fractionOfVoters", config_1.Gamemode.hexed() ? 1 : 3 / 4], function (p) { return p.team() == team && !p.afk(); })
                 .on("success", function () { return team.cores().copy().each(function (c) { return c.kill(); }); })
                 .on("vote passed", function () { return Call.sendMessage(prefix + "Team ".concat(team.coloredName(), " has voted to forfeit this match.")); })
                 .on("vote failed", function (t) { return t.messageEligibleVoters(prefix + "Team ".concat(team.coloredName(), " has chosen not to forfeit this match.")); })

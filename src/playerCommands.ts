@@ -696,7 +696,7 @@ Please stop attacking and [lime]build defenses[] first!`
 		description: 'Rock the vote to change map.',
 		perm: Perm.play,
 		init: () => ({
-			manager: new VoteManager(1.5 * 60_000, Gamemode.hexed() ? 1 : undefined) //Require unanimity in Hexed, as it is often 1 v everyone
+			manager: new VoteManager(1.5 * 60_000, Gamemode.hexed() ? ["fractionOfVoters", 1] : undefined) //Require unanimity in Hexed, as it is often 1 v everyone
 				.on("success", () => neutralGameover())
 				.on("vote passed", () => Call.sendMessage(`RTV: [green]Vote has passed, changing map.`))
 				.on("vote failed", () => Call.sendMessage(`RTV: [red]Vote failed.`))
@@ -865,7 +865,7 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 	surrender: command(() => {
 		const prefix = "[orange]Surrender[white]: ";
 		const managers = Team.all.map(team =>
-			new VoteManager<number>(1.5 * 60_000, Gamemode.hexed() ? 1 : 3/4, p => p.team() == team && !p.afk())
+			new VoteManager<number>(1.5 * 60_000, ["fractionOfVoters", Gamemode.hexed() ? 1 : 3/4], p => p.team() == team && !p.afk())
 				.on("success", () => team.cores().copy().each(c => c.kill()))
 				.on("vote passed", () => Call.sendMessage(
 					prefix + `Team ${team.coloredName()} has voted to forfeit this match.`
