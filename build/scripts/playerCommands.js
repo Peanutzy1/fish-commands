@@ -802,7 +802,6 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         args: ["map:map"],
         description: 'Override the next map in queue.',
         perm: commands_1.Perm.admin,
-        requirements: [commands_1.Req.modeNot("hexed")],
         handler: function (_a) {
             var allCommands = _a.allCommands, args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, f = _a.f;
             Vars.maps.setNextMapOverride(args.map);
@@ -891,7 +890,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             description: 'Allows you to vote for the next map. Use /maps to see all available maps.',
             perm: commands_1.Perm.play,
             data: { votes: votes, voteEndTime: function () { return voteEndTime; }, resetVotes: resetVotes, endVote: endVote },
-            requirements: [commands_1.Req.cooldown(10000), commands_1.Req.modeNot("hexed")],
+            requirements: [commands_1.Req.cooldown(10000)],
             handler: function (_a) {
                 var map = _a.args.map, sender = _a.sender;
                 if (votes.get(sender))
