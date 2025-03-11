@@ -40,7 +40,8 @@ export function formatModeName(name:GamemodeName){
 		"hexed": "Hexed",
 		"pvp": "PVP",
 		"sandbox": "Sandbox",
-		"hardcore": "Hardcore"
+		"hardcore": "Hardcore",
+		"testsrv": "Testing Server",
 	}[name];
 }
 
