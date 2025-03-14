@@ -102,14 +102,29 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             var output = _a.output;
             output("[accent][cyan]fish-commands[] is the monolithic plugin used for the Fish servers' features.\n[accent]==========\n[accent]Source code available at: [cyan]https://github.com/Fish-Community/fish-commands/\n[accent]Current plugin version: [cyan]".concat((_c = (_b = globals_1.fishPlugin.version) === null || _b === void 0 ? void 0 : _b.slice(0, 8)) !== null && _c !== void 0 ? _c : "[scarlet]null[]", "[]"));
         }
-    }, unpause: {
+    }, unpause: (0, commands_1.command)({
         args: [],
         description: 'Unpauses the game.',
-        perm: commands_1.Perm.play,
-        handler: function () {
-            Core.app.post(function () { return Vars.state.set(GameState.State.playing); });
+        perm: commands_1.Perm.trusted,
+        requirements: [commands_1.Req.mode('pvp')],
+        init: function () {
+            var data = { unpaused: false };
+            Events.on(EventType.PlayEvent, function () {
+                if (data.unpaused) {
+                    data.unpaused = false;
+                    Vars.state.rules.pvpAutoPause = true;
+                }
+            });
+            return data;
         },
-    }, tp: {
+        handler: function (_a) {
+            var data = _a.data, outputSuccess = _a.outputSuccess;
+            Vars.state.rules.pvpAutoPause = false;
+            data.unpaused = true;
+            Core.app.post(function () { return Vars.state.set(GameState.State.playing); });
+            outputSuccess("Unpaused.");
+        },
+    }), tp: {
         args: ['player:player'],
         description: 'Teleport to another player.',
         perm: commands_1.Perm.play,

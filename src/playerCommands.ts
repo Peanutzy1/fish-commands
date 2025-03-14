@@ -32,14 +32,28 @@ export const commands = commandList({
 		}
 	},
 
-	unpause: {
+	unpause: command({
 		args: [],
 		description: 'Unpauses the game.',
-		perm: Perm.play,
-		handler() {
-			Core.app.post(() => Vars.state.set(GameState.State.playing));
+		perm: Perm.trusted,
+		requirements: [Req.mode('pvp')],
+		init() {
+			const data = { unpaused: false };
+			Events.on(EventType.PlayEvent, () => {
+				if(data.unpaused){
+					data.unpaused = false;
+					Vars.state.rules.pvpAutoPause = true;
+				}
+			});
+			return data;
 		},
-	},
+		handler({data, outputSuccess}) {
+			Vars.state.rules.pvpAutoPause = false;
+			data.unpaused = true;
+			Core.app.post(() => Vars.state.set(GameState.State.playing));
+			outputSuccess(`Unpaused.`);
+		},
+	}),
 
 	tp: {
 		args: ['player:player'],

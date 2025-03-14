@@ -58,6 +58,7 @@ const Vars: {
 			waitEnemies:boolean;
 			env:number;
 			fog:boolean;
+			pvpAutoPause: boolean;
 		}
 		set(state:State):void;
 		gameOver:boolean;
