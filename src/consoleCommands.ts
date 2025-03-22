@@ -352,9 +352,19 @@ export const commands = consoleCommandList({
 					? `Player ${args.player} has joined the server, but their info was not cached, most likely because they have no rank, so there is no stored USID.`
 					: `Unknown player ${args.player}`
 				);
+			if(player.ranksAtLeast("admin")) fail(`Please use the approveauth command instead.`);
 			const oldusid = player.usid;
 			player.usid = null;
 			outputSuccess(`Removed the usid of player ${player.name}/${player.uuid} (was ${oldusid})`);
+		}
+	},
+	approveauth: {
+		args: ["usid:string"],
+		description: `Sets the USID of a player.`,
+		handler({args, outputSuccess, f}){
+			const player = FishPlayer.lastAuthKicked ?? fail(`No authorization failures have occurred since the last restart.`);
+			player.usid = args.usid;
+			outputSuccess(f`Set USID for player ${player} to ${args.usid}.`);
 		}
 	},
 	update: {

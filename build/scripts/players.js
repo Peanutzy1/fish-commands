@@ -95,6 +95,7 @@ var FishPlayer = /** @class */ (function () {
         this.lastRatelimitedMessage = -1;
         this.changedTeam = false;
         this.ipDetectedVpn = false;
+        this.approveNextLogin = false;
         this.chatStrictness = "chat";
         this.uuid = (_m = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _m !== void 0 ? _m : (0, funcs_3.crash)("Attempted to create FishPlayer with no UUID");
         this.name = (_o = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _o !== void 0 ? _o : "Unnamed player [ERROR]";
@@ -537,10 +538,9 @@ var FishPlayer = /** @class */ (function () {
     /** Must be called at player join, before updateName(). */
     FishPlayer.prototype.updateSavedInfoFromPlayer = function (player) {
         var _this = this;
-        var _a;
         this.player = player;
         this.name = player.name;
-        (_a = this.usid) !== null && _a !== void 0 ? _a : (this.usid = player.usid());
+        //Do not update USID here
         this.flags.forEach(function (f) {
             if (!f.peristent)
                 _this.flags.delete(f);
@@ -729,14 +729,37 @@ var FishPlayer = /** @class */ (function () {
     };
     /** Checks if this player's USID is correct. */
     FishPlayer.prototype.checkUsid = function () {
-        if (this.usid != null && this.usid != "" && this.player.usid() != this.usid) {
-            Log.err("&rUSID mismatch for player &c\"".concat(this.cleanedName, "\"&r: stored usid is &c").concat(this.usid, "&r, but they tried to connect with usid &c").concat(this.player.usid(), "&r"));
-            if (this.hasPerm("usidCheck")) {
-                this.kick("Authorization failure!", 1);
-                FishPlayer.lastAuthKicked = this;
+        var _a;
+        var usidMissing = this.usid == null || this.usid == "";
+        var receivedUSID = this.player.usid();
+        if (this.hasPerm("usidCheck")) {
+            if (usidMissing) {
+                if (this.hasPerm("admin")) {
+                    //Admin missing USID, don't let them in
+                    Log.err("&rUSID missing for privileged player &c\"".concat(this.cleanedName, "\"&r: no stored usid, cannot authenticate.\nRun &lgapproveauth ").concat(receivedUSID, "&fr if you have verified this connection attempt."));
+                    this.kick("Authorization failure! Please ask a staff member with Console Access to approve this connection.", 1);
+                    FishPlayer.lastAuthKicked = this;
+                    return false;
+                }
+                else {
+                    Log.info("Acquired USID for player &c\"".concat(this.cleanedName, "\"&fr: &c\"").concat(receivedUSID, "\"&fr"));
+                }
             }
-            return false;
+            else {
+                if (receivedUSID != this.usid) {
+                    Log.err("&rUSID mismatch for player &c\"".concat(this.cleanedName, "\"&r: stored usid is &c").concat(this.usid, "&r, but they tried to connect with usid &c").concat(receivedUSID, "&r\nRun &lgapproveauth ").concat(receivedUSID, "&fr if you have verified this connection attempt."));
+                    this.kick("Authorization failure!", 1);
+                    FishPlayer.lastAuthKicked = this;
+                    return false;
+                }
+            }
         }
+        else {
+            if (!usidMissing && receivedUSID != this.usid) {
+                Log.err("&rUSID mismatch for player &c\"".concat(this.cleanedName, "\"&r: stored usid is &c").concat(this.usid, "&r, but they tried to connect with usid &c").concat(receivedUSID, "&r"));
+            }
+        }
+        (_a = this.usid) !== null && _a !== void 0 ? _a : (this.usid = receivedUSID);
         return true;
     };
     FishPlayer.prototype.displayTrail = function () {
