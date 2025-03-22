@@ -92,6 +92,7 @@ export class FishPlayer {
 	lastRatelimitedMessage = -1;
 	changedTeam = false;
 	ipDetectedVpn = false;
+	approveNextLogin = false;
 	
 	//Stored data
 	uuid: string;
@@ -507,7 +508,7 @@ export class FishPlayer {
 	updateSavedInfoFromPlayer(player:mindustryPlayer){
 		this.player = player;
 		this.name = player.name;
-		this.usid ??= player.usid();
+		//Do not update USID here
 		this.flags.forEach(f => {
 			if(!f.peristent) this.flags.delete(f);
 		});
@@ -670,14 +671,33 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	}
 	/** Checks if this player's USID is correct. */
 	checkUsid(){
-		if(this.usid != null && this.usid != "" && this.player!.usid() != this.usid){
-			Log.err(`&rUSID mismatch for player &c"${this.cleanedName}"&r: stored usid is &c${this.usid}&r, but they tried to connect with usid &c${this.player!.usid()}&r`);
-			if(this.hasPerm("usidCheck")){
-				this.kick(`Authorization failure!`, 1);
-				FishPlayer.lastAuthKicked = this;
+		const usidMissing = this.usid == null || this.usid == "";
+		const receivedUSID = this.player!.usid();
+		if(this.hasPerm("usidCheck")){
+			if(usidMissing){
+				if(this.hasPerm("admin")){
+					//Admin missing USID, don't let them in
+					Log.err(`&rUSID missing for privileged player &c"${this.cleanedName}"&r: no stored usid, cannot authenticate.\nRun &lgapproveauth ${receivedUSID}&fr if you have verified this connection attempt.`);
+					this.kick(`Authorization failure! Please ask a staff member with Console Access to approve this connection.`, 1);
+					FishPlayer.lastAuthKicked = this;
+					return false;
+				} else {
+					Log.info(`Acquired USID for player &c"${this.cleanedName}"&fr: &c"${receivedUSID}"&fr`);
+				}
+			} else {
+				if(receivedUSID != this.usid){
+					Log.err(`&rUSID mismatch for player &c"${this.cleanedName}"&r: stored usid is &c${this.usid}&r, but they tried to connect with usid &c${receivedUSID}&r\nRun &lgapproveauth ${receivedUSID}&fr if you have verified this connection attempt.`);
+					this.kick(`Authorization failure!`, 1);
+					FishPlayer.lastAuthKicked = this;
+					return false;
+				}
 			}
-			return false;
+		} else {
+			if(!usidMissing && receivedUSID != this.usid){
+				Log.err(`&rUSID mismatch for player &c"${this.cleanedName}"&r: stored usid is &c${this.usid}&r, but they tried to connect with usid &c${receivedUSID}&r`);
+			}
 		}
+		this.usid ??= receivedUSID;
 		return true;
 	}
 	displayTrail(){
