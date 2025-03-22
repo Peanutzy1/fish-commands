@@ -6,7 +6,7 @@ This file contains the FishPlayer class, and many player-related functions.
 import * as api from "./api";
 import { Perm, PermType } from "./commands";
 import * as globals from "./globals";
-import { FColor, Gamemode, heuristics, Mode, prefixes, rules, stopAntiEvadeTime, text, tips } from "./config";
+import { FColor, Gamemode, heuristics, localIPAddress, Mode, prefixes, rules, stopAntiEvadeTime, text, tips } from "./config";
 import { uuidPattern } from "./globals";
 import { Menu } from "./menus";
 import { Rank, RankName, RoleFlag, RoleFlagName } from "./ranks";
@@ -107,7 +107,7 @@ export class FishPlayer {
 		speed: number;
 	} | null;
 	history: PlayerHistoryEntry[];
-	usid: string | null;
+	usidMapping: Partial<Record<string, string>>;
 	chatStrictness: "chat" | "strict" = "chat";
 	/** -1 represents unknown */
 	lastJoined:number;
@@ -143,7 +143,7 @@ export class FishPlayer {
 		this.cleanedName = escapeStringColorsServer(Strings.stripColors(this.name));
 		this.rank = Rank.getByName(rank) ?? Rank.player;
 		this.flags = new Set(flags.map(RoleFlag.getByName).filter((f):f is RoleFlag => f != null));
-		this.usid = usid ?? player?.usid() ?? null;
+		this.usidMapping = typeof usid === "string" ? {[localIPAddress]: usid} : (usid ?? {});
 		this.chatStrictness = chatStrictness;
 		this.stats = stats ?? {
 			blocksBroken: 0,
@@ -671,7 +671,8 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	}
 	/** Checks if this player's USID is correct. */
 	checkUsid(){
-		const usidMissing = this.usid == null || this.usid == "";
+		const storedUSID = this.usid();
+		const usidMissing = storedUSID == null || storedUSID;
 		const receivedUSID = this.player!.usid();
 		if(this.hasPerm("usidCheck")){
 			if(usidMissing){
@@ -685,19 +686,19 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 					Log.info(`Acquired USID for player &c"${this.cleanedName}"&fr: &c"${receivedUSID}"&fr`);
 				}
 			} else {
-				if(receivedUSID != this.usid){
-					Log.err(`&rUSID mismatch for player &c"${this.cleanedName}"&r: stored usid is &c${this.usid}&r, but they tried to connect with usid &c${receivedUSID}&r\nRun &lgapproveauth ${receivedUSID}&fr if you have verified this connection attempt.`);
+				if(receivedUSID != storedUSID){
+					Log.err(`&rUSID mismatch for player &c"${this.cleanedName}"&r: stored usid is &c${storedUSID}&r, but they tried to connect with usid &c${receivedUSID}&r\nRun &lgapproveauth ${receivedUSID}&fr if you have verified this connection attempt.`);
 					this.kick(`Authorization failure!`, 1);
 					FishPlayer.lastAuthKicked = this;
 					return false;
 				}
 			}
 		} else {
-			if(!usidMissing && receivedUSID != this.usid){
-				Log.err(`&rUSID mismatch for player &c"${this.cleanedName}"&r: stored usid is &c${this.usid}&r, but they tried to connect with usid &c${receivedUSID}&r`);
+			if(!usidMissing && receivedUSID != storedUSID){
+				Log.err(`&rUSID mismatch for player &c"${this.cleanedName}"&r: stored usid is &c${storedUSID}&r, but they tried to connect with usid &c${receivedUSID}&r`);
 			}
 		}
-		this.usid ??= receivedUSID;
+		this.setUSID(receivedUSID);
 		return true;
 	}
 	displayTrail(){
@@ -878,7 +879,7 @@ We apologize for the inconvenience.`
 		out.writeNumber(this.rainbow?.speed ?? 0, 2);
 		out.writeString(this.rank.name, 2);
 		out.writeArray(Array.from(this.flags).filter(f => f.peristent), (f, str) => str.writeString(f.name, 2), 2);
-		out.writeString(this.usid, 2);
+		out.writeString(this.usid() ?? null, 2);
 		out.writeEnumString(this.chatStrictness, ["chat", "strict"]);
 		out.writeNumber(this.lastJoined, 15);
 		out.writeNumber(this.firstJoined, 15);
@@ -1038,6 +1039,12 @@ We apologize for the inconvenience.`
 	}
 	info():PlayerInfo {
 		return Vars.netServer.admins.getInfo(this.uuid);
+	}
+	usid():string | undefined {
+		return this.usidMapping[localIPAddress];
+	}
+	setUSID(usid:string | undefined){
+		this.usidMapping[localIPAddress] = usid;
 	}
 	/**
 	 * Sends this player a chat message.
