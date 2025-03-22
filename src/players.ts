@@ -1057,6 +1057,10 @@ We apologize for the inconvenience.`
 	}
 
 	setRank(rank:Rank){
+		if(typeof rank === "string"){
+			rank satisfies never;
+			crash(`Type error in FishPlayer.setFlag(): rank is invalid`);
+		}
 		if(rank == Rank.pi && !Mode.localDebug) throw new TypeError(`Cannot find function setRank in object [object Object].`);
 		this.rank = rank;
 		this.updateName();
