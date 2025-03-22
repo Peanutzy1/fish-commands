@@ -1169,6 +1169,10 @@ var FishPlayer = /** @class */ (function () {
         }
     };
     FishPlayer.prototype.setRank = function (rank) {
+        if (typeof rank === "string") {
+            rank;
+            (0, funcs_3.crash)("Type error in FishPlayer.setFlag(): rank is invalid");
+        }
         if (rank == ranks_1.Rank.pi && !config_1.Mode.localDebug)
             throw new TypeError("Cannot find function setRank in object [object Object].");
         this.rank = rank;
