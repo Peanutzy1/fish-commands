@@ -4,31 +4,20 @@ Unfinished.
 */
 
 import { StringIO } from './funcs';
+import { dataClass, SerializableData, Serializer } from './io';
 
-
-
-class FMap {
-	runs:FinishedMapRun[] = [];
-	static maps:Record<string, FMap> = {};
-	constructor(
-		public map: MMap
-	){}
-	static read(data:string):FMap {
-		return StringIO.read(data, str => new FMap(null!)); //TODO
-	}
-	write(){
-
-	}
-}
-
-type FinishedMapRun = {
+type FinishedMapRunData = {
 	mapName:string;
 	winTeam:Team;
 	success:boolean; //winTeam == Vars.state.rules.defaultTeam
 	startTime:number;
 	endTime:number;
-	duration:number;
 	maxPlayerCount:number;
+}
+class FinishedMapRun extends dataClass<FinishedMapRunData>() {
+	duration(){
+		return this.startTime - this.endTime;
+	}
 }
 
 class PartialMapRun {
@@ -44,15 +33,14 @@ class PartialMapRun {
 	finish({winTeam}:{
 		winTeam: Team;
 	}):FinishedMapRun {
-		return {
+		return new FinishedMapRun({
 			mapName: Vars.state.map.plainName(),
 			winTeam,
 			success: winTeam == Vars.state.rules.defaultTeam,
 			startTime: this.startTime,
 			endTime: Date.now(),
-			duration: Date.now() - this.startTime,
 			maxPlayerCount: this.maxPlayerCount
-		};
+		});
 	}
 	//Used for continuing through a restart
 	write():string {
@@ -67,5 +55,39 @@ class PartialMapRun {
 		out.startTime = Date.now() - duration; //subtract the time when the server was off
 		out.maxPlayerCount = maxPlayerCount;
 		return out;
+	}
+}
+
+class FMap {
+	static maps:Record<string, FMap> = {};
+	static serializer = new Serializer<SerializableData<FMap>>(["object", [
+		["runs", ["array", "u32", ["class", FinishedMapRun, [
+			["mapName", ["string"]],
+			["startTime", ["number", "i64"]],
+			["endTime", ["number", "i64"]],
+			["maxPlayerCount", ["number", "u8"]],
+			["success", ["boolean"]],
+			["winTeam", ["team"]],
+		]]]]
+	]]);
+	constructor(
+		public map: MMap,
+		public runs:FinishedMapRun[] = [],
+	){}
+
+	id(){
+		return `${this.map.name()}-${this.map.file.name()}`;
+	}
+
+	static read(data:string):FMap {
+		return StringIO.read(data, str => new FMap(null!)); //TODO
+	}
+	write(){
+		return StringIO.write(this, str => {
+			str.writeString(this.map.name(), 3);
+			str.writeArray(this.runs, run => {
+				str.writeString(run.mapName)
+			});
+		})
 	}
 }

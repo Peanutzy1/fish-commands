@@ -13,6 +13,10 @@ importPackage(Packages.java.util.regex);
 importClass(Packages.java.lang.Runtime);
 importClass(Packages.java.lang.ProcessBuilder);
 importClass(Packages.java.nio.file.Paths);
+importClass(Packages.java.io.ByteArrayOutputStream);
+importClass(Packages.java.io.DataOutputStream);
+importClass(Packages.java.io.ByteArrayInputStream);
+importClass(Packages.java.io.DataInputStream);
 
 //Polyfills
 Object.entries = o => Object.keys(o).map(k => [k, o[k]]);

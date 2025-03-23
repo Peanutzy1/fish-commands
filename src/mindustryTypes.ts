@@ -342,6 +342,50 @@ class InputStream {
 class OutputStream {
 	close():void;
 }
+class DataOutputStream extends OutputStream {
+	constructor(stream:OutputStream);
+	write(b:number[]):void;
+	write(b:number[], offset:number, length:number):void;
+	write(b:number):void;
+	writeBoolean(v:boolean):void;
+	writeByte(v:number):void;
+	writeBytes(s:String):void;
+	writeChar(v:number):void;
+	writeChars(s:String):void;
+	writeDouble(v:number):void;
+	writeFloat(v:number):void;
+	writeInt(v:number):void;
+	writeLong(v:number):void;
+	writeShort(v:number):void;
+	writeUTF(s:String):void;
+}
+class DataInputStream extends InputStream {
+	constructor(stream:InputStream);
+	read(b:number[]):number;
+	read(b:number[], off:number, len:number):number;
+	readBoolean():boolean;
+	readByte():number;
+	readChar():number;
+	readDouble():number;
+	readFloat():number;
+	readFully(b:number[]):void;
+	readFully(b:number[], off:number, len:number):void;
+	readInt():number;
+	readLine():String;
+	readLong():number;
+	readShort():number;
+	readUnsignedByte():number;
+	readUnsignedShort():number;
+	readUTF():String;
+	skipBytes(n:number):number;
+}
+class ByteArrayOutputStream extends OutputStream {
+	constructor();
+	toByteArray():number[];
+}
+class ByteArrayInputStream extends InputStream {
+	constructor(bytes:number[]);
+}
 const Http: {
 	post(url:string, content:string):HttpRequest;
 	get(url:string):HttpRequest;
