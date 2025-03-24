@@ -96,7 +96,6 @@ var FishPlayer = /** @class */ (function () {
         this.lastRatelimitedMessage = -1;
         this.changedTeam = false;
         this.ipDetectedVpn = false;
-        this.approveNextLogin = false;
         this.chatStrictness = "chat";
         this.uuid = (_o = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _o !== void 0 ? _o : (0, funcs_3.crash)("Attempted to create FishPlayer with no UUID");
         this.name = (_p = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _p !== void 0 ? _p : "Unnamed player [ERROR]";
@@ -731,7 +730,7 @@ var FishPlayer = /** @class */ (function () {
     /** Checks if this player's USID is correct. */
     FishPlayer.prototype.checkUsid = function () {
         var storedUSID = this.usid();
-        var usidMissing = storedUSID == null || storedUSID;
+        var usidMissing = storedUSID == null || !storedUSID;
         var receivedUSID = this.player.usid();
         if (this.hasPerm("usidCheck")) {
             if (usidMissing) {

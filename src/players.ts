@@ -92,7 +92,6 @@ export class FishPlayer {
 	lastRatelimitedMessage = -1;
 	changedTeam = false;
 	ipDetectedVpn = false;
-	approveNextLogin = false;
 	
 	//Stored data
 	uuid: string;
@@ -672,7 +671,7 @@ If you are unable to change it, please download Mindustry from Steam or itch.io.
 	/** Checks if this player's USID is correct. */
 	checkUsid(){
 		const storedUSID = this.usid();
-		const usidMissing = storedUSID == null || storedUSID;
+		const usidMissing = storedUSID == null || !storedUSID;
 		const receivedUSID = this.player!.usid();
 		if(this.hasPerm("usidCheck")){
 			if(usidMissing){
