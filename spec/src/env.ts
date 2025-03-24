@@ -118,6 +118,112 @@ class InetAddress {
 class Inet4Address extends InetAddress {}
 class Inet6Address extends InetAddress {}
 
+class InputStream {}
+class OutputStream {
+  write(b:number[], offset?:number, length?:number):void {
+    throw new Error("not implemented");
+  }
+}
+class DataOutputStream extends OutputStream {
+	constructor(public stream:OutputStream){
+    super();
+  }
+	writeByte(v:number):void {
+    this.stream.write([v]);
+  }
+  writeBoolean(v:boolean):void {
+    this.stream.write([Number(v)]);
+  }
+	writeBytes(s:string):void {
+    throw new Error("unimplemented");
+  }
+	writeChar(v:number):void {
+    throw new Error("unimplemented");
+  }
+	writeChars(s:string):void {
+    throw new Error("unimplemented");
+  }
+	writeDouble(v:number):void {
+    
+  }
+	writeFloat(v:number):void {
+
+  }
+	writeInt(v:number):void {
+
+  }
+	writeLong(v:number):void {
+
+  }
+	writeShort(v:number):void {
+
+  }
+	writeUTF(s:String):void {
+
+  }
+}
+class DataInputStream extends InputStream {
+	constructor(stream:InputStream){
+    super();
+  }
+	readBoolean():boolean {
+    throw new Error("not implemented");
+  }
+	readByte():number {
+    throw new Error("not implemented");
+  }
+	readChar():number {
+    throw new Error("not implemented");
+  }
+	readDouble():number {
+    throw new Error("not implemented");
+  }
+	readFloat():number {
+    throw new Error("not implemented");
+  }
+	readFully(b:number[], off?:number, len?:number):void {
+    throw new Error("not implemented");
+  }
+	readInt():number {
+    throw new Error("not implemented");
+  }
+	readLine():String {
+    throw new Error("not implemented");
+  }
+	readLong():number {
+    throw new Error("not implemented");
+  }
+	readShort():number {
+    throw new Error("not implemented");
+  }
+	readUnsignedByte():number {
+    throw new Error("not implemented");
+  }
+	readUnsignedShort():number {
+    throw new Error("not implemented");
+  }
+	readUTF():String {
+    throw new Error("not implemented");
+  }
+	skipBytes(n:number):number {
+    throw new Error("not implemented");
+  }
+}
+class ByteArrayInputStream extends InputStream {
+  constructor(public bytes:number[]){
+    super();
+  }
+}
+class ByteArrayOutputStream extends OutputStream {
+  bytes:number[] = [];
+  constructor(){
+    super();
+  }
+  write(b: number[], offset?: number, length?: number):void {
+    this.bytes.push(...b);
+  }
+}
+
 const Packages = {
   java: {
     net: { NetworkInterface, Inet4Address },
