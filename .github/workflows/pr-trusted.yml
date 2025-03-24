@@ -25,6 +25,9 @@ jobs:
         with:
           app-id: ${{ secrets.FISH_BOT_ID }}
           private-key: ${{ secrets.FISH_BOT_PRIVATE_KEY }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
       # Checkout the trusted code
       - uses: actions/checkout@v1
         with:
