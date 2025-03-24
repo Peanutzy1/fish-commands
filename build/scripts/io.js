@@ -27,14 +27,17 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Serializer = void 0;
+exports.Serializer = exports.DataClass = void 0;
 exports.dataClass = dataClass;
+var DataClass = /** @class */ (function () {
+    function DataClass(data) {
+        Object.assign(this, data);
+    }
+    return DataClass;
+}());
+exports.DataClass = DataClass;
 function dataClass() {
-    return /** @class */ (function () {
-        function class_1() {
-        }
-        return class_1;
-    }());
+    return DataClass;
 }
 function checkBounds(type, value, min, max) {
     if (value < min) {
@@ -60,7 +63,7 @@ var Serializer = /** @class */ (function () {
         return Serializer.readNode(this.schema, new DataInputStream(new ByteArrayInputStream(input)));
     };
     Serializer.writeNode = function (schema, value, output) {
-        var e_1, _a;
+        var e_1, _a, e_2, _b;
         var checkNumbers = false;
         switch (schema[0]) {
             case 'string':
@@ -138,8 +141,8 @@ var Serializer = /** @class */ (function () {
                 break;
             case 'object':
                 try {
-                    for (var _b = __values(schema[1]), _c = _b.next(); !_c.done; _c = _b.next()) {
-                        var _d = __read(_c.value, 2), key = _d[0], childSchema = _d[1];
+                    for (var _c = __values(schema[1]), _d = _c.next(); !_d.done; _d = _c.next()) {
+                        var _e = __read(_d.value, 2), key = _e[0], childSchema = _e[1];
                         //correspondence
                         this.writeNode(childSchema, value[key], output);
                     }
@@ -147,9 +150,25 @@ var Serializer = /** @class */ (function () {
                 catch (e_1_1) { e_1 = { error: e_1_1 }; }
                 finally {
                     try {
-                        if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                        if (_d && !_d.done && (_a = _c.return)) _a.call(_c);
                     }
                     finally { if (e_1) throw e_1.error; }
+                }
+                break;
+            case 'class':
+                try {
+                    for (var _f = __values(schema[2]), _g = _f.next(); !_g.done; _g = _f.next()) {
+                        var _h = __read(_g.value, 2), key = _h[0], childSchema = _h[1];
+                        //correspondence
+                        this.writeNode(childSchema, value[key], output);
+                    }
+                }
+                catch (e_2_1) { e_2 = { error: e_2_1 }; }
+                finally {
+                    try {
+                        if (_g && !_g.done && (_b = _f.return)) _b.call(_f);
+                    }
+                    finally { if (e_2) throw e_2.error; }
                 }
                 break;
             case 'array':
@@ -161,7 +180,7 @@ var Serializer = /** @class */ (function () {
         }
     };
     Serializer.readNode = function (schema, input) {
-        var e_2, _a;
+        var e_3, _a, e_4, _b;
         switch (schema[0]) {
             case 'string':
                 return input.readUTF();
@@ -186,19 +205,35 @@ var Serializer = /** @class */ (function () {
             case 'object':
                 var output = {};
                 try {
-                    for (var _b = __values(schema[1]), _c = _b.next(); !_c.done; _c = _b.next()) {
-                        var _d = __read(_c.value, 2), key = _d[0], childSchema = _d[1];
+                    for (var _c = __values(schema[1]), _d = _c.next(); !_d.done; _d = _c.next()) {
+                        var _e = __read(_d.value, 2), key = _e[0], childSchema = _e[1];
                         output[key] = this.readNode(childSchema, input);
                     }
                 }
-                catch (e_2_1) { e_2 = { error: e_2_1 }; }
+                catch (e_3_1) { e_3 = { error: e_3_1 }; }
                 finally {
                     try {
-                        if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+                        if (_d && !_d.done && (_a = _c.return)) _a.call(_c);
                     }
-                    finally { if (e_2) throw e_2.error; }
+                    finally { if (e_3) throw e_3.error; }
                 }
                 return output;
+            case 'class':
+                var classData = {};
+                try {
+                    for (var _f = __values(schema[2]), _g = _f.next(); !_g.done; _g = _f.next()) {
+                        var _h = __read(_g.value, 2), key = _h[0], childSchema = _h[1];
+                        classData[key] = this.readNode(childSchema, input);
+                    }
+                }
+                catch (e_4_1) { e_4 = { error: e_4_1 }; }
+                finally {
+                    try {
+                        if (_g && !_g.done && (_b = _f.return)) _b.call(_f);
+                    }
+                    finally { if (e_4) throw e_4.error; }
+                }
+                return new schema[1](classData);
             case 'array':
                 var length = this.readNode(["number", schema[1]], input);
                 var array = new Array(length);

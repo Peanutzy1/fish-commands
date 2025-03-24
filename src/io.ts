@@ -1,18 +1,24 @@
 
 
-export function dataClass<T>(){
-  return class {} as new () => T;
+export class DataClass<T extends Serializable> {
+	_brand!: symbol;
+	constructor(data:T){
+		Object.assign(this, data);
+	}
+}
+export function dataClass<T extends Serializable>(){
+	return DataClass as new (data:T) => (DataClass<T> & T);
 }
 
 //Java does not support u64
 export type NumberRepresentation = "i8" | "i16" | "i32" | "i64" | "u8" | "u16" | "u32" | "f32" | "f64";
 
 export type SerializablePrimitive = string | number | boolean | Team;
-export type SerializableDataClass<ClassInstance extends {}> = new (data:SerializableData<ClassInstance>) => ClassInstance;
+export type SerializableDataClassConstructor<ClassInstance extends {}> = new (data:SerializableData<ClassInstance>) => ClassInstance;
 
 export type Serializable = SerializablePrimitive | Array<Serializable> | {
   [index: string]: Serializable;
-};
+} | DataClass<Serializable>;
 
 export type PrimitiveSchema<T extends SerializablePrimitive> =
 	T extends string ? ["string"] :
@@ -24,24 +30,26 @@ export type ArraySchema<T extends Array<Serializable>> =
 	["array", length:NumberRepresentation & `u${string}`, element:Schema<T[number]>];
 export type ObjectSchema<T extends Record<string, Serializable>> =
 	["object", children:Array<keyof T extends infer KT extends keyof T ? KT extends unknown ? [KT, Schema<T[KT]>] : never : never>];
-export type DataClassSchema<ClassInstance extends {}, T extends SerializableDataClass<ClassInstance>> =
-  ["class", clazz: {prototype: T}, children:Array<
-    ConstructorParameters<T>[0] extends infer U ?
-      keyof U extends infer KU extends keyof U ? KU extends unknown ? [KU, U[KU]] : never : never
-    : never
+export type DataClassSchema<ClassInstance extends {}> =
+  ["class", clazz: new (data:any) => ClassInstance, children:Array<
+		SerializableData<ClassInstance> extends infer Data extends Record<string, Serializable> ?
+			keyof Data extends infer KU extends keyof Data ? KU extends unknown ? [KU, Schema<Data[KU]>] : never : never
+		: never
   >];
 
 export type Schema<T extends Serializable> =
-	T extends Array<Serializable> ? ArraySchema<T> :
-	T extends Record<string, Serializable> ? ObjectSchema<T> :
-  T extends SerializableDataClass<infer ClassInstance> ? DataClassSchema<ClassInstance, T> :
 	T extends SerializablePrimitive ? PrimitiveSchema<T> :
+	T extends Array<Serializable> ? ArraySchema<T> :
+  T extends infer ClassInstance extends DataClass<Serializable> ? DataClassSchema<ClassInstance> :
+	T extends Record<string, Serializable> ? ObjectSchema<T> :
 never;
+
+
 
 export type SerializableData<T extends {}> = {
   [K in keyof T extends infer KT extends keyof T ? KT extends unknown ?
     T[KT] extends Serializable ? KT : never
-  : never : never]: T[K] & Serializable;
+  : never : never]: T[K];
 };
 
 function checkBounds(type:NumberRepresentation, value:number, min:number, max:number){
@@ -112,7 +120,13 @@ export class Serializer<T extends Serializable> {
 			case 'object':
 				for(const [key, childSchema] of schema[1]){
 					//correspondence
-					this.writeNode<any>(childSchema, value[key], output);
+					this.writeNode<Serializable[]>(childSchema as ArraySchema<Serializable[]>, value[key], output);
+				}
+				break;
+			case 'class':
+				for(const [key, childSchema] of schema[2] as [string, Schema<Serializable>][]){
+					//correspondence
+					this.writeNode<Serializable[]>(childSchema as ArraySchema<Serializable[]>, value[key], output);
 				}
 				break;
 			case 'array':
@@ -153,6 +167,12 @@ export class Serializer<T extends Serializable> {
 					output[key] = this.readNode<Serializable>(childSchema, input);
 				}
 				return output;
+			case 'class':
+				const classData:Record<string, Serializable> = {};
+				for(const [key, childSchema] of schema[2] as [string, Schema<Serializable>][]){
+					classData[key] = this.readNode<Serializable>(childSchema, input);
+				}
+				return new schema[1](classData);
 			case 'array':
 				const length = this.readNode<number>(["number", schema[1]], input);
 				const array = new Array<Serializable>(length);
