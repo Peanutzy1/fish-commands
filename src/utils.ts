@@ -7,7 +7,7 @@ import * as api from './api';
 import { fail } from './commands';
 import { Gamemode, GamemodeName, adminNames, bannedWords, text, multiCharSubstitutions, substitutions } from "./config";
 import { crash, escapeStringColorsServer, escapeTextDiscord, parseError, StringIO } from './funcs';
-import { maxTime } from "./globals";
+import { FishEvents, maxTime } from "./globals";
 import { fishState, ipPattern, ipPortPattern, ipRangeCIDRPattern, ipRangeWildcardPattern, tileHistory, uuidPattern } from './globals';
 import { FishPlayer } from "./players";
 import { Boolf, PartialFormatString, SelectEnumClassKeys } from './types';
@@ -118,8 +118,9 @@ export function getTeam(team:string):Team | string {
 
 /** Attempts to parse an Item from the input. */
 export function getItem(item:string):Item | string {
-	if(item in Items && Items[item as keyof typeof Items] instanceof Item) return Items[item as keyof typeof Items] as Item;
-	else if(Vars.content.items().find(t => t.name.includes(item.toLowerCase()))) return Vars.content.items().find(t => t.name.includes(item.toLowerCase()));
+	let temp: Item;
+	if(item in Items && (temp = Items[item as keyof typeof Items]) instanceof Item) return temp;
+	else if(temp = Vars.content.items().find(t => t.name.includes(item.toLowerCase()))!) return temp;
 	return `"${item}" is not a valid item.`;
 }
 
@@ -288,8 +289,6 @@ export function serverRestartLoop(sec:number):void {
 		fishState.restartLoopTask = Timer.schedule(() => serverRestartLoop(sec - 1), 1);
 	} else {
 		Log.info(`Restarting...`);
-		Core.settings.manualSave();
-		FishPlayer.saveAll();
 		const file = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
 		Vars.netServer.kickAll(Packets.KickReason.serverRestarting);
 		Core.app.post(() => {
@@ -349,10 +348,10 @@ export function getBlock(block:string, filter:"buildable" | "air" | "all"):Block
 		air: b => b == Blocks.air || isBuildable(b),
 		all: b => true
 	} satisfies Record<string, (b:Block) => boolean>)[filter];
-	let out:Block;
+	let out:Block | null;
 	if(block in Blocks && Blocks[block] instanceof Block && check(Blocks[block])) return Blocks[block];
-	else if(out = Vars.content.blocks().find(t => t.name.includes(block.toLowerCase()) && check(t))) return out;
-	else if(out = Vars.content.blocks().find(t => t.name.replace(/-/g, "").includes(block.toLowerCase().replace(/ /g, "")) && check(t))) return out;
+	else if(out = Vars.content.blocks().find(t => t.name.includes(block.toLowerCase()) && check(t))) return out!;
+	else if(out = Vars.content.blocks().find(t => t.name.replace(/-/g, "").includes(block.toLowerCase().replace(/ /g, "")) && check(t))) return out!;
 	else if(block.includes("airblast")) return Blocks.blastDrill;
 	return `"${block}" is not a valid block.`;
 }

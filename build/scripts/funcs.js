@@ -51,6 +51,7 @@ exports.tagProcessor = tagProcessor;
 exports.tagProcessorPartial = tagProcessorPartial;
 exports.random = random;
 exports.getIPAddress = getIPAddress;
+exports.lazy = lazy;
 var storedValues = {};
 /**
  * Stores the output of a function and returns that value
@@ -366,4 +367,10 @@ function getIPAddress(fallback) {
         .filter(function (i) { return i.isUp() && !i.isLoopback(); })
         .findFirst()
         .orElse(null)) === null || _a === void 0 ? void 0 : _a.getInterfaceAddresses().stream().map(function (s) { return s.getAddress(); }).filter(function (a) { return a instanceof Packages.java.net.Inet4Address; }).findFirst().orElse(null)) === null || _b === void 0 ? void 0 : _b.getHostAddress()) !== null && _c !== void 0 ? _c : fallback;
+}
+function lazy(func) {
+    var value = null;
+    return function get() {
+        return value !== null && value !== void 0 ? value : (value = func());
+    };
 }

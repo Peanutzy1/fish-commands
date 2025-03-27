@@ -191,10 +191,11 @@ function getTeam(team) {
 }
 /** Attempts to parse an Item from the input. */
 function getItem(item) {
-    if (item in Items && Items[item] instanceof Item)
-        return Items[item];
-    else if (Vars.content.items().find(function (t) { return t.name.includes(item.toLowerCase()); }))
-        return Vars.content.items().find(function (t) { return t.name.includes(item.toLowerCase()); });
+    var temp;
+    if (item in Items && (temp = Items[item]) instanceof Item)
+        return temp;
+    else if (temp = Vars.content.items().find(function (t) { return t.name.includes(item.toLowerCase()); }))
+        return temp;
     return "\"".concat(item, "\" is not a valid item.");
 }
 /**
@@ -403,8 +404,6 @@ function serverRestartLoop(sec) {
     }
     else {
         Log.info("Restarting...");
-        Core.settings.manualSave();
-        players_1.FishPlayer.saveAll();
         var file_1 = Vars.saveDirectory.child('1' + '.' + Vars.saveExtension);
         Vars.netServer.kickAll(Packets.KickReason.serverRestarting);
         Core.app.post(function () {

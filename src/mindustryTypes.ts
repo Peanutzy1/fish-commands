@@ -270,6 +270,7 @@ const Core: {
 	settings: {
 		get<T = unknown>(key:string, defaultValue?:T):T;
 		getBytes(key:string):number[];
+		getString(key:string):string | null;
 		getDataDirectory():Fi;
 		getInt(key:string, defaultValue?:number):number;
 		put(key:string, value:any):void;

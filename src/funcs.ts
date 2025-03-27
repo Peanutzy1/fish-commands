@@ -293,3 +293,9 @@ export function getIPAddress(fallback:string = "127.0.0.1"):string {
 		?.getHostAddress() ?? fallback;
 }
 
+export function lazy<T extends {}>(func:() => T){
+	let value: T | null = null;
+	return function get(){
+		return value ??= func();
+	}
+}

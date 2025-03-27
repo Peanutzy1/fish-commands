@@ -45,6 +45,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SettingsSerializer = exports.Serializer = exports.DataClass = void 0;
 exports.dataClass = dataClass;
 exports.serialize = serialize;
+var funcs_1 = require("./funcs");
 var globals_1 = require("./globals");
 var DataClass = /** @class */ (function () {
     function DataClass(data) {
@@ -292,12 +293,12 @@ function serialize(settingsKey, schema) {
         var addInitializer = _a.addInitializer, access = _a.access;
         addInitializer(function () {
             var _this = this;
-            var serializer = new SettingsSerializer(settingsKey, schema());
+            var serializer = (0, funcs_1.lazy)(function () { return new SettingsSerializer(settingsKey, schema()); });
             globals_1.FishEvents.on("loadData", function () {
-                access.set(_this, serializer.readSettings());
+                access.set(_this, serializer().readSettings());
             });
             globals_1.FishEvents.on("saveData", function () {
-                serializer.writeSettings(access.get(_this));
+                serializer().writeSettings(access.get(_this));
             });
         });
     };

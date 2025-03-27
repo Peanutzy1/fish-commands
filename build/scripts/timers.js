@@ -33,6 +33,7 @@ function initializeTimers() {
             SaveIO.save(file);
             players_1.FishPlayer.saveAll();
             Call.sendMessage('[#4fff8f9f]Game saved.');
+            globals_1.FishEvents.fire("saveData", []);
         });
         try {
             //Unblacklist trusted players

@@ -5,8 +5,8 @@ This file contains the in-game chat commands that can be run by trusted staff.
 
 import * as api from "./api";
 import { Perm, Req, command, commandList, fail } from "./commands";
-import { Gamemode, localIPAddress, Mode, rules, stopAntiEvadeTime } from "./config";
-import { maxTime } from "./globals";
+import { Gamemode, Mode, rules, stopAntiEvadeTime } from "./config";
+import { FishEvents, maxTime } from "./globals";
 import { updateMaps } from "./files";
 import * as fjsContext from "./fjsContext";
 import { fishState, ipPattern, uuidPattern } from "./globals";
@@ -328,6 +328,7 @@ export const commands = commandList({
 		perm: Perm.mod,
 		handler({outputSuccess}){
 			FishPlayer.saveAll();
+			FishEvents.fire("saveData", []);
 			const file = Vars.saveDirectory.child(`1.${Vars.saveExtension}`);
 			SaveIO.save(file);
 			outputSuccess("Game saved.");

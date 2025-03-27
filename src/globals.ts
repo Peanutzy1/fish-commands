@@ -38,4 +38,6 @@ export const FishEvents = new EventEmitter<{
 	loadData: [];
 	/** Use this event to save data to Core.settings */
 	saveData: [];
+	/** Use this event to mutate things after all the data is loaded */
+	dataLoaded: [];
 }>();

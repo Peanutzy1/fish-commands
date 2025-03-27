@@ -125,6 +125,7 @@ Events.on(EventType.ServerLoadEvent, function (e) {
     var clientHandler = Vars.netServer.clientCommands;
     var serverHandler = ServerControl.instance.handler;
     players_1.FishPlayer.loadAll();
+    globals_1.FishEvents.fire("loadData", []);
     timers.initializeTimers();
     menus.registerListeners();
     //Cap delta
@@ -175,8 +176,10 @@ Events.on(EventType.ServerLoadEvent, function (e) {
         Log.err("Failed to get fish plugin information.");
         Log.err(err);
     }
+    globals_1.FishEvents.fire("dataLoaded", []);
     Core.app.addListener({
         dispose: function () {
+            globals_1.FishEvents.fire("saveData", []);
             players_1.FishPlayer.saveAll();
             Log.info("Saved on exit.");
         }

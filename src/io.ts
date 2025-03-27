@@ -1,3 +1,4 @@
+import { lazy } from "./funcs";
 import { FishEvents } from "./globals";
 
 
@@ -219,12 +220,12 @@ export function serialize<T extends Serializable>(settingsKey: string, schema: (
 		static: true;
 	}){
 		addInitializer(function(){
-			const serializer = new SettingsSerializer<T>(settingsKey, schema());
+			const serializer = lazy(() => new SettingsSerializer<T>(settingsKey, schema()));
 			FishEvents.on("loadData", () => {
-				access.set(this, serializer.readSettings());
+				access.set(this, serializer().readSettings());
 			});
 			FishEvents.on("saveData", () => {
-				serializer.writeSettings(access.get(this));
+				serializer().writeSettings(access.get(this));
 			});
 		});
 	};

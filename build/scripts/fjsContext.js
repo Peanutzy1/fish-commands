@@ -12,6 +12,7 @@ var consoleCommands = require("./consoleCommands").commands;
 var files = require("./files");
 var funcs = require("./funcs");
 var globals = require("./globals");
+var maps = require("./maps");
 var memberCommands = require("./memberCommands").commands;
 var menus = require("./menus");
 var packetHandlers = require("./packetHandlers");
@@ -25,6 +26,7 @@ var votes = require("./votes");
 var Promise = require("./promise").Promise;
 var Perm = commands.Perm, allCommands = commands.allCommands;
 var FishPlayer = players.FishPlayer;
+var FMap = maps.FMap;
 var Rank = ranks.Rank, RoleFlag = ranks.RoleFlag;
 var Menu = menus.Menu;
 Object.assign(this, utils, funcs); //global scope goes brrrrr, I'm sure this will not cause any bugs whatsoever

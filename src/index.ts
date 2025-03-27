@@ -7,7 +7,7 @@ import * as api from './api';
 import * as commands from './commands';
 import { handleTapEvent } from './commands';
 import { commands as consoleCommands } from "./consoleCommands";
-import { fishPlugin, fishState, ipJoins, tileHistory } from "./globals";
+import { FishEvents, fishPlugin, fishState, ipJoins, tileHistory } from "./globals";
 import { commands as memberCommands } from './memberCommands';
 import * as menus from "./menus";
 import { loadPacketHandlers, commands as packetHandlerCommands } from './packetHandlers';
@@ -118,6 +118,7 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 	const serverHandler = ServerControl.instance.handler;
 
 	FishPlayer.loadAll();
+	FishEvents.fire("loadData", []);
 	timers.initializeTimers();
 	menus.registerListeners();
 
@@ -172,8 +173,12 @@ Events.on(EventType.ServerLoadEvent, (e) => {
 		Log.err("Failed to get fish plugin information.");
 		Log.err(err);
 	}
+
+	FishEvents.fire("dataLoaded", []);
+
 	Core.app.addListener({
 		dispose(){
+			FishEvents.fire("saveData", []);
 			FishPlayer.saveAll();
 			Log.info("Saved on exit.");
 		}

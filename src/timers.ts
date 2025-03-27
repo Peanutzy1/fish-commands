@@ -7,7 +7,7 @@ import { getStaffMessages } from './api';
 import * as config from "./config";
 import { Gamemode } from "./config";
 import { updateMaps } from './files';
-import { ipJoins } from "./globals";
+import { FishEvents, ipJoins } from "./globals";
 import { FishPlayer } from "./players";
 import { definitelyRealMemoryCorruption, neutralGameover } from "./utils";
 
@@ -21,6 +21,7 @@ export function initializeTimers(){
 			SaveIO.save(file);
 			FishPlayer.saveAll();
 			Call.sendMessage('[#4fff8f9f]Game saved.');
+			FishEvents.fire("saveData", []);
 		});
 		//Unblacklist trusted players
 		for(const fishP of Object.values(FishPlayer.cachedPlayers)){
