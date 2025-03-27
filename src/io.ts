@@ -197,10 +197,10 @@ export class SettingsSerializer<T extends Serializable> extends Serializer<T> {
 		this.write(object, new DataOutputStream(output));
 		Core.settings.put(this.settingsKey, output.toByteArray());
 	}
-	readSettings():T {
-		return this.read(new DataInputStream(new ByteArrayInputStream(
-			Core.settings.getBytes(this.settingsKey)
-		)));
+	readSettings():T | null {
+		const data = Core.settings.getBytes(this.settingsKey);
+		if(data) return this.read(new DataInputStream(new ByteArrayInputStream(data)));
+		else return null;
 	}
 }
 
@@ -222,7 +222,8 @@ export function serialize<T extends Serializable>(settingsKey: string, schema: (
 		addInitializer(function(){
 			const serializer = lazy(() => new SettingsSerializer<T>(settingsKey, schema()));
 			FishEvents.on("loadData", () => {
-				access.set(this, serializer().readSettings());
+				const value = serializer().readSettings();
+				if(value) access.set(this, value);
 			});
 			FishEvents.on("saveData", () => {
 				serializer().writeSettings(access.get(this));

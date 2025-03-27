@@ -276,7 +276,11 @@ var SettingsSerializer = /** @class */ (function (_super) {
         Core.settings.put(this.settingsKey, output.toByteArray());
     };
     SettingsSerializer.prototype.readSettings = function () {
-        return this.read(new DataInputStream(new ByteArrayInputStream(Core.settings.getBytes(this.settingsKey))));
+        var data = Core.settings.getBytes(this.settingsKey);
+        if (data)
+            return this.read(new DataInputStream(new ByteArrayInputStream(data)));
+        else
+            return null;
     };
     return SettingsSerializer;
 }(Serializer));
@@ -295,7 +299,9 @@ function serialize(settingsKey, schema) {
             var _this = this;
             var serializer = (0, funcs_1.lazy)(function () { return new SettingsSerializer(settingsKey, schema()); });
             globals_1.FishEvents.on("loadData", function () {
-                access.set(_this, serializer().readSettings());
+                var value = serializer().readSettings();
+                if (value)
+                    access.set(_this, value);
             });
             globals_1.FishEvents.on("saveData", function () {
                 serializer().writeSettings(access.get(_this));
