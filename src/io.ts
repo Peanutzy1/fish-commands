@@ -1,3 +1,4 @@
+import { FishEvents } from "./globals";
 
 
 export class DataClass<T extends Serializable> {
@@ -68,13 +69,11 @@ export class Serializer<T extends Serializable> {
 	constructor(
 		public schema: Schema<T>,
 	){}
-	write(object:T):number[] {
-		const output = new ByteArrayOutputStream();
-		Serializer.writeNode(this.schema, object, new DataOutputStream(output));
-		return output.toByteArray();
+	write(object:T, output:DataOutputStream):void {
+		Serializer.writeNode(this.schema, object, output);
 	}
-	read(input:number[]):T {
-		return Serializer.readNode(this.schema, new DataInputStream(new ByteArrayInputStream(input)));
+	read(input:DataInputStream):T {
+		return Serializer.readNode(this.schema, input);
 	}
 	/** SAFETY: Data must not be a union */
 	static writeNode<Data extends Serializable>(schema:Schema<Data>, object:Data, output:DataOutputStream):void;
@@ -182,4 +181,51 @@ export class Serializer<T extends Serializable> {
 				return array;
 		}
 	}
+}
+
+export class SettingsSerializer<T extends Serializable> extends Serializer<T> {
+	constructor(
+		public readonly settingsKey: string,
+		public readonly schema: Schema<T>,
+	){
+		super(schema);
+	}
+
+	writeSettings(object:T):void {
+		const output = new ByteArrayOutputStream();
+		this.write(object, new DataOutputStream(output));
+		Core.settings.put(this.settingsKey, output.toByteArray());
+	}
+	readSettings():T {
+		return this.read(new DataInputStream(new ByteArrayInputStream(
+			Core.settings.getBytes(this.settingsKey)
+		)));
+	}
+}
+
+if(!Symbol.metadata)
+	Object.defineProperty(Symbol, "metadata", {
+		writable: false,
+		enumerable: false,
+		configurable: false,
+		value: Symbol("Symbol.metadata")
+	});
+
+export function serialize<T extends Serializable>(settingsKey: string, schema: () => Schema<T>){
+	return function<
+		This extends { [P in Name]: T }, Name extends string | symbol
+	>(_: unknown, {addInitializer, access}:ClassFieldDecoratorContext<This, T> & {
+		name: Name;
+		static: true;
+	}){
+		addInitializer(function(){
+			const serializer = new SettingsSerializer<T>(settingsKey, schema());
+			FishEvents.on("loadData", () => {
+				access.set(this, serializer.readSettings());
+			});
+			FishEvents.on("saveData", () => {
+				serializer.writeSettings(access.get(this));
+			});
+		});
+	};
 }

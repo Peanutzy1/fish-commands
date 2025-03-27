@@ -269,6 +269,7 @@ const Pal: Record<"orangeSpark" | "adminChat" | "logicBlocks" | "vent" | "lighti
 const Core: {
 	settings: {
 		get<T = unknown>(key:string, defaultValue?:T):T;
+		getBytes(key:string):number[];
 		getDataDirectory():Fi;
 		getInt(key:string, defaultValue?:number):number;
 		put(key:string, value:any):void;
@@ -410,7 +411,7 @@ class Seq<T> {
 	/** @returns whether any item was removed */
 	removeAll(pred:(item:T) => boolean):boolean;
 	select(pred:(item:T) => boolean):Seq<T>;
-	find(pred:(item:T) => boolean):T;
+	find(pred:(item:T) => boolean):T | null;
 	each(func:(item:T) => unknown):void;
 	each(pred:(item:T) => boolean, func:(item:T) => unknown):void;
 	isEmpty():boolean;
@@ -651,6 +652,9 @@ interface ReadonlyArray<T> {
 interface ObjectConstructor {
 	entries<const K extends PropertyKey, V>(input:Record<K, V>):[K, V][];
 	fromEntries<const K extends PropertyKey, V>(input:[K, V][]):Record<K, V>;
+}
+interface SymbolConstructor {
+	readonly metadata: unique symbol;
 }
 
 const Threads: {

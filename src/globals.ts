@@ -4,7 +4,7 @@ This file contains mutable global variables, and global constants.
 */
 
 import { EventEmitter } from "./funcs";
-import { FishPlayer } from "./players";
+import type { FishPlayer } from "./players";
 
 export const tileHistory:Record<string, string> = {};
 export const recentWhispers:Record<string, string> = {};
@@ -34,4 +34,8 @@ export const maxTime = 9999999999999;
 export const FishEvents = new EventEmitter<{
 	/** Fired after a team change. The current team is player.team() */
 	playerTeamChange: [player:FishPlayer, previous:Team];
+	/** Use this event to load data from Core.settings */
+	loadData: [];
+	/** Use this event to save data to Core.settings */
+	saveData: [];
 }>();

@@ -1,4 +1,19 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __values = (this && this.__values) || function(o) {
     var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
     if (m) return m.call(o);
@@ -27,8 +42,10 @@ var __read = (this && this.__read) || function (o, n) {
     return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Serializer = exports.DataClass = void 0;
+exports.SettingsSerializer = exports.Serializer = exports.DataClass = void 0;
 exports.dataClass = dataClass;
+exports.serialize = serialize;
+var globals_1 = require("./globals");
 var DataClass = /** @class */ (function () {
     function DataClass(data) {
         Object.assign(this, data);
@@ -54,13 +71,11 @@ var Serializer = /** @class */ (function () {
     function Serializer(schema) {
         this.schema = schema;
     }
-    Serializer.prototype.write = function (object) {
-        var output = new ByteArrayOutputStream();
-        Serializer.writeNode(this.schema, object, new DataOutputStream(output));
-        return output.toByteArray();
+    Serializer.prototype.write = function (object, output) {
+        Serializer.writeNode(this.schema, object, output);
     };
     Serializer.prototype.read = function (input) {
-        return Serializer.readNode(this.schema, new DataInputStream(new ByteArrayInputStream(input)));
+        return Serializer.readNode(this.schema, input);
     };
     Serializer.writeNode = function (schema, value, output) {
         var e_1, _a, e_2, _b;
@@ -246,3 +261,44 @@ var Serializer = /** @class */ (function () {
     return Serializer;
 }());
 exports.Serializer = Serializer;
+var SettingsSerializer = /** @class */ (function (_super) {
+    __extends(SettingsSerializer, _super);
+    function SettingsSerializer(settingsKey, schema) {
+        var _this = _super.call(this, schema) || this;
+        _this.settingsKey = settingsKey;
+        _this.schema = schema;
+        return _this;
+    }
+    SettingsSerializer.prototype.writeSettings = function (object) {
+        var output = new ByteArrayOutputStream();
+        this.write(object, new DataOutputStream(output));
+        Core.settings.put(this.settingsKey, output.toByteArray());
+    };
+    SettingsSerializer.prototype.readSettings = function () {
+        return this.read(new DataInputStream(new ByteArrayInputStream(Core.settings.getBytes(this.settingsKey))));
+    };
+    return SettingsSerializer;
+}(Serializer));
+exports.SettingsSerializer = SettingsSerializer;
+if (!Symbol.metadata)
+    Object.defineProperty(Symbol, "metadata", {
+        writable: false,
+        enumerable: false,
+        configurable: false,
+        value: Symbol("Symbol.metadata")
+    });
+function serialize(settingsKey, schema) {
+    return function (_, _a) {
+        var addInitializer = _a.addInitializer, access = _a.access;
+        addInitializer(function () {
+            var _this = this;
+            var serializer = new SettingsSerializer(settingsKey, schema());
+            globals_1.FishEvents.on("loadData", function () {
+                access.set(_this, serializer.readSettings());
+            });
+            globals_1.FishEvents.on("saveData", function () {
+                serializer.writeSettings(access.get(_this));
+            });
+        });
+    };
+}
