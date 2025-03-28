@@ -299,3 +299,20 @@ export function lazy<T extends {}>(func:() => T){
 		return value ??= func();
 	}
 }
+
+export function invalidtoNull(input:number):number | null {
+	if(isNaN(input) || !isFinite(input)) return null;
+	return input;
+}
+
+export function computeStatistics(data:number[]){
+	const lowest = Math.min(...data);
+	const highest = Math.max(...data);
+	return {
+		lowest,
+		highest,
+		range: highest - lowest,
+		//variance? stdev?
+		average: (data.reduce((a, b) => a + b, 0) / data.length),
+	};
+}

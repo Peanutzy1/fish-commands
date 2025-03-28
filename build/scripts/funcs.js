@@ -52,6 +52,8 @@ exports.tagProcessorPartial = tagProcessorPartial;
 exports.random = random;
 exports.getIPAddress = getIPAddress;
 exports.lazy = lazy;
+exports.invalidtoNull = invalidtoNull;
+exports.computeStatistics = computeStatistics;
 var storedValues = {};
 /**
  * Stores the output of a function and returns that value
@@ -372,5 +374,21 @@ function lazy(func) {
     var value = null;
     return function get() {
         return value !== null && value !== void 0 ? value : (value = func());
+    };
+}
+function invalidtoNull(input) {
+    if (isNaN(input) || !isFinite(input))
+        return null;
+    return input;
+}
+function computeStatistics(data) {
+    var lowest = Math.min.apply(Math, __spreadArray([], __read(data), false));
+    var highest = Math.max.apply(Math, __spreadArray([], __read(data), false));
+    return {
+        lowest: lowest,
+        highest: highest,
+        range: highest - lowest,
+        //variance? stdev?
+        average: (data.reduce(function (a, b) { return a + b; }, 0) / data.length),
     };
 }

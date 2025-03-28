@@ -3,6 +3,7 @@ Copyright © BalaM314, 2025. All Rights Reserved.
 Unfinished.
 */
 
+import { computeStatistics } from './funcs';
 import { FishEvents } from './globals';
 import { dataClass, serialize } from './io';
 
@@ -18,11 +19,11 @@ export class FinishedMapRun extends dataClass<FinishedMapRunData>() {
 		return this.endTime - this.startTime;
 	}
 	outcome(){
-		if(this.success) return ["win"] as const;
+		if(this.success) return ["win", "win"] as const;
 		else if(this.winTeam === Team.derelict){
 			if(this.duration() > 180_000) return ["loss", "late rtv"] as const;
-			return ["rtv"] as const;
-		} else return ["loss", "normal"] as const;
+			return ["rtv", "early rtv"] as const;
+		} else return ["loss", "loss"] as const;
 	}
 }
 
@@ -144,5 +145,33 @@ export class FMap extends dataClass<FMapData>() {
 		this.maps[mapFileName] = fmap;
 		this.allMaps.push(fmap);
 		return fmap;
+	}
+
+	stats(){
+		const allRunCount = this.runs.length;
+		const victories = this.runs.filter(r => r.outcome()[1] === "win").length;
+		const losses = this.runs.filter(r => r.outcome()[0] === "loss").length;
+		const earlyRTVs = this.runs.filter(r => r.outcome()[1] === "early rtv").length;
+		const lateRTVs = this.runs.filter(r => r.outcome()[1] === "late rtv").length;
+		const significantRunCount = allRunCount - earlyRTVs;
+		const totalLosses = losses + lateRTVs;
+		const durations = this.runs.map(r => r.duration() / 1000); //convert to seconds
+		const durationStats = computeStatistics(durations);
+		return {
+			allRunCount,
+			significantRunCount,
+			victories,
+			losses,
+			totalLosses,
+			earlyRTVs,
+			lateRTVs,
+			earlyRTVRate: earlyRTVs / allRunCount,
+			winRate: victories / significantRunCount,
+			lossRate: losses / significantRunCount,
+			averagePlaytime: durationStats.average,
+			shortestWinTime: Math.min(...this.runs.filter(r => r.outcome()[0] === "win").map(r => r.duration())),
+			longestTime: durationStats.highest,
+			averageHighestPlayerCount: computeStatistics(this.runs.map(r => r.maxPlayerCount)).average,
+		};
 	}
 }

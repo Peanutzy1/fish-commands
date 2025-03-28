@@ -68,9 +68,19 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FMap = exports.PartialMapRun = exports.FinishedMapRun = void 0;
+var funcs_1 = require("./funcs");
 var globals_1 = require("./globals");
 var io_1 = require("./io");
 var FinishedMapRun = /** @class */ (function (_super) {
@@ -83,14 +93,14 @@ var FinishedMapRun = /** @class */ (function (_super) {
     };
     FinishedMapRun.prototype.outcome = function () {
         if (this.success)
-            return ["win"];
+            return ["win", "win"];
         else if (this.winTeam === Team.derelict) {
             if (this.duration() > 180000)
                 return ["loss", "late rtv"];
-            return ["rtv"];
+            return ["rtv", "early rtv"];
         }
         else
-            return ["loss", "normal"];
+            return ["loss", "loss"];
     };
     return FinishedMapRun;
 }((0, io_1.dataClass)()));
@@ -200,6 +210,33 @@ var FMap = function () {
                 this.maps[mapFileName] = fmap;
                 this.allMaps.push(fmap);
                 return fmap;
+            };
+            FMap.prototype.stats = function () {
+                var allRunCount = this.runs.length;
+                var victories = this.runs.filter(function (r) { return r.outcome()[1] === "win"; }).length;
+                var losses = this.runs.filter(function (r) { return r.outcome()[0] === "loss"; }).length;
+                var earlyRTVs = this.runs.filter(function (r) { return r.outcome()[1] === "early rtv"; }).length;
+                var lateRTVs = this.runs.filter(function (r) { return r.outcome()[1] === "late rtv"; }).length;
+                var significantRunCount = allRunCount - earlyRTVs;
+                var totalLosses = losses + lateRTVs;
+                var durations = this.runs.map(function (r) { return r.duration() / 1000; }); //convert to seconds
+                var durationStats = (0, funcs_1.computeStatistics)(durations);
+                return {
+                    allRunCount: allRunCount,
+                    significantRunCount: significantRunCount,
+                    victories: victories,
+                    losses: losses,
+                    totalLosses: totalLosses,
+                    earlyRTVs: earlyRTVs,
+                    lateRTVs: lateRTVs,
+                    earlyRTVRate: earlyRTVs / allRunCount,
+                    winRate: victories / significantRunCount,
+                    lossRate: losses / significantRunCount,
+                    averagePlaytime: durationStats.average,
+                    shortestWinTime: Math.min.apply(Math, __spreadArray([], __read(this.runs.filter(function (r) { return r.outcome()[0] === "win"; }).map(function (r) { return r.duration(); })), false)),
+                    longestTime: durationStats.highest,
+                    averageHighestPlayerCount: (0, funcs_1.computeStatistics)(this.runs.map(function (r) { return r.maxPlayerCount; })).average,
+                };
             };
             return FMap;
         }(_classSuper)),
