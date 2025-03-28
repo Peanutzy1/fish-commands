@@ -70,7 +70,7 @@ var __read = (this && this.__read) || function (o, n) {
 };
 var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FMap = void 0;
+exports.FMap = exports.PartialMapRun = exports.FinishedMapRun = void 0;
 var globals_1 = require("./globals");
 var io_1 = require("./io");
 var FinishedMapRun = /** @class */ (function (_super) {
@@ -81,8 +81,20 @@ var FinishedMapRun = /** @class */ (function (_super) {
     FinishedMapRun.prototype.duration = function () {
         return this.endTime - this.startTime;
     };
+    FinishedMapRun.prototype.outcome = function () {
+        if (this.success)
+            return ["win"];
+        else if (this.winTeam === Team.derelict) {
+            if (this.duration() > 180000)
+                return ["loss", "late rtv"];
+            return ["rtv"];
+        }
+        else
+            return ["loss", "normal"];
+    };
     return FinishedMapRun;
 }((0, io_1.dataClass)()));
+exports.FinishedMapRun = FinishedMapRun;
 var PartialMapRun = /** @class */ (function () {
     function PartialMapRun() {
         this.startTime = Date.now();
@@ -160,6 +172,7 @@ var PartialMapRun = /** @class */ (function () {
     })();
     return PartialMapRun;
 }());
+exports.PartialMapRun = PartialMapRun;
 var FMap = function () {
     var _b;
     var _classSuper = (0, io_1.dataClass)();

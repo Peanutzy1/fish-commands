@@ -13,13 +13,20 @@ type FinishedMapRunData = {
 	endTime:number;
 	maxPlayerCount:number;
 }
-class FinishedMapRun extends dataClass<FinishedMapRunData>() {
+export class FinishedMapRun extends dataClass<FinishedMapRunData>() {
 	duration(){
 		return this.endTime - this.startTime;
 	}
+	outcome(){
+		if(this.success) return ["win"] as const;
+		else if(this.winTeam === Team.derelict){
+			if(this.duration() > 180_000) return ["loss", "late rtv"] as const;
+			return ["rtv"] as const;
+		} else return ["loss", "normal"] as const;
+	}
 }
 
-class PartialMapRun {
+export class PartialMapRun {
 	static readonly key = "fish-partial-map-run";
 	static current: PartialMapRun | null = null;
 	static {
