@@ -30,6 +30,21 @@ const Strings: {
 const NetServer: {
 	kickDuration: number;
 };
+class Rules {
+	constructor();
+	mode(): Gamemode;
+	defaultTeam: Team;
+	waveTeam: Team;
+	waves: boolean;
+	waitEnemies: boolean;
+	env: number;
+	fog: boolean;
+	pvpAutoPause: boolean;
+	placeRangeCheck: boolean;
+	onlyDepositCore: boolean;
+	getClass(): typeof Rules;
+}
+
 const Vars: {
 	logic: {
 		skipWave():void;
@@ -50,16 +65,7 @@ const Vars: {
 	}
 	maps: Maps;
 	state: {
-		rules: {
-			mode():Gamemode;
-			defaultTeam:Team;
-			waveTeam:Team;
-			waves:boolean;
-			waitEnemies:boolean;
-			env:number;
-			fog:boolean;
-			pvpAutoPause: boolean;
-		}
+		rules: Rules
 		set(state:State):void;
 		gameOver:boolean;
 		wave:number;
@@ -625,6 +631,7 @@ class MMap {
 	plainName():string;
 	plainAuthor():string;
 	plainDescription():string;
+	rules():Rules;
 }
 
 class Sort {

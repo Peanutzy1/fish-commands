@@ -83,7 +83,7 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CommandError = exports.Req = exports.Perm = exports.consoleCommandList = exports.commandList = exports.allConsoleCommands = exports.allCommands = void 0;
+exports.CommandError = exports.f_client = exports.Req = exports.Perm = exports.consoleCommandList = exports.commandList = exports.allConsoleCommands = exports.allCommands = void 0;
 exports.command = command;
 exports.formatArg = formatArg;
 exports.fail = fail;
@@ -604,6 +604,18 @@ var fFunctions = {
             value ? "&lrtrue&fr" : "&lgfalse&fr",
         ];
     },
+    percent: function (value, decimals) {
+        if (decimals === void 0) { decimals = 0; }
+        if (isNaN(value) || !isFinite(value))
+            return ["[gray]N/A[]", "N/A"];
+        var percent = (value * 100).toFixed(decimals) + "%";
+        return ["".concat(percent), "".concat(percent)];
+    },
+    number: function (value) {
+        if (isNaN(value) || !isFinite(value))
+            return ["[gray]N/A[]", "N/A"];
+        return [value.toString(), value.toString()];
+    }
 };
 var processedFFunctions = [0, 1].map(function (i) {
     return Object.fromEntries(Object.entries(fFunctions).map(function (_a) {
@@ -619,7 +631,7 @@ var processedFFunctions = [0, 1].map(function (i) {
         ];
     }));
 });
-var f_client = Object.assign(outputFormatter_client, processedFFunctions[0]);
+exports.f_client = Object.assign(outputFormatter_client, processedFFunctions[0]);
 var f_server = Object.assign(outputFormatter_server, processedFFunctions[1]);
 exports.CommandError = (function () { });
 Object.setPrototypeOf(exports.CommandError.prototype, Error.prototype);
@@ -745,7 +757,7 @@ function register(commands, clientHandler, serverHandler) {
                                     outputFail: function (message) { (0, utils_1.outputFail)(message, sender); failed = true; },
                                     outputSuccess: function (message) { return (0, utils_1.outputSuccess)(message, sender); },
                                     output: function (message) { return (0, utils_1.outputMessage)(message, sender); },
-                                    f: f_client,
+                                    f: exports.f_client,
                                     execServer: function (command) { return serverHandler.handleMessage(command); },
                                     admins: Vars.netServer.admins,
                                     lastUsedSender: usageData.lastUsed,

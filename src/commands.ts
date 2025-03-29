@@ -448,16 +448,25 @@ const fFunctions = {
 			value ? `&lrtrue&fr` : `&lgfalse&fr`,
 		];
 	},
+	percent(value:number, decimals = 0){
+		if(isNaN(value) || !isFinite(value)) return ["[gray]N/A[]", "N/A"];
+		const percent = (value * 100).toFixed(decimals) + "%";
+		return [`${percent}`, `${percent}`];
+	},
+	number(value:number){
+		if(isNaN(value) || !isFinite(value)) return ["[gray]N/A[]", "N/A"];
+		return [value.toString(), value.toString()];
+	}
 } satisfies Record<string, TupleFunction>;
 const processedFFunctions = ([0, 1] as const).map(i =>
 	Object.fromEntries(Object.entries(fFunctions).map(([k, v]) => [k,
-		(...args:any) => v.apply(processedFFunctions[i], args)[i]
+		(...args:any) => (v as TupleFunction).apply(processedFFunctions[i], args)[i]
 	])) as {
 		[K in keyof typeof fFunctions]: DeduplicateTupleFunction<(typeof fFunctions)[K]>;
 	}
 );
 export type FFunction = TagFunction<Formattable, PartialFormatString<string | null>> & typeof processedFFunctions[0];
-const f_client = Object.assign(outputFormatter_client, processedFFunctions[0]);
+export const f_client = Object.assign(outputFormatter_client, processedFFunctions[0]);
 const f_server = Object.assign(outputFormatter_server, processedFFunctions[1]);
 
 //Shenanigans were once necessary due to odd behavior of Typescript's compiled error subclass

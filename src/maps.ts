@@ -3,9 +3,11 @@ Copyright © BalaM314, 2025. All Rights Reserved.
 Unfinished.
 */
 
+import { FFunction } from './commands';
 import { computeStatistics } from './funcs';
 import { FishEvents } from './globals';
 import { dataClass, serialize } from './io';
+import { formatTime } from './utils';
 
 type FinishedMapRunData = {
 	winTeam:Team;
@@ -147,6 +149,10 @@ export class FMap extends dataClass<FMapData>() {
 		return fmap;
 	}
 
+	rules():Rules | undefined {
+		return this.map?.rules();
+	}
+
 	stats(){
 		const allRunCount = this.runs.length;
 		const victories = this.runs.filter(r => r.outcome()[1] === "win").length;
@@ -173,5 +179,26 @@ export class FMap extends dataClass<FMapData>() {
 			longestTime: durationStats.highest,
 			averageHighestPlayerCount: computeStatistics(this.runs.map(r => r.maxPlayerCount)).average,
 		};
+	}
+	displayStats(f:FFunction):string | null {
+		const map = this.map; if(!map) return null;
+		const stats = this.stats();
+		const rules = this.rules()!;
+
+		return (`\
+[coral]Information for map ${map.name()} [gray](${map.file.name()})[coral]:
+[accent]Map by: ${map.author()}
+[accent]Description: ${map.description()}
+[accent]Size: ${map.width}x${map.height}
+[accent]Last updated: ${new Date(map.file.lastModified()).toLocaleDateString()}
+[accent]BvB allowed: ${f.boolGood(rules.placeRangeCheck)}, unit item transfer allowed: ${f.boolGood(rules.onlyDepositCore)}
+
+[accent]Total runs: ${stats.allRunCount} (${stats.victories} wins, ${stats.totalLosses} losses, ${stats.earlyRTVs} RTVs)
+[accent]Outcomes: ${f.percent(stats.winRate, 1)} wins, ${f.percent(stats.lossRate, 1)} losses, ${f.percent(stats.earlyRTVRate, 1)} RTVs
+[accent]Average playtime: ${formatTime(stats.averagePlaytime)}
+[accent]Shortest win time: ${formatTime(stats.shortestWinTime)}
+[accent]Longest run: ${formatTime(stats.longestTime)}
+[accent]Average player count: ${stats.averageHighestPlayerCount}`
+		);
 	}
 }
