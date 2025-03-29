@@ -93,6 +93,7 @@ var funcs_1 = require("./funcs");
 var funcs_2 = require("./funcs");
 var funcs_3 = require("./funcs");
 var votes_1 = require("./votes");
+var maps_1 = require("./maps");
 exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         args: [],
         description: 'Prints information about the plugin.',
@@ -982,6 +983,21 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
                 y: height - (y ? y + 1 + Math.trunc(size / 2) : size),
                 getCenterText: function (x, y) { return "".concat(x, ",").concat(height - y - size); }
             });
+        }
+    }, mapinfo: {
+        args: ["map:map?"],
+        perm: commands_1.Perm.none,
+        description: "Displays information about a map.",
+        handler: function (_a) {
+            var output = _a.output, map = _a.args.map, f = _a.f, sender = _a.sender;
+            if (map) {
+                output(maps_1.FMap.getCreate(map).displayStats(f));
+            }
+            else {
+                menus_1.Menu.textPages(sender, Vars.maps.customMaps().map(function (m) {
+                    return [m.name(), function () { return maps_1.FMap.getCreate(m).displayStats(f); }];
+                }).toArray());
+            }
         }
     } }));
 var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11, templateObject_12, templateObject_13, templateObject_14, templateObject_15, templateObject_16, templateObject_17;

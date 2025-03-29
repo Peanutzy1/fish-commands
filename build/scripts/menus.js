@@ -228,6 +228,40 @@ exports.Menu = {
         showPage(0);
         return promise;
     },
+    textPages: function (target, pages, cfg) {
+        if (cfg === void 0) { cfg = {}; }
+        var _a = promise_1.Promise.withResolvers(), promise = _a.promise, reject = _a.reject, resolve = _a.resolve;
+        function showPage(index) {
+            var opts = [
+                [
+                    { data: ["left", 5], text: "[".concat(index == 0 ? "gray" : "accent", "]<<<") },
+                    { data: ["left", 1], text: "[".concat(index == 0 ? "gray" : "accent", "]<--") },
+                    { data: ["right", 1], text: "[".concat(index == pages.length - 1 ? "gray" : "accent", "]-->") },
+                    { data: ["right", 5], text: "[".concat(index == pages.length - 1 ? "gray" : "accent", "]>>>") },
+                ],
+                [
+                    { data: ["numbers"], text: "[accent]Page ".concat(index + 1, "/").concat(pages.length) },
+                    { data: ["cancel"], text: "[red]Close" },
+                ]
+            ];
+            exports.Menu.buttons(target, pages[index][0], pages[index][1](), opts, cfg).then(function (response) {
+                if ((response === null || response === void 0 ? void 0 : response[0]) === "right")
+                    showPage(Math.min(index + response[1], pages.length - 1));
+                else if ((response === null || response === void 0 ? void 0 : response[0]) === "left")
+                    showPage(Math.max(index - response[1], 0));
+                else {
+                    //Treat numbers as cancel
+                    if (cfg.onCancel == "null")
+                        resolve(null);
+                    else if (cfg.onCancel == "reject")
+                        reject("cancel");
+                    //otherwise, just let the promise hang
+                }
+            });
+        }
+        showPage(0);
+        return promise;
+    },
     scroll: function (target, title, description, options, cfg) {
         var _a, _b;
         if (cfg === void 0) { cfg = {}; }

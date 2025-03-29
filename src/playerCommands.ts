@@ -16,6 +16,7 @@ import { capitalizeText, escapeTextDiscord } from './funcs';
 import { StringBuilder, StringIO } from './funcs';
 import { to2DArray } from './funcs';
 import { VoteManager } from './votes';
+import { FMap } from './maps';
 
 export const commands = commandList({
 	about: {
@@ -952,4 +953,19 @@ Win rate: ${target.stats.gamesWon / target.stats.gamesFinished}`
 			});
 		}
 	},
+
+	mapinfo: {
+		args: ["map:map?"],
+		perm: Perm.none,
+		description: "Displays information about a map.",
+		handler({output, args:{map}, f, sender}){
+			if(map){
+				output(FMap.getCreate(map).displayStats(f)!);
+			} else {
+				Menu.textPages(sender, Vars.maps.customMaps().map(m =>
+					[m.name(), () => FMap.getCreate(m).displayStats(f)!] as const
+				).toArray())
+			}
+		}
+	}
 });

@@ -216,6 +216,41 @@ export const Menu = {
 		showPage(0);
 		return promise;
 	},
+	textPages<TOption extends unknown, TCancelBehavior extends MenuCancelOption>(
+		this:void, target:FishPlayer, pages:(readonly [title:string, description:() => string])[],
+		cfg: Pick<MenuOptions<TOption, TCancelBehavior>, "onCancel"> = {},
+	){
+		const { promise, reject, resolve } = Promise.withResolvers<
+			(TCancelBehavior extends "null" ? null : never) | TOption,
+			TCancelBehavior extends "reject" ? "cancel" : never
+		>();
+		function showPage(index:number){
+			const opts:{ data: ["left", number] | ["numbers"] | ["right", number] | ["cancel"]; text: string; }[][] = [
+				[
+					{ data: ["left", 5], text: `[${index == 0 ? "gray" : "accent"}]<<<` },
+					{ data: ["left", 1], text: `[${index == 0 ? "gray" : "accent"}]<--` },
+					{ data: ["right", 1], text: `[${index == pages.length - 1 ? "gray" : "accent"}]-->` },
+					{ data: ["right", 5], text: `[${index == pages.length - 1 ? "gray" : "accent"}]>>>` },
+				],
+				[
+					{ data: ["numbers"], text: `[accent]Page ${index + 1}/${pages.length}` },
+					{ data: ["cancel"], text: `[red]Close` },
+				]
+			];
+			Menu.buttons(target, pages[index][0], pages[index][1](), opts, cfg).then<unknown, never>(response => {
+				if(response?.[0] === "right") showPage(Math.min(index + response[1], pages.length - 1));
+				else if(response?.[0] === "left") showPage(Math.max(index - response[1], 0));
+				else {
+					//Treat numbers as cancel
+					if(cfg.onCancel == "null") resolve(null as never);
+					else if(cfg.onCancel == "reject") reject("cancel" as never);
+					//otherwise, just let the promise hang
+				}
+			});
+		}
+		showPage(0);
+		return promise;
+	},
 	scroll<TOption extends unknown, TCancelBehavior extends MenuCancelOption>(
 		this:void, target:FishPlayer, title:string, description:string,
 		options:{ data: TOption; text: string; }[][],
