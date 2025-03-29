@@ -7,7 +7,8 @@ import { FFunction } from './commands';
 import { computeStatistics } from './funcs';
 import { FishEvents } from './globals';
 import { dataClass, serialize } from './io';
-import { formatTime } from './utils';
+import { formatTime, match } from './utils';
+import { Gamemode } from './config';
 
 type FinishedMapRunData = {
 	winTeam:Team;
@@ -79,7 +80,7 @@ export class PartialMapRun {
 	}):FinishedMapRun {
 		return new FinishedMapRun({
 			winTeam,
-			success: winTeam == Vars.state.rules.defaultTeam,
+			success: Gamemode.pvp() ? true : winTeam == Vars.state.rules.defaultTeam,
 			startTime: this.startTime,
 			endTime: Date.now(),
 			maxPlayerCount: this.maxPlayerCount
@@ -161,8 +162,13 @@ export class FMap extends dataClass<FMapData>() {
 		const lateRTVs = this.runs.filter(r => r.outcome()[1] === "late rtv").length;
 		const significantRunCount = allRunCount - earlyRTVs;
 		const totalLosses = losses + lateRTVs;
-		const durations = this.runs.map(r => r.duration() / 1000); //convert to seconds
+		const durations = this.runs.filter(r => r.outcome()[0] !== "rtv").map(r => r.duration() / 1000); //convert to seconds
 		const durationStats = computeStatistics(durations);
+		const teamWins = this.runs.filter(r => r.success).reduce((acc, item) => {
+			acc[item.winTeam.name] = (acc[item.winTeam.name] ?? 0) + 1;
+			return acc;
+		}, {} as Record<string, number>);
+		const teamWinRate = Object.fromEntries(Object.entries(teamWins).map(([team, wins]) => [team, wins / victories]));
 		return {
 			allRunCount,
 			significantRunCount,
@@ -177,7 +183,10 @@ export class FMap extends dataClass<FMapData>() {
 			averagePlaytime: durationStats.average,
 			shortestWinTime: Math.min(...this.runs.filter(r => r.outcome()[0] === "win").map(r => r.duration())),
 			longestTime: durationStats.highest,
+			shortestTime: durationStats.lowest,
 			averageHighestPlayerCount: computeStatistics(this.runs.map(r => r.maxPlayerCount)).average,
+			teamWins,
+			teamWinRate,
 		};
 	}
 	displayStats(f:FFunction):string | null {
@@ -185,6 +194,33 @@ export class FMap extends dataClass<FMapData>() {
 		const stats = this.stats();
 		const rules = this.rules()!;
 
+		const modeSpecificStats = match(Gamemode.name(), {
+			attack: `\
+[accent]Total runs: ${stats.allRunCount} (${stats.victories} wins, ${stats.totalLosses} losses, ${stats.earlyRTVs} RTVs)
+[accent]Outcomes: ${f.percent(stats.winRate, 1)} wins, ${f.percent(stats.lossRate, 1)} losses, ${f.percent(stats.earlyRTVRate, 1)} RTVs
+[accent]Average playtime: ${formatTime(stats.averagePlaytime)}
+[accent]Shortest win time: ${formatTime(stats.shortestWinTime)}`,
+			survival: `\
+[accent]Total runs: ${stats.allRunCount} (${stats.earlyRTVs} RTVs)
+[accent]RTV rate: ${f.percent(stats.earlyRTVRate, 1)}
+[accent]Average duration: ${formatTime(stats.averagePlaytime)}
+[accent]Longest duration: ${formatTime(stats.longestTime)}`,
+			pvp: `\
+[accent]Total runs: ${stats.allRunCount} (${stats.earlyRTVs} RTVs)
+[accent]Team win rates: ${Object.entries(stats.teamWinRate).map(([team, rate]) => `${team} ${f.percent(rate, 1)}`).join(", ")}
+[accent]RTV rate: ${f.percent(stats.earlyRTVRate, 1)}
+[accent]Average match duration: ${formatTime(stats.averagePlaytime)}
+[accent]Shortest match duration: ${formatTime(stats.shortestWinTime)}`,
+			hexed: `\
+[accent]Total runs: ${stats.allRunCount} (${stats.earlyRTVs} RTVs)
+[accent]RTV rate: ${f.percent(stats.earlyRTVRate, 1)}
+[accent]Average match duration: ${formatTime(stats.averagePlaytime)}
+[accent]Shortest match duration: ${formatTime(stats.shortestWinTime)}`,
+			sandbox: `\
+[accent]Total plays: ${stats.allRunCount}
+[accent]Average play time: ${formatTime(stats.averagePlaytime)}
+[accent]Shortest play time: ${formatTime(stats.shortestTime)}`,
+		}, "");
 		return (`\
 [coral]Information for map ${map.name()} [gray](${map.file.name()})[coral]:
 [accent]Map by: ${map.author()}
@@ -193,11 +229,8 @@ export class FMap extends dataClass<FMapData>() {
 [accent]Last updated: ${new Date(map.file.lastModified()).toLocaleDateString()}
 [accent]BvB allowed: ${f.boolGood(rules.placeRangeCheck)}, unit item transfer allowed: ${f.boolGood(rules.onlyDepositCore)}
 
-[accent]Total runs: ${stats.allRunCount} (${stats.victories} wins, ${stats.totalLosses} losses, ${stats.earlyRTVs} RTVs)
-[accent]Outcomes: ${f.percent(stats.winRate, 1)} wins, ${f.percent(stats.lossRate, 1)} losses, ${f.percent(stats.earlyRTVRate, 1)} RTVs
-[accent]Average playtime: ${formatTime(stats.averagePlaytime)}
-[accent]Shortest win time: ${formatTime(stats.shortestWinTime)}
-[accent]Longest run: ${formatTime(stats.longestTime)}
+${modeSpecificStats}
+[accent]Longest play time: ${formatTime(stats.longestTime)}
 [accent]Average player count: ${stats.averageHighestPlayerCount}`
 		);
 	}

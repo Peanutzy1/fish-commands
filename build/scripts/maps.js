@@ -84,6 +84,7 @@ var funcs_1 = require("./funcs");
 var globals_1 = require("./globals");
 var io_1 = require("./io");
 var utils_1 = require("./utils");
+var config_1 = require("./config");
 var FinishedMapRun = /** @class */ (function (_super) {
     __extends(FinishedMapRun, _super);
     function FinishedMapRun() {
@@ -122,7 +123,7 @@ var PartialMapRun = /** @class */ (function () {
         var winTeam = _b.winTeam;
         return new FinishedMapRun({
             winTeam: winTeam,
-            success: winTeam == Vars.state.rules.defaultTeam,
+            success: config_1.Gamemode.pvp() ? true : winTeam == Vars.state.rules.defaultTeam,
             startTime: this.startTime,
             endTime: Date.now(),
             maxPlayerCount: this.maxPlayerCount
@@ -224,8 +225,17 @@ var FMap = function () {
                 var lateRTVs = this.runs.filter(function (r) { return r.outcome()[1] === "late rtv"; }).length;
                 var significantRunCount = allRunCount - earlyRTVs;
                 var totalLosses = losses + lateRTVs;
-                var durations = this.runs.map(function (r) { return r.duration() / 1000; }); //convert to seconds
+                var durations = this.runs.filter(function (r) { return r.outcome()[0] !== "rtv"; }).map(function (r) { return r.duration() / 1000; }); //convert to seconds
                 var durationStats = (0, funcs_1.computeStatistics)(durations);
+                var teamWins = this.runs.filter(function (r) { return r.success; }).reduce(function (acc, item) {
+                    var _c;
+                    acc[item.winTeam.name] = ((_c = acc[item.winTeam.name]) !== null && _c !== void 0 ? _c : 0) + 1;
+                    return acc;
+                }, {});
+                var teamWinRate = Object.fromEntries(Object.entries(teamWins).map(function (_c) {
+                    var _d = __read(_c, 2), team = _d[0], wins = _d[1];
+                    return [team, wins / victories];
+                }));
                 return {
                     allRunCount: allRunCount,
                     significantRunCount: significantRunCount,
@@ -240,7 +250,10 @@ var FMap = function () {
                     averagePlaytime: durationStats.average,
                     shortestWinTime: Math.min.apply(Math, __spreadArray([], __read(this.runs.filter(function (r) { return r.outcome()[0] === "win"; }).map(function (r) { return r.duration(); })), false)),
                     longestTime: durationStats.highest,
+                    shortestTime: durationStats.lowest,
                     averageHighestPlayerCount: (0, funcs_1.computeStatistics)(this.runs.map(function (r) { return r.maxPlayerCount; })).average,
+                    teamWins: teamWins,
+                    teamWinRate: teamWinRate,
                 };
             };
             FMap.prototype.displayStats = function (f) {
@@ -249,7 +262,17 @@ var FMap = function () {
                     return null;
                 var stats = this.stats();
                 var rules = this.rules();
-                return ("[coral]Information for map ".concat(map.name(), " [gray](").concat(map.file.name(), ")[coral]:\n[accent]Map by: ").concat(map.author(), "\n[accent]Description: ").concat(map.description(), "\n[accent]Size: ").concat(map.width, "x").concat(map.height, "\n[accent]Last updated: ").concat(new Date(map.file.lastModified()).toLocaleDateString(), "\n[accent]BvB allowed: ").concat(f.boolGood(rules.placeRangeCheck), ", unit item transfer allowed: ").concat(f.boolGood(rules.onlyDepositCore), "\n\n[accent]Total runs: ").concat(stats.allRunCount, " (").concat(stats.victories, " wins, ").concat(stats.totalLosses, " losses, ").concat(stats.earlyRTVs, " RTVs)\n[accent]Outcomes: ").concat(f.percent(stats.winRate, 1), " wins, ").concat(f.percent(stats.lossRate, 1), " losses, ").concat(f.percent(stats.earlyRTVRate, 1), " RTVs\n[accent]Average playtime: ").concat((0, utils_1.formatTime)(stats.averagePlaytime), "\n[accent]Shortest win time: ").concat((0, utils_1.formatTime)(stats.shortestWinTime), "\n[accent]Longest run: ").concat((0, utils_1.formatTime)(stats.longestTime), "\n[accent]Average player count: ").concat(stats.averageHighestPlayerCount));
+                var modeSpecificStats = (0, utils_1.match)(config_1.Gamemode.name(), {
+                    attack: "[accent]Total runs: ".concat(stats.allRunCount, " (").concat(stats.victories, " wins, ").concat(stats.totalLosses, " losses, ").concat(stats.earlyRTVs, " RTVs)\n[accent]Outcomes: ").concat(f.percent(stats.winRate, 1), " wins, ").concat(f.percent(stats.lossRate, 1), " losses, ").concat(f.percent(stats.earlyRTVRate, 1), " RTVs\n[accent]Average playtime: ").concat((0, utils_1.formatTime)(stats.averagePlaytime), "\n[accent]Shortest win time: ").concat((0, utils_1.formatTime)(stats.shortestWinTime)),
+                    survival: "[accent]Total runs: ".concat(stats.allRunCount, " (").concat(stats.earlyRTVs, " RTVs)\n[accent]RTV rate: ").concat(f.percent(stats.earlyRTVRate, 1), "\n[accent]Average duration: ").concat((0, utils_1.formatTime)(stats.averagePlaytime), "\n[accent]Longest duration: ").concat((0, utils_1.formatTime)(stats.longestTime)),
+                    pvp: "[accent]Total runs: ".concat(stats.allRunCount, " (").concat(stats.earlyRTVs, " RTVs)\n[accent]Team win rates: ").concat(Object.entries(stats.teamWinRate).map(function (_c) {
+                        var _d = __read(_c, 2), team = _d[0], rate = _d[1];
+                        return "".concat(team, " ").concat(f.percent(rate, 1));
+                    }).join(", "), "\n[accent]RTV rate: ").concat(f.percent(stats.earlyRTVRate, 1), "\n[accent]Average match duration: ").concat((0, utils_1.formatTime)(stats.averagePlaytime), "\n[accent]Shortest match duration: ").concat((0, utils_1.formatTime)(stats.shortestWinTime)),
+                    hexed: "[accent]Total runs: ".concat(stats.allRunCount, " (").concat(stats.earlyRTVs, " RTVs)\n[accent]RTV rate: ").concat(f.percent(stats.earlyRTVRate, 1), "\n[accent]Average match duration: ").concat((0, utils_1.formatTime)(stats.averagePlaytime), "\n[accent]Shortest match duration: ").concat((0, utils_1.formatTime)(stats.shortestWinTime)),
+                    sandbox: "[accent]Total plays: ".concat(stats.allRunCount, "\n[accent]Average play time: ").concat((0, utils_1.formatTime)(stats.averagePlaytime), "\n[accent]Shortest play time: ").concat((0, utils_1.formatTime)(stats.shortestTime)),
+                }, "");
+                return ("[coral]Information for map ".concat(map.name(), " [gray](").concat(map.file.name(), ")[coral]:\n[accent]Map by: ").concat(map.author(), "\n[accent]Description: ").concat(map.description(), "\n[accent]Size: ").concat(map.width, "x").concat(map.height, "\n[accent]Last updated: ").concat(new Date(map.file.lastModified()).toLocaleDateString(), "\n[accent]BvB allowed: ").concat(f.boolGood(rules.placeRangeCheck), ", unit item transfer allowed: ").concat(f.boolGood(rules.onlyDepositCore), "\n\n").concat(modeSpecificStats, "\n[accent]Longest play time: ").concat((0, utils_1.formatTime)(stats.longestTime), "\n[accent]Average player count: ").concat(stats.averageHighestPlayerCount));
             };
             return FMap;
         }(_classSuper)),
