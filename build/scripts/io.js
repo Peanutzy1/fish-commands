@@ -69,14 +69,26 @@ function checkBounds(type, value, min, max) {
     return value;
 }
 var Serializer = /** @class */ (function () {
-    function Serializer(schema) {
+    function Serializer(schema, oldSchema) {
         this.schema = schema;
+        this.oldSchema = oldSchema;
     }
     Serializer.prototype.write = function (object, output) {
         Serializer.writeNode(this.schema, object, output);
     };
     Serializer.prototype.read = function (input) {
-        return Serializer.readNode(this.schema, input);
+        input.mark(0xFFFF); //1MB
+        try {
+            return Serializer.readNode(this.schema, input);
+        }
+        catch (err) {
+            Log.warn("Using fallback schema: this message should go away after a restart");
+            input.reset();
+            if (this.oldSchema)
+                return Serializer.readNode(this.oldSchema, input);
+            else
+                throw err;
+        }
     };
     Serializer.writeNode = function (schema, value, output) {
         var e_1, _a, e_2, _b;
@@ -193,6 +205,10 @@ var Serializer = /** @class */ (function () {
                     this.writeNode(schema[2], value[i], output);
                 }
                 break;
+            case 'version':
+                output.writeByte(schema[1]);
+                this.writeNode(schema[2], value, output);
+                break;
         }
     };
     Serializer.readNode = function (schema, input) {
@@ -257,6 +273,11 @@ var Serializer = /** @class */ (function () {
                     array[i] = this.readNode(schema[2], input);
                 }
                 return array;
+            case 'version':
+                var version = input.readByte();
+                if (version !== schema[1])
+                    (0, funcs_1.crash)("Expected version ".concat(schema[1], ", but read ").concat(version));
+                return this.readNode(schema[2], input);
         }
     };
     return Serializer;
@@ -264,10 +285,11 @@ var Serializer = /** @class */ (function () {
 exports.Serializer = Serializer;
 var SettingsSerializer = /** @class */ (function (_super) {
     __extends(SettingsSerializer, _super);
-    function SettingsSerializer(settingsKey, schema) {
-        var _this = _super.call(this, schema) || this;
+    function SettingsSerializer(settingsKey, schema, oldSchema) {
+        var _this = _super.call(this, schema, oldSchema) || this;
         _this.settingsKey = settingsKey;
         _this.schema = schema;
+        _this.oldSchema = oldSchema;
         return _this;
     }
     SettingsSerializer.prototype.writeSettings = function (object) {
@@ -292,12 +314,14 @@ if (!Symbol.metadata)
         configurable: false,
         value: Symbol("Symbol.metadata")
     });
-function serialize(settingsKey, schema) {
+function serialize(settingsKey, schema, oldSchema) {
     return function (_, _a) {
         var addInitializer = _a.addInitializer, access = _a.access;
         addInitializer(function () {
             var _this = this;
-            var serializer = (0, funcs_1.lazy)(function () { return new SettingsSerializer(settingsKey, schema()); });
+            var serializer = (0, funcs_1.lazy)(function () {
+                return new SettingsSerializer(settingsKey, schema(), oldSchema === null || oldSchema === void 0 ? void 0 : oldSchema());
+            });
             globals_1.FishEvents.on("loadData", function () {
                 var value = serializer().readSettings();
                 if (value)

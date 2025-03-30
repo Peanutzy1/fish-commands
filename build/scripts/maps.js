@@ -88,7 +88,9 @@ var config_1 = require("./config");
 var FinishedMapRun = /** @class */ (function (_super) {
     __extends(FinishedMapRun, _super);
     function FinishedMapRun() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super.apply(this, __spreadArray([], __read(arguments), false)) || this;
+        _this.wave = 0;
+        return _this;
     }
     FinishedMapRun.prototype.duration = function () {
         return this.endTime - this.startTime;
@@ -126,7 +128,8 @@ var PartialMapRun = /** @class */ (function () {
             success: config_1.Gamemode.pvp() ? true : winTeam == Vars.state.rules.defaultTeam,
             startTime: this.startTime,
             endTime: Date.now(),
-            maxPlayerCount: this.maxPlayerCount
+            maxPlayerCount: this.maxPlayerCount,
+            wave: Vars.state.wave,
         });
     };
     //Used for continuing through a restart
@@ -279,7 +282,17 @@ var FMap = function () {
         (function () {
             var _c;
             var _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create((_c = _classSuper[Symbol.metadata]) !== null && _c !== void 0 ? _c : null) : void 0;
-            _static_allMaps_decorators = [(0, io_1.serialize)("fish-map-data", function () { return ["array", "u16", ["class", FMap, [
+            _static_allMaps_decorators = [(0, io_1.serialize)("fish-map-data", function () { return ["version", 1, ["array", "u16", ["class", FMap, [
+                                ["runs", ["array", "u32", ["class", FinishedMapRun, [
+                                                ["startTime", ["number", "i64"]],
+                                                ["endTime", ["number", "i64"]],
+                                                ["maxPlayerCount", ["number", "u8"]],
+                                                ["success", ["boolean"]],
+                                                ["winTeam", ["team"]],
+                                                ["wave", ["number", "u16"]]
+                                            ]]]],
+                                ["mapFileName", ["string"]],
+                            ]]]]; }, function () { return ["array", "u16", ["class", FMap, [
                             ["runs", ["array", "u32", ["class", FinishedMapRun, [
                                             ["startTime", ["number", "i64"]],
                                             ["endTime", ["number", "i64"]],

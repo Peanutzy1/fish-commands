@@ -174,8 +174,9 @@ export class EventEmitter<
 		return this;
 	}
 	fire<EventType extends keyof EventMapping>(event: EventType, args: EventMapping[EventType]) {
-		for (const listener of this.listeners[event] ?? []) {
-			listener(this, ...args);
+		const listeners = this.listeners[event] ?? [];
+		for (let i = 0; i < listeners.length; i ++) {
+			listeners[i](this, ...args);
 		}
 	}
 }

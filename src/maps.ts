@@ -16,8 +16,10 @@ type FinishedMapRunData = {
 	startTime:number;
 	endTime:number;
 	maxPlayerCount:number;
+	wave:number;
 }
 export class FinishedMapRun extends dataClass<FinishedMapRunData>() {
+	wave = 0;
 	duration(){
 		return this.endTime - this.startTime;
 	}
@@ -83,7 +85,8 @@ export class PartialMapRun {
 			success: Gamemode.pvp() ? true : winTeam == Vars.state.rules.defaultTeam,
 			startTime: this.startTime,
 			endTime: Date.now(),
-			maxPlayerCount: this.maxPlayerCount
+			maxPlayerCount: this.maxPlayerCount,
+			wave: Vars.state.wave,
 		});
 	}
 	//Used for continuing through a restart
@@ -114,7 +117,17 @@ export class FMap extends dataClass<FMapData>() {
 		public map:MMap | null = Vars.maps.customMaps().find(m => m.file.name() === data.mapFileName)
 	){ super(data); }
 
-	@serialize("fish-map-data", () => ["array", "u16", ["class", FMap, [
+	@serialize("fish-map-data", () => ["version", 1, ["array", "u16", ["class", FMap, [
+		["runs", ["array", "u32", ["class", FinishedMapRun, [
+			["startTime", ["number", "i64"]],
+			["endTime", ["number", "i64"]],
+			["maxPlayerCount", ["number", "u8"]],
+			["success", ["boolean"]],
+			["winTeam", ["team"]],
+			["wave", ["number", "u16"]]
+		]]]],
+		["mapFileName", ["string"]],
+	]]]], () => ["array", "u16", ["class", FMap, [
 		["runs", ["array", "u32", ["class", FinishedMapRun, [
 			["startTime", ["number", "i64"]],
 			["endTime", ["number", "i64"]],

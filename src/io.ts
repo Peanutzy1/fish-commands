@@ -1,4 +1,4 @@
-import { lazy } from "./funcs";
+import { crash, lazy } from "./funcs";
 import { FishEvents } from "./globals";
 
 
@@ -24,7 +24,7 @@ export type Serializable = SerializablePrimitive | Array<Serializable> | {
 
 export type PrimitiveSchema<T extends SerializablePrimitive> =
 	T extends string ? ["string"] :
-	T extends number ? ["number", bytes:NumberRepresentation] :
+	T extends number ? ["number", bytes:NumberRepresentation | number] :
 	T extends boolean ? ["boolean"] :
   T extends Team ? ["team"] :
 never;
@@ -37,14 +37,15 @@ export type DataClassSchema<ClassInstance extends {}> =
 		SerializableData<ClassInstance> extends infer Data extends Record<string, Serializable> ?
 			keyof Data extends infer KU extends keyof Data ? KU extends unknown ? [KU, Schema<Data[KU]>] : never : never
 		: never
-  >];
+	>];
+export type VersionSchema<T extends Serializable> = ["version", number:number, rest:Schema<T, false>];
 
-export type Schema<T extends Serializable> =
+export type Schema<T extends Serializable, AllowVersion = true> = (
 	T extends SerializablePrimitive ? PrimitiveSchema<T> :
 	T extends Array<Serializable> ? ArraySchema<T> :
   T extends infer ClassInstance extends DataClass<Serializable> ? DataClassSchema<ClassInstance> :
 	T extends Record<string, Serializable> ? ObjectSchema<T> :
-never;
+never) | (AllowVersion extends true ? VersionSchema<T> : never);
 
 
 
@@ -69,12 +70,21 @@ function checkBounds(type:NumberRepresentation, value:number, min:number, max:nu
 export class Serializer<T extends Serializable> {
 	constructor(
 		public schema: Schema<T>,
+		public oldSchema?: Schema<T>,
 	){}
 	write(object:T, output:DataOutputStream):void {
 		Serializer.writeNode(this.schema, object, output);
 	}
 	read(input:DataInputStream):T {
-		return Serializer.readNode(this.schema, input);
+		input.mark(0xFFFF); //1MB
+		try {
+			return Serializer.readNode(this.schema, input);
+		} catch(err){
+			Log.warn(`Using fallback schema: this message should go away after a restart`);
+			input.reset();
+			if(this.oldSchema) return Serializer.readNode(this.oldSchema, input);
+			else throw err;
+		}
 	}
 	/** SAFETY: Data must not be a union */
 	static writeNode<Data extends Serializable>(schema:Schema<Data>, object:Data, output:DataOutputStream):void;
@@ -135,6 +145,10 @@ export class Serializer<T extends Serializable> {
 					this.writeNode(schema[2], (value as Serializable[])[i], output);
 				}
 				break;
+			case 'version':
+				output.writeByte(schema[1]);
+				this.writeNode<Data>(schema[2], value, output);
+				break;
 		}
 	}
 	/** SAFETY: Data must not be a union */
@@ -180,6 +194,10 @@ export class Serializer<T extends Serializable> {
 					array[i] = this.readNode<Serializable>(schema[2], input);
 				}
 				return array;
+			case 'version':
+				const version = input.readByte();
+				if(version !== schema[1]) crash(`Expected version ${schema[1]}, but read ${version}`);
+				return this.readNode<Data>(schema[2], input);
 		}
 	}
 }
@@ -188,8 +206,9 @@ export class SettingsSerializer<T extends Serializable> extends Serializer<T> {
 	constructor(
 		public readonly settingsKey: string,
 		public readonly schema: Schema<T>,
+		public readonly oldSchema?: Schema<T>,
 	){
-		super(schema);
+		super(schema, oldSchema);
 	}
 
 	writeSettings(object:T):void {
@@ -212,7 +231,10 @@ if(!Symbol.metadata)
 		value: Symbol("Symbol.metadata")
 	});
 
-export function serialize<T extends Serializable>(settingsKey: string, schema: () => Schema<T>){
+export function serialize<T extends Serializable>(
+	settingsKey: string,
+	schema: () => Schema<T>, oldSchema?: () => Schema<T>
+){
 	return function<
 		This extends { [P in Name]: T }, Name extends string | symbol
 	>(_: unknown, {addInitializer, access}:ClassFieldDecoratorContext<This, T> & {
@@ -220,7 +242,9 @@ export function serialize<T extends Serializable>(settingsKey: string, schema: (
 		static: true;
 	}){
 		addInitializer(function(){
-			const serializer = lazy(() => new SettingsSerializer<T>(settingsKey, schema()));
+			const serializer = lazy(() =>
+				new SettingsSerializer<T>(settingsKey, schema(), oldSchema?.())
+			);
 			FishEvents.on("loadData", () => {
 				const value = serializer().readSettings();
 				if(value) access.set(this, value);

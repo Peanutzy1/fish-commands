@@ -345,7 +345,8 @@ class HttpResponse {
 class InputStream {
 	close():void;
 	transferTo(outputsteam:OutputStream):number;
-
+	mark(readlimit:number):void;
+	reset():void;
 }
 class OutputStream {
 	close():void;

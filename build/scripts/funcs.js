@@ -1,15 +1,4 @@
 "use strict";
-var __values = (this && this.__values) || function(o) {
-    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-    if (m) return m.call(o);
-    if (o && typeof o.length === "number") return {
-        next: function () {
-            if (o && i >= o.length) o = void 0;
-            return { value: o && o[i++], done: !o };
-        }
-    };
-    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-};
 var __read = (this && this.__read) || function (o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
     if (!m) return o;
@@ -256,20 +245,10 @@ var EventEmitter = /** @class */ (function () {
         return this;
     };
     EventEmitter.prototype.fire = function (event, args) {
-        var e_1, _a;
-        var _b;
-        try {
-            for (var _c = __values((_b = this.listeners[event]) !== null && _b !== void 0 ? _b : []), _d = _c.next(); !_d.done; _d = _c.next()) {
-                var listener = _d.value;
-                listener.apply(void 0, __spreadArray([this], __read(args), false));
-            }
-        }
-        catch (e_1_1) { e_1 = { error: e_1_1 }; }
-        finally {
-            try {
-                if (_d && !_d.done && (_a = _c.return)) _a.call(_c);
-            }
-            finally { if (e_1) throw e_1.error; }
+        var _a;
+        var listeners = (_a = this.listeners[event]) !== null && _a !== void 0 ? _a : [];
+        for (var i = 0; i < listeners.length; i++) {
+            listeners[i].apply(listeners, __spreadArray([this], __read(args), false));
         }
     };
     return EventEmitter;
