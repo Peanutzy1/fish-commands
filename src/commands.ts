@@ -453,8 +453,9 @@ const fFunctions = {
 		const percent = (value * 100).toFixed(decimals) + "%";
 		return [`${percent}`, `${percent}`];
 	},
-	number(value:number){
+	number(value:number, decimals:number | null = null){
 		if(isNaN(value) || !isFinite(value)) return ["[gray]N/A[]", "N/A"];
+		if(decimals !== null) return [value.toFixed(decimals), value.toFixed(decimals)];
 		return [value.toString(), value.toString()];
 	}
 } satisfies Record<string, TupleFunction>;

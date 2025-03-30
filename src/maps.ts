@@ -175,8 +175,9 @@ export class FMap extends dataClass<FMapData>() {
 		const lateRTVs = this.runs.filter(r => r.outcome()[1] === "late rtv").length;
 		const significantRunCount = allRunCount - earlyRTVs;
 		const totalLosses = losses + lateRTVs;
-		const durations = this.runs.filter(r => r.outcome()[0] !== "rtv").map(r => r.duration() / 1000); //convert to seconds
+		const durations = this.runs.filter(r => r.outcome()[0] !== "rtv").map(r => r.duration());
 		const durationStats = computeStatistics(durations);
+		const winDurationStats = computeStatistics(this.runs.filter(r => r.outcome()[0] === "win").map(r => r.duration()));
 		const teamWins = this.runs.filter(r => r.success).reduce((acc, item) => {
 			acc[item.winTeam.name] = (acc[item.winTeam.name] ?? 0) + 1;
 			return acc;
@@ -194,7 +195,7 @@ export class FMap extends dataClass<FMapData>() {
 			winRate: victories / significantRunCount,
 			lossRate: losses / significantRunCount,
 			averagePlaytime: durationStats.average,
-			shortestWinTime: Math.min(...this.runs.filter(r => r.outcome()[0] === "win").map(r => r.duration())),
+			shortestWinTime: winDurationStats.lowest,
 			longestTime: durationStats.highest,
 			shortestTime: durationStats.lowest,
 			averageHighestPlayerCount: computeStatistics(this.runs.map(r => r.maxPlayerCount)).average,
@@ -244,7 +245,7 @@ export class FMap extends dataClass<FMapData>() {
 
 ${modeSpecificStats}
 [accent]Longest play time: ${formatTime(stats.longestTime)}
-[accent]Average player count: ${stats.averageHighestPlayerCount}`
+[accent]Average player count: ${f.number(stats.averageHighestPlayerCount, 1)}`
 		);
 	}
 }

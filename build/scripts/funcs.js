@@ -361,6 +361,8 @@ function invalidtoNull(input) {
     return input;
 }
 function computeStatistics(data) {
+    if (data.length == 0)
+        data = [NaN]; //return NaN for all properties
     var lowest = Math.min.apply(Math, __spreadArray([], __read(data), false));
     var highest = Math.max.apply(Math, __spreadArray([], __read(data), false));
     return {

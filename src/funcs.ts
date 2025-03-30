@@ -307,6 +307,7 @@ export function invalidtoNull(input:number):number | null {
 }
 
 export function computeStatistics(data:number[]){
+	if(data.length == 0) data = [NaN]; //return NaN for all properties
 	const lowest = Math.min(...data);
 	const highest = Math.max(...data);
 	return {
