@@ -240,6 +240,7 @@ var FMap = function () {
                     var _d = __read(_c, 2), team = _d[0], wins = _d[1];
                     return [team, wins / victories];
                 }));
+                var waveStats = (0, funcs_1.computeStatistics)(this.runs.filter(function (r) { return r.outcome()[0] !== "rtv"; }).map(function (r) { return r.wave; }));
                 return {
                     allRunCount: allRunCount,
                     significantRunCount: significantRunCount,
@@ -258,6 +259,8 @@ var FMap = function () {
                     averageHighestPlayerCount: (0, funcs_1.computeStatistics)(this.runs.map(function (r) { return r.maxPlayerCount; })).average,
                     teamWins: teamWins,
                     teamWinRate: teamWinRate,
+                    highestWave: waveStats.highest,
+                    averageWave: waveStats.average,
                 };
             };
             FMap.prototype.displayStats = function (f) {
@@ -268,7 +271,7 @@ var FMap = function () {
                 var rules = this.rules();
                 var modeSpecificStats = (0, utils_1.match)(config_1.Gamemode.name(), {
                     attack: "[accent]Total runs: ".concat(stats.allRunCount, " (").concat(stats.victories, " wins, ").concat(stats.totalLosses, " losses, ").concat(stats.earlyRTVs, " RTVs)\n[accent]Outcomes: ").concat(f.percent(stats.winRate, 1), " wins, ").concat(f.percent(stats.lossRate, 1), " losses, ").concat(f.percent(stats.earlyRTVRate, 1), " RTVs\n[accent]Average playtime: ").concat((0, utils_1.formatTime)(stats.averagePlaytime), "\n[accent]Shortest win time: ").concat((0, utils_1.formatTime)(stats.shortestWinTime)),
-                    survival: "[accent]Total runs: ".concat(stats.allRunCount, " (").concat(stats.earlyRTVs, " RTVs)\n[accent]RTV rate: ").concat(f.percent(stats.earlyRTVRate, 1), "\n[accent]Average duration: ").concat((0, utils_1.formatTime)(stats.averagePlaytime), "\n[accent]Longest duration: ").concat((0, utils_1.formatTime)(stats.longestTime)),
+                    survival: "[accent]Highest wave reached: ".concat(stats.highestWave, "\n[accent]Average wave reached: ").concat(stats.averageWave, "\n[accent]Total runs: ").concat(stats.allRunCount, " (").concat(stats.earlyRTVs, " RTVs)\n[accent]RTV rate: ").concat(f.percent(stats.earlyRTVRate, 1), "\n[accent]Average duration: ").concat((0, utils_1.formatTime)(stats.averagePlaytime), "\n[accent]Longest duration: ").concat((0, utils_1.formatTime)(stats.longestTime)),
                     pvp: "[accent]Total runs: ".concat(stats.allRunCount, " (").concat(stats.earlyRTVs, " RTVs)\n[accent]Team win rates: ").concat(Object.entries(stats.teamWinRate).map(function (_c) {
                         var _d = __read(_c, 2), team = _d[0], rate = _d[1];
                         return "".concat(team, " ").concat(f.percent(rate, 1));

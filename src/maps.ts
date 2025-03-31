@@ -183,6 +183,7 @@ export class FMap extends dataClass<FMapData>() {
 			return acc;
 		}, {} as Record<string, number>);
 		const teamWinRate = Object.fromEntries(Object.entries(teamWins).map(([team, wins]) => [team, wins / victories]));
+		const waveStats = computeStatistics(this.runs.filter(r => r.outcome()[0] !== "rtv").map(r => r.wave));
 		return {
 			allRunCount,
 			significantRunCount,
@@ -201,6 +202,8 @@ export class FMap extends dataClass<FMapData>() {
 			averageHighestPlayerCount: computeStatistics(this.runs.map(r => r.maxPlayerCount)).average,
 			teamWins,
 			teamWinRate,
+			highestWave: waveStats.highest,
+			averageWave: waveStats.average,
 		};
 	}
 	displayStats(f:FFunction):string | null {
@@ -215,6 +218,8 @@ export class FMap extends dataClass<FMapData>() {
 [accent]Average playtime: ${formatTime(stats.averagePlaytime)}
 [accent]Shortest win time: ${formatTime(stats.shortestWinTime)}`,
 			survival: `\
+[accent]Highest wave reached: ${stats.highestWave}
+[accent]Average wave reached: ${stats.averageWave}
 [accent]Total runs: ${stats.allRunCount} (${stats.earlyRTVs} RTVs)
 [accent]RTV rate: ${f.percent(stats.earlyRTVRate, 1)}
 [accent]Average duration: ${formatTime(stats.averagePlaytime)}
