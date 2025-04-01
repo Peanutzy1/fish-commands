@@ -77,6 +77,7 @@ exports.outputMessage = outputMessage;
 exports.outputConsole = outputConsole;
 exports.updateBans = updateBans;
 exports.processChat = processChat;
+exports.foolifyChat = foolifyChat;
 exports.getIPRange = getIPRange;
 exports.getHash = getHash;
 exports.match = match;
@@ -621,6 +622,65 @@ function processChat(player, message, effects) {
         return null;
     }
     return (highlight !== null && highlight !== void 0 ? highlight : "") + message;
+}
+var replacements = [
+    //Serpulo units
+    ["dagger", "mace", "fortress", "scepter", "reign", "nova", "pulsar", "quasar", "vela", "corvus", "crawler", "atrax", "spiroct", "arkyid", "toxopid", "flare", "horizon", "zenith", "antumbra", "eclipse", "mono", "poly", "mega", "quad", "oct", "risso", "minke", "bryde", "sei", "omura", "retusa", "oxynoe", "cyerce", "aegires", "navanax", "fort", "toxo", "flarogus"],
+    //Erekir units
+    ["stell", "locus", "precept", "vanquish", "conquer", "merui", "cleroi", "anthicus", "tecta", "collaris", "elude", "avert", "obviate", "quell", "disrupt", "vanq", "crab", "anthi", "larry", "obvi"],
+    //Items, full form
+    ["copper", "lead", "metaglass", "graphite", "sand", "coal", "titanium", "thorium", "scrap", "silicon", "plastanium", "phase fabric", "surge alloy", "spore pod", "blast compound", "pyratite", "beryllium", "tungsten", "oxide", "carbide"],
+    //Items, short form
+    ["coppa", "meta", "graph", "tita", "titan", "thor", "scrap", "sili", "plast", "phase", "surge", "spore", "blast", "pyra", "beryl", "tung", "oxide", "carb"],
+    //Liquids
+    ["water", "slag", "oil", "cryo", "cryofluid"],
+    //Liquids/gases (erekir)
+    ["hydrogen", "ozone", "nitrogen", "cyanogen", "cyan", "nitro", "hydro", "arky", "arkycite", "neoplasm"],
+    //Gamemodes
+    ["attack", "sandbox", "pvp", "hexed", "survival"],
+    //teams
+    ["crux", "sharded", "malis", "neoplastic"]
+].map(function (set) { return [set, new RegExp("\\b(?:".concat(set.join("|"), ")\\b"), 'g')]; });
+var foolCounter = 0;
+function foolifyChat(message) {
+    var e_6, _a;
+    if (foolCounter < 5) {
+        //Skip the next 5 messages no matter what
+        foolCounter++;
+        return message;
+    }
+    var cleanedMessage = removeFoosChars(message);
+    var replacedMessage = cleanedMessage;
+    var _loop_2 = function (set, regex) {
+        Log.info(replacedMessage);
+        replacedMessage = replacedMessage.replace(regex, function () { return (0, funcs_1.random)(set); });
+    };
+    try {
+        for (var replacements_1 = __values(replacements), replacements_1_1 = replacements_1.next(); !replacements_1_1.done; replacements_1_1 = replacements_1.next()) {
+            var _b = __read(replacements_1_1.value, 2), set = _b[0], regex = _b[1];
+            _loop_2(set, regex);
+        }
+    }
+    catch (e_6_1) { e_6 = { error: e_6_1 }; }
+    finally {
+        try {
+            if (replacements_1_1 && !replacements_1_1.done && (_a = replacements_1.return)) _a.call(replacements_1);
+        }
+        finally { if (e_6) throw e_6.error; }
+    }
+    Log.info(replacedMessage);
+    if (replacedMessage !== cleanedMessage) {
+        if (foolCounter < 7) {
+            //Skip the next 2 messages that would get altered
+            foolCounter++;
+            return message;
+        }
+        foolCounter = 0;
+        return replacedMessage;
+    }
+    else {
+        return message;
+    }
 }
 exports.addToTileHistory = logErrors("Error while saving a tilelog entry", function (e) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0;

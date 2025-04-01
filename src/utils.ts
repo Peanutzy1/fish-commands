@@ -6,7 +6,7 @@ This file contains many utility functions.
 import * as api from './api';
 import { fail } from './commands';
 import { Gamemode, GamemodeName, adminNames, bannedWords, text, multiCharSubstitutions, substitutions } from "./config";
-import { crash, escapeStringColorsServer, escapeTextDiscord, parseError, StringIO } from './funcs';
+import { crash, escapeStringColorsServer, escapeTextDiscord, parseError, random, StringIO } from './funcs';
 import { FishEvents, maxTime } from "./globals";
 import { fishState, ipPattern, ipPortPattern, ipRangeCIDRPattern, ipRangeWildcardPattern, tileHistory, uuidPattern } from './globals';
 import { FishPlayer } from "./players";
@@ -503,6 +503,62 @@ export function processChat(player:mindustryPlayer, message:string, effects = fa
 	}
 
 	return (highlight ?? "") + message;
+}
+
+
+const replacements = ([
+	//Serpulo units
+	["dagger", "mace", "fortress", "scepter", "reign", "nova", "pulsar", "quasar", "vela", "corvus", "crawler", "atrax", "spiroct", "arkyid", "toxopid", "flare", "horizon", "zenith", "antumbra", "eclipse", "mono", "poly", "mega", "quad", "oct", "risso", "minke", "bryde", "sei", "omura", "retusa", "oxynoe", "cyerce", "aegires", "navanax", "fort", "toxo", "flarogus"],
+	//Erekir units
+	["stell", "locus", "precept", "vanquish", "conquer", "merui", "cleroi", "anthicus", "tecta", "collaris", "elude", "avert", "obviate", "quell", "disrupt", "vanq", "crab", "anthi", "larry", "obvi"],
+
+	//Items, full form
+	["copper", "lead", "metaglass", "graphite", "sand", "coal", "titanium", "thorium", "scrap", "silicon", "plastanium", "phase fabric", "surge alloy", "spore pod", "blast compound", "pyratite", "beryllium", "tungsten", "oxide", "carbide"],
+	//Items, short form
+	["coppa", "meta", "graph", "tita", "titan", "thor", "scrap", "sili", "plast", "phase", "surge", "spore", "blast", "pyra", "beryl", "tung", "oxide", "carb"],
+
+	//Liquids
+	["water", "slag", "oil", "cryo", "cryofluid"],
+
+	//Liquids/gases (erekir)
+	["hydrogen", "ozone", "nitrogen", "cyanogen", "cyan", "nitro", "hydro", "arky", "arkycite", "neoplasm"],
+
+	//Gamemodes
+	["attack", "sandbox", "pvp", "hexed", "survival"],
+
+	//teams
+	["crux", "sharded", "malis", "neoplastic"]
+] satisfies string[][]).map(set => [set, new RegExp(`\\b(?:${set.join("|")})\\b`, 'g')] as const);
+
+let foolCounter = 0;
+export function foolifyChat(message:string){
+	if(foolCounter < 5){
+		//Skip the next 5 messages no matter what
+		foolCounter ++;
+		return message;
+	}
+	let cleanedMessage = removeFoosChars(message);
+	let replacedMessage = cleanedMessage;
+	for(const [set, regex] of replacements){
+		Log.info(replacedMessage);
+		replacedMessage = replacedMessage.replace(regex, () => random(set));
+		//This code has a "feature":
+		//if it replaces a long item name to "blast compound",
+		//it will then replace "blast" to something else on the next pass
+		//this was unintended but it's funny so I'm keeping it
+	}
+	Log.info(replacedMessage);
+	if(replacedMessage !== cleanedMessage){
+		if(foolCounter < 7){
+			//Skip the next 2 messages that would get altered
+			foolCounter ++;
+			return message;
+		}
+		foolCounter = 0;
+		return replacedMessage;	
+	} else {
+		return message;
+	}
 }
 
 export const addToTileHistory = logErrors("Error while saving a tilelog entry", (e:any) => {
