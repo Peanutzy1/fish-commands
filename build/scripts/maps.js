@@ -68,15 +68,6 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FMap = exports.PartialMapRun = exports.FinishedMapRun = void 0;
@@ -87,8 +78,10 @@ var utils_1 = require("./utils");
 var config_1 = require("./config");
 var FinishedMapRun = /** @class */ (function (_super) {
     __extends(FinishedMapRun, _super);
-    function FinishedMapRun() {
-        var _this = _super.apply(this, __spreadArray([], __read(arguments), false)) || this;
+    //this constructor is useless, but rhino crashes with a bizarre error when trying to run the emitted code
+    //do not remove this useless constructor
+    function FinishedMapRun(data) {
+        var _this = _super.call(this, data) || this;
         _this.wave = 0;
         return _this;
     }

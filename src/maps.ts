@@ -20,6 +20,11 @@ type FinishedMapRunData = {
 }
 export class FinishedMapRun extends dataClass<FinishedMapRunData>() {
 	wave = 0;
+	//this constructor is useless, but rhino crashes with a bizarre error when trying to run the emitted code
+	//do not remove this useless constructor
+	constructor(data:FinishedMapRunData){
+		super(data);
+	}
 	duration(){
 		return this.endTime - this.startTime;
 	}
