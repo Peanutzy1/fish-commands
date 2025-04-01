@@ -532,30 +532,41 @@ const replacements = ([
 
 let foolCounter = 0;
 export function foolifyChat(message:string){
-	if(foolCounter < 5){
-		//Skip the next 5 messages no matter what
-		foolCounter ++;
-		return message;
-	}
 	let cleanedMessage = removeFoosChars(message);
-	let replacedMessage = cleanedMessage;
-	for(const [set, regex] of replacements){
-		Log.info(replacedMessage);
-		replacedMessage = replacedMessage.replace(regex, (_, plural) => random(set) + plural);
-		//This code has a "feature":
-		//if it replaces a long item name to "blast compound",
-		//it will then replace "blast" to something else on the next pass
-		//this was unintended but it's funny so I'm keeping it
-	}
-	Log.info(replacedMessage);
-	if(replacedMessage !== cleanedMessage){
-		if(foolCounter < 7){
-			//Skip the next 2 messages that would get altered
+	setShuffle: {
+		if(foolCounter < 5){
+			//Skip the next 5 messages no matter what
 			foolCounter ++;
-			return message;
+			break setShuffle;
 		}
-		foolCounter = 0;
-		return replacedMessage;	
+		let replacedMessage = cleanedMessage;
+		for(const [set, regex] of replacements){
+			Log.info(replacedMessage);
+			replacedMessage = replacedMessage.replace(regex, (_, plural) => random(set) + plural);
+			//This code has a "feature":
+			//if it replaces a long item name to "blast compound",
+			//it will then replace "blast" to something else on the next pass
+			//this was unintended but it's funny so I'm keeping it
+		}
+		Log.info(replacedMessage);
+		if(replacedMessage !== cleanedMessage){
+			if(foolCounter < 7){
+				//Skip the next 2 messages that would get altered
+				foolCounter ++;
+				break setShuffle;
+			}
+			foolCounter = 0;
+			return replacedMessage;
+		} else {
+			break setShuffle;
+		}
+	}
+	if(Math.random() < 0.02){
+		return cleanedMessage.split("").reverse().join("");
+	} else if(Math.random() < 0.02){
+		return "[scarlet]I really hope everyone is having a fun time :} <3";
+	} else if(Math.random() < 0.005){
+		return "[cyan]AMOGUS";
 	} else {
 		return message;
 	}

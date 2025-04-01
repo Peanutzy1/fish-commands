@@ -644,39 +644,53 @@ var replacements = [
 var foolCounter = 0;
 function foolifyChat(message) {
     var e_6, _a;
-    if (foolCounter < 5) {
-        //Skip the next 5 messages no matter what
-        foolCounter++;
-        return message;
-    }
     var cleanedMessage = removeFoosChars(message);
-    var replacedMessage = cleanedMessage;
-    var _loop_2 = function (set, regex) {
-        Log.info(replacedMessage);
-        replacedMessage = replacedMessage.replace(regex, function (_, plural) { return (0, funcs_1.random)(set) + plural; });
-    };
-    try {
-        for (var replacements_1 = __values(replacements), replacements_1_1 = replacements_1.next(); !replacements_1_1.done; replacements_1_1 = replacements_1.next()) {
-            var _b = __read(replacements_1_1.value, 2), set = _b[0], regex = _b[1];
-            _loop_2(set, regex);
-        }
-    }
-    catch (e_6_1) { e_6 = { error: e_6_1 }; }
-    finally {
-        try {
-            if (replacements_1_1 && !replacements_1_1.done && (_a = replacements_1.return)) _a.call(replacements_1);
-        }
-        finally { if (e_6) throw e_6.error; }
-    }
-    Log.info(replacedMessage);
-    if (replacedMessage !== cleanedMessage) {
-        if (foolCounter < 7) {
-            //Skip the next 2 messages that would get altered
+    setShuffle: {
+        if (foolCounter < 5) {
+            //Skip the next 5 messages no matter what
             foolCounter++;
-            return message;
+            break setShuffle;
         }
-        foolCounter = 0;
-        return replacedMessage;
+        var replacedMessage = cleanedMessage;
+        var _loop_2 = function (set, regex) {
+            Log.info(replacedMessage);
+            replacedMessage = replacedMessage.replace(regex, function (_, plural) { return (0, funcs_1.random)(set) + plural; });
+        };
+        try {
+            for (var replacements_1 = __values(replacements), replacements_1_1 = replacements_1.next(); !replacements_1_1.done; replacements_1_1 = replacements_1.next()) {
+                var _b = __read(replacements_1_1.value, 2), set = _b[0], regex = _b[1];
+                _loop_2(set, regex);
+            }
+        }
+        catch (e_6_1) { e_6 = { error: e_6_1 }; }
+        finally {
+            try {
+                if (replacements_1_1 && !replacements_1_1.done && (_a = replacements_1.return)) _a.call(replacements_1);
+            }
+            finally { if (e_6) throw e_6.error; }
+        }
+        Log.info(replacedMessage);
+        if (replacedMessage !== cleanedMessage) {
+            if (foolCounter < 7) {
+                //Skip the next 2 messages that would get altered
+                foolCounter++;
+                break setShuffle;
+            }
+            foolCounter = 0;
+            return replacedMessage;
+        }
+        else {
+            break setShuffle;
+        }
+    }
+    if (Math.random() < 0.02) {
+        return cleanedMessage.split("").reverse().join("");
+    }
+    else if (Math.random() < 0.02) {
+        return "[scarlet]I really hope everyone is having a fun time :} <3";
+    }
+    else if (Math.random() < 0.005) {
+        return "[cyan]AMOGUS";
     }
     else {
         return message;
