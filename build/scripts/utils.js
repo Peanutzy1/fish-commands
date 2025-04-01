@@ -41,7 +41,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.addToTileHistory = exports.foolifyChat = void 0;
-exports.memoize = memoize;
+exports.memoizeChatFilter = memoizeChatFilter;
 exports.formatTime = formatTime;
 exports.formatModeName = formatModeName;
 exports.formatTimestamp = formatTimestamp;
@@ -89,13 +89,14 @@ var funcs_1 = require("./funcs");
 var globals_1 = require("./globals");
 var globals_2 = require("./globals");
 var players_1 = require("./players");
-function memoize(impl) {
-    var lastInput = null;
+function memoizeChatFilter(impl) {
+    var lastCleanedInput = null;
     var lastOutput = null;
     return function memoized(input) {
-        if (input === lastInput)
+        var cleanedInput = removeFoosChars(input);
+        if (cleanedInput === lastCleanedInput)
             return lastOutput;
-        lastInput = input;
+        lastCleanedInput = cleanedInput;
         return lastOutput = impl(input);
     };
 }
@@ -652,7 +653,7 @@ var replacements = [
     ["crux", "sharded", "malis", "neoplastic"]
 ].map(function (set) { return [set, new RegExp("\\b(?:".concat(set.join("|"), ")(e?s?(?:i?gone)?)\\b"), 'g')]; });
 var foolCounter = 0;
-exports.foolifyChat = memoize(function foolifyChat(message) {
+exports.foolifyChat = memoizeChatFilter(function foolifyChat(message) {
     var e_6, _a;
     var cleanedMessage = removeFoosChars(message);
     setShuffle: {

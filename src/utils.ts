@@ -7,18 +7,19 @@ import * as api from './api';
 import { fail } from './commands';
 import { Gamemode, GamemodeName, adminNames, bannedWords, text, multiCharSubstitutions, substitutions } from "./config";
 import { crash, escapeStringColorsServer, escapeTextDiscord, parseError, random, StringIO } from './funcs';
-import { FishEvents, maxTime } from "./globals";
+import { maxTime } from "./globals";
 import { fishState, ipPattern, ipPortPattern, ipRangeCIDRPattern, ipRangeWildcardPattern, tileHistory, uuidPattern } from './globals';
 import { FishPlayer } from "./players";
 import { Boolf, PartialFormatString, SelectEnumClassKeys } from './types';
 
 
-export function memoize<TIn extends {}, TOut extends unknown>(impl:(arg:TIn) => TOut):(arg:TIn) => TOut {
-	let lastInput:TIn | null = null;
-	let lastOutput:TOut | null = null;
-	return function memoized(input:TIn):TOut {
-		if(input === lastInput) return lastOutput!;
-		lastInput = input;
+export function memoizeChatFilter(impl:(arg:string) => string){
+	let lastCleanedInput:string | null = null;
+	let lastOutput:string | null = null;
+	return function memoized(input:string):string {
+		let cleanedInput = removeFoosChars(input);
+		if(cleanedInput === lastCleanedInput) return lastOutput!;
+		lastCleanedInput = cleanedInput;
 		return lastOutput = impl(input);
 	};
 }
@@ -541,7 +542,7 @@ const replacements = ([
 ] satisfies string[][]).map(set => [set, new RegExp(`\\b(?:${set.join("|")})(e?s?(?:i?gone)?)\\b`, 'g')] as const);
 
 let foolCounter = 0;
-export const foolifyChat = memoize(function foolifyChat(message:string){
+export const foolifyChat = memoizeChatFilter(function foolifyChat(message:string){
 	let cleanedMessage = removeFoosChars(message);
 	setShuffle: {
 		if(foolCounter < 5){
