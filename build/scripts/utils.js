@@ -640,7 +640,7 @@ var replacements = [
     ["attack", "sandbox", "pvp", "hexed", "survival"],
     //teams
     ["crux", "sharded", "malis", "neoplastic"]
-].map(function (set) { return [set, new RegExp("\\b(?:".concat(set.join("|"), ")\\b"), 'g')]; });
+].map(function (set) { return [set, new RegExp("\\b(?:".concat(set.join("|"), ")(e?s?(?:i?gone)?)\\b"), 'g')]; });
 var foolCounter = 0;
 function foolifyChat(message) {
     var e_6, _a;
@@ -653,7 +653,7 @@ function foolifyChat(message) {
     var replacedMessage = cleanedMessage;
     var _loop_2 = function (set, regex) {
         Log.info(replacedMessage);
-        replacedMessage = replacedMessage.replace(regex, function () { return (0, funcs_1.random)(set); });
+        replacedMessage = replacedMessage.replace(regex, function (_, plural) { return (0, funcs_1.random)(set) + plural; });
     };
     try {
         for (var replacements_1 = __values(replacements), replacements_1_1 = replacements_1.next(); !replacements_1_1.done; replacements_1_1 = replacements_1.next()) {

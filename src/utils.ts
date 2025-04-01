@@ -528,7 +528,7 @@ const replacements = ([
 
 	//teams
 	["crux", "sharded", "malis", "neoplastic"]
-] satisfies string[][]).map(set => [set, new RegExp(`\\b(?:${set.join("|")})\\b`, 'g')] as const);
+] satisfies string[][]).map(set => [set, new RegExp(`\\b(?:${set.join("|")})(e?s?(?:i?gone)?)\\b`, 'g')] as const);
 
 let foolCounter = 0;
 export function foolifyChat(message:string){
@@ -541,7 +541,7 @@ export function foolifyChat(message:string){
 	let replacedMessage = cleanedMessage;
 	for(const [set, regex] of replacements){
 		Log.info(replacedMessage);
-		replacedMessage = replacedMessage.replace(regex, () => random(set));
+		replacedMessage = replacedMessage.replace(regex, (_, plural) => random(set) + plural);
 		//This code has a "feature":
 		//if it replaces a long item name to "blast compound",
 		//it will then replace "blast" to something else on the next pass
