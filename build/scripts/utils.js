@@ -40,7 +40,8 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addToTileHistory = void 0;
+exports.addToTileHistory = exports.foolifyChat = void 0;
+exports.memoize = memoize;
 exports.formatTime = formatTime;
 exports.formatModeName = formatModeName;
 exports.formatTimestamp = formatTimestamp;
@@ -77,7 +78,6 @@ exports.outputMessage = outputMessage;
 exports.outputConsole = outputConsole;
 exports.updateBans = updateBans;
 exports.processChat = processChat;
-exports.foolifyChat = foolifyChat;
 exports.getIPRange = getIPRange;
 exports.getHash = getHash;
 exports.match = match;
@@ -89,6 +89,16 @@ var funcs_1 = require("./funcs");
 var globals_1 = require("./globals");
 var globals_2 = require("./globals");
 var players_1 = require("./players");
+function memoize(impl) {
+    var lastInput = null;
+    var lastOutput = null;
+    return function memoized(input) {
+        if (input === lastInput)
+            return lastOutput;
+        lastInput = input;
+        return lastOutput = impl(input);
+    };
+}
 function formatTime(time) {
     if (globals_1.maxTime - (time + Date.now()) < 20000)
         return "forever";
@@ -642,7 +652,7 @@ var replacements = [
     ["crux", "sharded", "malis", "neoplastic"]
 ].map(function (set) { return [set, new RegExp("\\b(?:".concat(set.join("|"), ")(e?s?(?:i?gone)?)\\b"), 'g')]; });
 var foolCounter = 0;
-function foolifyChat(message) {
+exports.foolifyChat = memoize(function foolifyChat(message) {
     var e_6, _a;
     var cleanedMessage = removeFoosChars(message);
     setShuffle: {
@@ -653,7 +663,6 @@ function foolifyChat(message) {
         }
         var replacedMessage = cleanedMessage;
         var _loop_2 = function (set, regex) {
-            Log.info(replacedMessage);
             replacedMessage = replacedMessage.replace(regex, function (_, plural) { return (0, funcs_1.random)(set) + plural; });
         };
         try {
@@ -669,7 +678,6 @@ function foolifyChat(message) {
             }
             finally { if (e_6) throw e_6.error; }
         }
-        Log.info(replacedMessage);
         if (replacedMessage !== cleanedMessage) {
             if (foolCounter < 7) {
                 //Skip the next 2 messages that would get altered
@@ -695,7 +703,7 @@ function foolifyChat(message) {
     else {
         return message;
     }
-}
+});
 exports.addToTileHistory = logErrors("Error while saving a tilelog entry", function (e) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0;
     var tile, uuid, action, type, time = Date.now();

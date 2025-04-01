@@ -13,6 +13,16 @@ import { FishPlayer } from "./players";
 import { Boolf, PartialFormatString, SelectEnumClassKeys } from './types';
 
 
+export function memoize<TIn extends {}, TOut extends unknown>(impl:(arg:TIn) => TOut):(arg:TIn) => TOut {
+	let lastInput:TIn | null = null;
+	let lastOutput:TOut | null = null;
+	return function memoized(input:TIn):TOut {
+		if(input === lastInput) return lastOutput!;
+		lastInput = input;
+		return lastOutput = impl(input);
+	};
+}
+
 export function formatTime(time:number){
 
 	if(maxTime - (time + Date.now()) < 20000) return "forever";
@@ -531,7 +541,7 @@ const replacements = ([
 ] satisfies string[][]).map(set => [set, new RegExp(`\\b(?:${set.join("|")})(e?s?(?:i?gone)?)\\b`, 'g')] as const);
 
 let foolCounter = 0;
-export function foolifyChat(message:string){
+export const foolifyChat = memoize(function foolifyChat(message:string){
 	let cleanedMessage = removeFoosChars(message);
 	setShuffle: {
 		if(foolCounter < 5){
@@ -541,14 +551,12 @@ export function foolifyChat(message:string){
 		}
 		let replacedMessage = cleanedMessage;
 		for(const [set, regex] of replacements){
-			Log.info(replacedMessage);
 			replacedMessage = replacedMessage.replace(regex, (_, plural) => random(set) + plural);
 			//This code has a "feature":
 			//if it replaces a long item name to "blast compound",
 			//it will then replace "blast" to something else on the next pass
 			//this was unintended but it's funny so I'm keeping it
 		}
-		Log.info(replacedMessage);
 		if(replacedMessage !== cleanedMessage){
 			if(foolCounter < 7){
 				//Skip the next 2 messages that would get altered
@@ -570,7 +578,7 @@ export function foolifyChat(message:string){
 	} else {
 		return message;
 	}
-}
+});
 
 export const addToTileHistory = logErrors("Error while saving a tilelog entry", (e:any) => {
 
