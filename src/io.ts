@@ -125,6 +125,7 @@ export class Serializer<T extends Serializable> {
 				output.writeBoolean(value);
 				break;
       case 'team':
+				if(!value) Log.err(`attempting to serialize a Team, but it was null`); //temporary debug message
         output.writeByte((value as Team).id);
         break;
 			case 'object':
