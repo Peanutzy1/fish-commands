@@ -550,6 +550,11 @@ Raw data for blocks tripped: ${data.toString(" ", i => i.toString())}`
 			FishPlayer.forEachPlayer(p => {
 				if(p.ranksAtLeast("mod")) numStaff ++;
 			});
+			const uptimeColor =
+				uptime < 24 * 3600_000 ? "" :
+				uptime < 3 * 24 * 3600_000 ? "&ly" :
+				uptime < 7 * 24 * 3600_000 ? "&y" :
+				"&br";
 			output(`
 Status:
 Playing on map &fi${Vars.state.map.plainName()}&fr for ${formatTime(1000 * Vars.state.tick / 60)}
@@ -557,7 +562,7 @@ ${Vars.state.rules.waves ? `Wave &c${Vars.state.wave}&fr, &c${Math.ceil(Vars.sta
 &c${Groups.unit.size()}&fr units, &c${Vars.state.enemies}&fr enemies, &c${Groups.build.size()}&fr buildings
 TPS: ${colorNumber(Core.graphics.getFramesPerSecond(), f => f > 58 ? "&g" : f > 30 ? "&y" : f > 10 ? "&r" : "&br&w", "server")}, \
 Memory: &c${Math.round(Core.app.getJavaHeap() / 1048576)}&fr MB
-Server uptime: ${formatTime(uptime)} (since ${formatTimestamp(Date.now() - uptime)})
+Server uptime: ${uptimeColor}${formatTime(uptime)}&fr (since ${formatTimestamp(Date.now() - uptime)})
 ${[
 	fishState.restartQueued ? "&by&lwRestart queued&fr" : "",
 	fishState.restartLoopTask ? "&by&lwRestarting now&fr" : "",
