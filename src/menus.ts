@@ -224,13 +224,14 @@ export const Menu = {
 			(TCancelBehavior extends "null" ? null : never) | TOption,
 			TCancelBehavior extends "reject" ? "cancel" : never
 		>();
+		const pageSkipSize = Math.max(Math.floor(pages.length / 8), 5);
 		function showPage(index:number){
 			const opts:{ data: ["left", number] | ["numbers"] | ["right", number] | ["cancel"]; text: string; }[][] = [
 				[
-					{ data: ["left", 5], text: `[${index == 0 ? "gray" : "accent"}]<<<` },
+					{ data: ["left", pageSkipSize], text: `[${index == 0 ? "gray" : "accent"}]<<<` },
 					{ data: ["left", 1], text: `[${index == 0 ? "gray" : "accent"}]<--` },
 					{ data: ["right", 1], text: `[${index == pages.length - 1 ? "gray" : "accent"}]-->` },
-					{ data: ["right", 5], text: `[${index == pages.length - 1 ? "gray" : "accent"}]>>>` },
+					{ data: ["right", pageSkipSize], text: `[${index == pages.length - 1 ? "gray" : "accent"}]>>>` },
 				],
 				[
 					{ data: ["numbers"], text: `[accent]Page ${index + 1}/${pages.length}` },

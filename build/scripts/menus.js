@@ -231,13 +231,14 @@ exports.Menu = {
     textPages: function (target, pages, cfg) {
         if (cfg === void 0) { cfg = {}; }
         var _a = promise_1.Promise.withResolvers(), promise = _a.promise, reject = _a.reject, resolve = _a.resolve;
+        var pageSkipSize = Math.max(Math.floor(pages.length / 8), 5);
         function showPage(index) {
             var opts = [
                 [
-                    { data: ["left", 5], text: "[".concat(index == 0 ? "gray" : "accent", "]<<<") },
+                    { data: ["left", pageSkipSize], text: "[".concat(index == 0 ? "gray" : "accent", "]<<<") },
                     { data: ["left", 1], text: "[".concat(index == 0 ? "gray" : "accent", "]<--") },
                     { data: ["right", 1], text: "[".concat(index == pages.length - 1 ? "gray" : "accent", "]-->") },
-                    { data: ["right", 5], text: "[".concat(index == pages.length - 1 ? "gray" : "accent", "]>>>") },
+                    { data: ["right", pageSkipSize], text: "[".concat(index == pages.length - 1 ? "gray" : "accent", "]>>>") },
                 ],
                 [
                     { data: ["numbers"], text: "[accent]Page ".concat(index + 1, "/").concat(pages.length) },
