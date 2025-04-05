@@ -214,17 +214,18 @@ var FMap = function () {
                 return (_c = this.map) === null || _c === void 0 ? void 0 : _c.rules();
             };
             FMap.prototype.stats = function () {
-                var allRunCount = this.runs.length;
-                var victories = this.runs.filter(function (r) { return r.outcome()[1] === "win"; }).length;
-                var losses = this.runs.filter(function (r) { return r.outcome()[0] === "loss"; }).length;
-                var earlyRTVs = this.runs.filter(function (r) { return r.outcome()[1] === "early rtv"; }).length;
-                var lateRTVs = this.runs.filter(function (r) { return r.outcome()[1] === "late rtv"; }).length;
+                var runs = this.runs.filter(function (r) { return r.maxPlayerCount > 0; }); //Remove all runs with no players on
+                var allRunCount = runs.length;
+                var victories = runs.filter(function (r) { return r.outcome()[1] === "win"; }).length;
+                var losses = runs.filter(function (r) { return r.outcome()[0] === "loss"; }).length;
+                var earlyRTVs = runs.filter(function (r) { return r.outcome()[1] === "early rtv"; }).length;
+                var lateRTVs = runs.filter(function (r) { return r.outcome()[1] === "late rtv"; }).length;
                 var significantRunCount = allRunCount - earlyRTVs;
                 var totalLosses = losses + lateRTVs;
-                var durations = this.runs.filter(function (r) { return r.outcome()[0] !== "rtv"; }).map(function (r) { return r.duration(); });
+                var durations = runs.filter(function (r) { return r.outcome()[0] !== "rtv"; }).map(function (r) { return r.duration(); });
                 var durationStats = (0, funcs_1.computeStatistics)(durations);
-                var winDurationStats = (0, funcs_1.computeStatistics)(this.runs.filter(function (r) { return r.outcome()[0] === "win"; }).map(function (r) { return r.duration(); }));
-                var teamWins = this.runs.filter(function (r) { return r.success; }).reduce(function (acc, item) {
+                var winDurationStats = (0, funcs_1.computeStatistics)(runs.filter(function (r) { return r.outcome()[0] === "win"; }).map(function (r) { return r.duration(); }));
+                var teamWins = runs.filter(function (r) { return r.success; }).reduce(function (acc, item) {
                     var _c;
                     acc[item.winTeam.name] = ((_c = acc[item.winTeam.name]) !== null && _c !== void 0 ? _c : 0) + 1;
                     return acc;
@@ -233,7 +234,7 @@ var FMap = function () {
                     var _d = __read(_c, 2), team = _d[0], wins = _d[1];
                     return [team, wins / victories];
                 }));
-                var waveStats = (0, funcs_1.computeStatistics)(this.runs.filter(function (r) { return r.outcome()[0] !== "rtv"; }).map(function (r) { return r.wave; }));
+                var waveStats = (0, funcs_1.computeStatistics)(runs.filter(function (r) { return r.outcome()[0] !== "rtv"; }).map(function (r) { return r.wave; }));
                 return {
                     allRunCount: allRunCount,
                     significantRunCount: significantRunCount,
@@ -249,7 +250,7 @@ var FMap = function () {
                     shortestWinTime: winDurationStats.lowest,
                     longestTime: durationStats.highest,
                     shortestTime: durationStats.lowest,
-                    averageHighestPlayerCount: (0, funcs_1.computeStatistics)(this.runs.map(function (r) { return r.maxPlayerCount; })).average,
+                    averageHighestPlayerCount: (0, funcs_1.computeStatistics)(runs.map(function (r) { return r.maxPlayerCount; })).average,
                     teamWins: teamWins,
                     teamWinRate: teamWinRate,
                     highestWave: waveStats.highest,
@@ -263,16 +264,16 @@ var FMap = function () {
                 var stats = this.stats();
                 var rules = this.rules();
                 var modeSpecificStats = (0, utils_1.match)(config_1.Gamemode.name(), {
-                    attack: "[accent]Total runs: ".concat(stats.allRunCount, " (").concat(stats.victories, " wins, ").concat(stats.totalLosses, " losses, ").concat(stats.earlyRTVs, " RTVs)\n[accent]Outcomes: ").concat(f.percent(stats.winRate, 1), " wins, ").concat(f.percent(stats.lossRate, 1), " losses, ").concat(f.percent(stats.earlyRTVRate, 1), " RTVs\n[accent]Average playtime: ").concat((0, utils_1.formatTime)(stats.averagePlaytime), "\n[accent]Shortest win time: ").concat((0, utils_1.formatTime)(stats.shortestWinTime)),
-                    survival: "[accent]Highest wave reached: ".concat(stats.highestWave, "\n[accent]Average wave reached: ").concat(stats.averageWave, "\n[accent]Total runs: ").concat(stats.allRunCount, " (").concat(stats.earlyRTVs, " RTVs)\n[accent]RTV rate: ").concat(f.percent(stats.earlyRTVRate, 1), "\n[accent]Average duration: ").concat((0, utils_1.formatTime)(stats.averagePlaytime), "\n[accent]Longest duration: ").concat((0, utils_1.formatTime)(stats.longestTime)),
-                    pvp: "[accent]Total runs: ".concat(stats.allRunCount, " (").concat(stats.earlyRTVs, " RTVs)\n[accent]Team win rates: ").concat(Object.entries(stats.teamWinRate).map(function (_c) {
+                    attack: "[CCFFCC]Total runs: ".concat(stats.allRunCount, " (").concat(stats.victories, " wins, ").concat(stats.totalLosses, " losses, ").concat(stats.earlyRTVs, " RTVs)\n[CCFFCC]Outcomes: ").concat(f.percent(stats.winRate, 1), " wins, ").concat(f.percent(stats.lossRate, 1), " losses, ").concat(f.percent(stats.earlyRTVRate, 1), " RTVs\n[CCFFCC]Average playtime: ").concat((0, utils_1.formatTime)(stats.averagePlaytime), "\n[CCFFCC]Shortest win time: ").concat((0, utils_1.formatTime)(stats.shortestWinTime)),
+                    survival: "[CCFFCC]Highest wave reached: ".concat(stats.highestWave, "\n[CCFFCC]Average wave reached: ").concat(stats.averageWave, "\n[CCFFCC]Total runs: ").concat(stats.allRunCount, " (").concat(stats.earlyRTVs, " RTVs)\n[CCFFCC]RTV rate: ").concat(f.percent(stats.earlyRTVRate, 1), "\n[CCFFCC]Average duration: ").concat((0, utils_1.formatTime)(stats.averagePlaytime), "\n[CCFFCC]Longest duration: ").concat((0, utils_1.formatTime)(stats.longestTime)),
+                    pvp: "[CCFFCC]Total runs: ".concat(stats.allRunCount, " (").concat(stats.earlyRTVs, " RTVs)\n[CCFFCC]Team win rates: ").concat(Object.entries(stats.teamWinRate).map(function (_c) {
                         var _d = __read(_c, 2), team = _d[0], rate = _d[1];
                         return "".concat(team, " ").concat(f.percent(rate, 1));
-                    }).join(", "), "\n[accent]RTV rate: ").concat(f.percent(stats.earlyRTVRate, 1), "\n[accent]Average match duration: ").concat((0, utils_1.formatTime)(stats.averagePlaytime), "\n[accent]Shortest match duration: ").concat((0, utils_1.formatTime)(stats.shortestWinTime)),
-                    hexed: "[accent]Total runs: ".concat(stats.allRunCount, " (").concat(stats.earlyRTVs, " RTVs)\n[accent]RTV rate: ").concat(f.percent(stats.earlyRTVRate, 1), "\n[accent]Average match duration: ").concat((0, utils_1.formatTime)(stats.averagePlaytime), "\n[accent]Shortest match duration: ").concat((0, utils_1.formatTime)(stats.shortestWinTime)),
-                    sandbox: "[accent]Total plays: ".concat(stats.allRunCount, "\n[accent]Average play time: ").concat((0, utils_1.formatTime)(stats.averagePlaytime), "\n[accent]Shortest play time: ").concat((0, utils_1.formatTime)(stats.shortestTime)),
+                    }).join(", "), "\n[CCFFCC]RTV rate: ").concat(f.percent(stats.earlyRTVRate, 1), "\n[CCFFCC]Average match duration: ").concat((0, utils_1.formatTime)(stats.averagePlaytime), "\n[CCFFCC]Shortest match duration: ").concat((0, utils_1.formatTime)(stats.shortestWinTime)),
+                    hexed: "[CCFFCC]Total runs: ".concat(stats.allRunCount, " (").concat(stats.earlyRTVs, " RTVs)\n[CCFFCC]RTV rate: ").concat(f.percent(stats.earlyRTVRate, 1), "\n[CCFFCC]Average match duration: ").concat((0, utils_1.formatTime)(stats.averagePlaytime), "\n[CCFFCC]Shortest match duration: ").concat((0, utils_1.formatTime)(stats.shortestWinTime)),
+                    sandbox: "[CCFFCC]Total plays: ".concat(stats.allRunCount, "\n[CCFFCC]Average play time: ").concat((0, utils_1.formatTime)(stats.averagePlaytime), "\n[CCFFCC]Shortest play time: ").concat((0, utils_1.formatTime)(stats.shortestTime)),
                 }, "");
-                return ("[coral]Information for map ".concat(map.name(), " [gray](").concat(map.file.name(), ")[coral]:\n[accent]Map by: ").concat(map.author(), "\n[accent]Description: ").concat(map.description(), "\n[accent]Size: ").concat(map.width, "x").concat(map.height, "\n[accent]Last updated: ").concat(new Date(map.file.lastModified()).toLocaleDateString(), "\n[accent]BvB allowed: ").concat(f.boolGood(rules.placeRangeCheck), ", unit item transfer allowed: ").concat(f.boolGood(rules.onlyDepositCore), "\n\n").concat(modeSpecificStats, "\n[accent]Longest play time: ").concat((0, utils_1.formatTime)(stats.longestTime), "\n[accent]Average player count: ").concat(f.number(stats.averageHighestPlayerCount, 1)));
+                return ("[coral]".concat(map.name(), "\n[gray](").concat(map.file.name(), ")\n\n[accent]Map by: [white]").concat(map.author(), "\n[accent]Description: [white]").concat(map.description(), "\n[accent]Size: [white]").concat(map.width, "x").concat(map.height, "\n[accent]Last updated: [white]").concat(new Date(map.file.lastModified()).toLocaleDateString(), "\n[accent]BvB allowed: ").concat(f.boolGood(rules.placeRangeCheck), ", unit item transfer allowed: ").concat(f.boolGood(rules.onlyDepositCore), "\n\n").concat(modeSpecificStats, "\n[CCFFCC]Longest play time: ").concat((0, utils_1.formatTime)(stats.longestTime), "\n[CCFFCC]Average player count: ").concat(f.number(stats.averageHighestPlayerCount, 1)));
             };
             return FMap;
         }(_classSuper)),

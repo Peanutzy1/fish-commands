@@ -103,6 +103,8 @@ function memoizeChatFilter(impl) {
 function formatTime(time) {
     if (globals_1.maxTime - (time + Date.now()) < 20000)
         return "forever";
+    if (isNaN(time))
+        return "N/A";
     var months = Math.floor(time / (30 * 24 * 60 * 60 * 1000));
     var days = Math.floor((time % (30 * 24 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000));
     var hours = Math.floor((time % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));

@@ -965,7 +965,7 @@ Win rate: ${target.stats.gamesWon / target.stats.gamesFinished}`
 				output(FMap.getCreate(map).displayStats(f)!);
 			} else {
 				Menu.textPages(sender, Vars.maps.customMaps().map(m =>
-					[m.name(), () => FMap.getCreate(m).displayStats(f)!] as const
+					["Map information", () => FMap.getCreate(m).displayStats(f)!] as const
 				).toArray())
 			}
 		}
