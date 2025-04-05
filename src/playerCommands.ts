@@ -906,9 +906,11 @@ ${highestVotedMaps.map(({key:map, value:votes}) =>
 			args: [],
 			description: "Vote to surrender to the enemy team.",
 			perm: Perm.play,
-			requirements: [Req.cooldown(30_000), Req.mode("pvp"), Req.teamAlive],
+			requirements: [Req.mode("pvp"), Req.teamAlive],
 			data: { managers },
 			handler({ sender }){
+				if(sender.ranksAtLeast("mod")) Req.cooldown(5_000);
+				else Req.cooldown(20_000);
 				managers[sender.team().id].vote(sender, 1, 0);
 			},
 		};
