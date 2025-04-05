@@ -29,11 +29,18 @@ export class FinishedMapRun extends dataClass<FinishedMapRunData>() {
 		return this.endTime - this.startTime;
 	}
 	outcome(){
-		if(this.success) return ["win", "win"] as const;
-		else if(this.winTeam === Team.derelict){
-			if(this.duration() > 180_000) return ["loss", "late rtv"] as const;
-			return ["rtv", "early rtv"] as const;
-		} else return ["loss", "loss"] as const;
+		if(Gamemode.pvp()){
+			if(this.winTeam === Team.derelict) {
+				if(this.duration() > 1200_000) return ["rtv", "late rtv"] as const;
+				else return ["rtv", "early rtv"] as const;
+			} else return ["win", "win"] as const;
+		} else {
+			if(this.success) return ["win", "win"] as const;
+			else if(this.winTeam === Team.derelict){
+				if(this.duration() > 180_000) return ["loss", "late rtv"] as const;
+				else return ["rtv", "early rtv"] as const;
+			} else return ["loss", "loss"] as const;
+		}
 	}
 }
 
@@ -184,11 +191,11 @@ export class FMap extends dataClass<FMapData>() {
 		const durations = runs.filter(r => r.outcome()[0] !== "rtv").map(r => r.duration());
 		const durationStats = computeStatistics(durations);
 		const winDurationStats = computeStatistics(runs.filter(r => r.outcome()[0] === "win").map(r => r.duration()));
-		const teamWins = runs.filter(r => r.success).reduce((acc, item) => {
+		const teamWins = runs.filter(r => r.outcome()[1] !== "early rtv").reduce((acc, item) => {
 			acc[item.winTeam.name] = (acc[item.winTeam.name] ?? 0) + 1;
 			return acc;
 		}, {} as Record<string, number>);
-		const teamWinRate = Object.fromEntries(Object.entries(teamWins).map(([team, wins]) => [team, wins / victories]));
+		const teamWinRate = Object.fromEntries(Object.entries(teamWins).map(([team, wins]) => [team, wins / significantRunCount]));
 		const waveStats = computeStatistics(runs.filter(r => r.outcome()[0] !== "rtv").map(r => r.wave));
 		return {
 			allRunCount,

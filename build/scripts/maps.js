@@ -89,15 +89,28 @@ var FinishedMapRun = /** @class */ (function (_super) {
         return this.endTime - this.startTime;
     };
     FinishedMapRun.prototype.outcome = function () {
-        if (this.success)
-            return ["win", "win"];
-        else if (this.winTeam === Team.derelict) {
-            if (this.duration() > 180000)
-                return ["loss", "late rtv"];
-            return ["rtv", "early rtv"];
+        if (config_1.Gamemode.pvp()) {
+            if (this.winTeam === Team.derelict) {
+                if (this.duration() > 1200000)
+                    return ["rtv", "late rtv"];
+                else
+                    return ["rtv", "early rtv"];
+            }
+            else
+                return ["win", "win"];
         }
-        else
-            return ["loss", "loss"];
+        else {
+            if (this.success)
+                return ["win", "win"];
+            else if (this.winTeam === Team.derelict) {
+                if (this.duration() > 180000)
+                    return ["loss", "late rtv"];
+                else
+                    return ["rtv", "early rtv"];
+            }
+            else
+                return ["loss", "loss"];
+        }
     };
     return FinishedMapRun;
 }((0, io_1.dataClass)()));
@@ -225,14 +238,14 @@ var FMap = function () {
                 var durations = runs.filter(function (r) { return r.outcome()[0] !== "rtv"; }).map(function (r) { return r.duration(); });
                 var durationStats = (0, funcs_1.computeStatistics)(durations);
                 var winDurationStats = (0, funcs_1.computeStatistics)(runs.filter(function (r) { return r.outcome()[0] === "win"; }).map(function (r) { return r.duration(); }));
-                var teamWins = runs.filter(function (r) { return r.success; }).reduce(function (acc, item) {
+                var teamWins = runs.filter(function (r) { return r.outcome()[1] !== "early rtv"; }).reduce(function (acc, item) {
                     var _c;
                     acc[item.winTeam.name] = ((_c = acc[item.winTeam.name]) !== null && _c !== void 0 ? _c : 0) + 1;
                     return acc;
                 }, {});
                 var teamWinRate = Object.fromEntries(Object.entries(teamWins).map(function (_c) {
                     var _d = __read(_c, 2), team = _d[0], wins = _d[1];
-                    return [team, wins / victories];
+                    return [team, wins / significantRunCount];
                 }));
                 var waveStats = (0, funcs_1.computeStatistics)(runs.filter(function (r) { return r.outcome()[0] !== "rtv"; }).map(function (r) { return r.wave; }));
                 return {
