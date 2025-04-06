@@ -649,6 +649,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             var sender = _a.sender, _c = _a.args, team = _c.team, reason = _c.reason, outputSuccess = _a.outputSuccess, f = _a.f;
             if (config_1.Gamemode.sandbox() && globals_1.fishState.peacefulMode && !sender.hasPerm("admin"))
                 (0, commands_1.fail)("You do not have permission to change teams because peaceful mode is on.");
+            if (config_1.Gamemode.sandbox() && team === Vars.state.rules.waveTeam && !sender.hasPerm("admin"))
+                (0, commands_1.fail)("You do not have permission to change to the wave team on sandbox.");
             if (!config_1.Gamemode.sandbox() && !reason)
                 (0, commands_1.fail)("Please specify a reason for changing teams.");
             if (!sender.hasPerm("changeTeamExternal")) {
