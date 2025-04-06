@@ -551,9 +551,9 @@ Raw data for blocks tripped: ${data.toString(" ", i => i.toString())}`
 				if(p.ranksAtLeast("mod")) numStaff ++;
 			});
 			const uptimeColor =
-				uptime < 24 * 3600_000 ? "" :
-				uptime < 3 * 24 * 3600_000 ? "&ly" :
-				uptime < 7 * 24 * 3600_000 ? "&y" :
+				uptime < 2 * 24 * 3600_000 ? "" :
+				uptime < 5 * 24 * 3600_000 ? "&ly" :
+				uptime < 9 * 24 * 3600_000 ? "&y" :
 				"&br";
 			output(`
 Status:

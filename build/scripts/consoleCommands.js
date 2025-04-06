@@ -664,9 +664,9 @@ exports.commands = (0, commands_1.consoleCommandList)({
                 if (p.ranksAtLeast("mod"))
                     numStaff++;
             });
-            var uptimeColor = uptime < 24 * 3600000 ? "" :
-                uptime < 3 * 24 * 3600000 ? "&ly" :
-                    uptime < 7 * 24 * 3600000 ? "&y" :
+            var uptimeColor = uptime < 2 * 24 * 3600000 ? "" :
+                uptime < 5 * 24 * 3600000 ? "&ly" :
+                    uptime < 9 * 24 * 3600000 ? "&y" :
                         "&br";
             output("\nStatus:\nPlaying on map &fi".concat(Vars.state.map.plainName(), "&fr for ").concat((0, utils_1.formatTime)(1000 * Vars.state.tick / 60), "\n").concat(Vars.state.rules.waves ? "Wave &c".concat(Vars.state.wave, "&fr, &c").concat(Math.ceil(Vars.state.wavetime / 60), "&fr seconds until next wave.\n") : "", "&c").concat(Groups.unit.size(), "&fr units, &c").concat(Vars.state.enemies, "&fr enemies, &c").concat(Groups.build.size(), "&fr buildings\nTPS: ").concat((0, utils_1.colorNumber)(Core.graphics.getFramesPerSecond(), function (f) { return f > 58 ? "&g" : f > 30 ? "&y" : f > 10 ? "&r" : "&br&w"; }, "server"), ", Memory: &c").concat(Math.round(Core.app.getJavaHeap() / 1048576), "&fr MB\nServer uptime: ").concat(uptimeColor).concat((0, utils_1.formatTime)(uptime), "&fr (since ").concat((0, utils_1.formatTimestamp)(Date.now() - uptime), ")\n").concat([
                 globals_2.fishState.restartQueued ? "&by&lwRestart queued&fr" : "",
