@@ -444,6 +444,7 @@ class ObjectSet<T> {
 	remove(item:T):boolean;
 	isEmpty():boolean;
 	contains(item:T):boolean;
+	toSeq():Seq<T>;
 	get(key:T):T;
 	first():T;
 }

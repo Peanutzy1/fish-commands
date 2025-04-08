@@ -7,17 +7,6 @@ var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cook
     if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
     return cooked;
 };
-var __values = (this && this.__values) || function(o) {
-    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-    if (m) return m.call(o);
-    if (o && typeof o.length === "number") return {
-        next: function () {
-            if (o && i >= o.length) o = void 0;
-            return { value: o && o[i++], done: !o };
-        }
-    };
-    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-};
 var __read = (this && this.__read) || function (o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
     if (!m) return o;
@@ -33,6 +22,17 @@ var __read = (this && this.__read) || function (o, n) {
         finally { if (e) throw e.error; }
     }
     return ar;
+};
+var __values = (this && this.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
@@ -104,13 +104,20 @@ exports.commands = (0, commands_1.consoleCommandList)({
         description: "Find player info(s). Displays all names and ips of a player.",
         handler: function (_a) {
             var e_1, _b;
-            var args = _a.args, output = _a.output, admins = _a.admins, f = _a.f;
-            var infoList = (0, funcs_1.setToArray)(admins.findByName(args.player));
-            if (infoList.length == 0)
+            var args = _a.args, output = _a.output, admins = _a.admins;
+            var infoList = admins.findByName(args.player)
+                .toSeq()
+                .map(function (p) { return [p, players_1.FishPlayer.getById(p.id)]; })
+                .sort(floatf(function (_a) {
+                var _b = __read(_a, 2), info = _b[0], fishP = _b[1];
+                if (!fishP)
+                    return -20000 + info.timesJoined;
+                return fishP.lastJoined;
+            }));
+            if (infoList.size == 0)
                 (0, commands_1.fail)("No players found.");
             var outputString = [""];
-            var _loop_1 = function (playerInfo) {
-                var fishP = players_1.FishPlayer.getById(playerInfo.id);
+            var _loop_1 = function (playerInfo, fishP) {
                 var flagsText = [
                     (fishP === null || fishP === void 0 ? void 0 : fishP.marked()) && "&lris marked&fr until ".concat((0, utils_1.formatTimeRelative)(fishP.unmarkTime)),
                     (fishP === null || fishP === void 0 ? void 0 : fishP.muted) && "&lris muted&fr",
@@ -140,15 +147,15 @@ exports.commands = (0, commands_1.consoleCommandList)({
                 ].filter(Boolean).map(function (l, i) { return i == 0 ? l : '\t' + l; }).join("\n"));
             };
             try {
-                for (var infoList_1 = __values(infoList), infoList_1_1 = infoList_1.next(); !infoList_1_1.done; infoList_1_1 = infoList_1.next()) {
-                    var playerInfo = infoList_1_1.value;
-                    _loop_1(playerInfo);
+                for (var _c = __values(infoList.toArray()), _d = _c.next(); !_d.done; _d = _c.next()) {
+                    var _e = __read(_d.value, 2), playerInfo = _e[0], fishP = _e[1];
+                    _loop_1(playerInfo, fishP);
                 }
             }
             catch (e_1_1) { e_1 = { error: e_1_1 }; }
             finally {
                 try {
-                    if (infoList_1_1 && !infoList_1_1.done && (_b = infoList_1.return)) _b.call(infoList_1);
+                    if (_d && !_d.done && (_b = _c.return)) _b.call(_c);
                 }
                 finally { if (e_1) throw e_1.error; }
             }
@@ -170,15 +177,15 @@ exports.commands = (0, commands_1.consoleCommandList)({
                 outputString.push("Info for player &c\"".concat(player.cleanedName, "\" &lk(").concat(player.name, ")&fr\n\tUUID: &c\"").concat(playerInfo.id, "\"&fr\n\tUSID: &c").concat(player.usid() ? "\"".concat(player.usid(), "\"") : "unknown", "&fr\n\tall names used: ").concat(playerInfo.names.map(function (n) { return "&c\"".concat(n, "\"&fr"); }).items.join(', '), "\n\tall IPs used: ").concat(playerInfo.ips.map(function (n) { return (n == playerInfo.lastIP ? '&c' : '&w') + n + '&fr'; }).items.join(", "), "\n\tjoined &c").concat(playerInfo.timesJoined, "&fr times, kicked &c").concat(playerInfo.timesKicked, "&fr times\n\trank: &c").concat(player.rank.name, "&fr").concat((player.marked() ? ", &lris marked&fr" : "") + (player.muted ? ", &lris muted&fr" : "") + (player.hasFlag("member") ? ", &lmis member&fr" : "") + (player.autoflagged ? ", &lris autoflagged&fr" : "")));
             };
             try {
-                for (var infoList_2 = __values(infoList), infoList_2_1 = infoList_2.next(); !infoList_2_1.done; infoList_2_1 = infoList_2.next()) {
-                    var player = infoList_2_1.value;
+                for (var infoList_1 = __values(infoList), infoList_1_1 = infoList_1.next(); !infoList_1_1.done; infoList_1_1 = infoList_1.next()) {
+                    var player = infoList_1_1.value;
                     _loop_2(player);
                 }
             }
             catch (e_2_1) { e_2 = { error: e_2_1 }; }
             finally {
                 try {
-                    if (infoList_2_1 && !infoList_2_1.done && (_b = infoList_2.return)) _b.call(infoList_2);
+                    if (infoList_1_1 && !infoList_1_1.done && (_b = infoList_1.return)) _b.call(infoList_1);
                 }
                 finally { if (e_2) throw e_2.error; }
             }

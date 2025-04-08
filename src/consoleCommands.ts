@@ -59,12 +59,17 @@ export const commands = consoleCommandList({
 	info: {
 		args: ["player:string"],
 		description: "Find player info(s). Displays all names and ips of a player.",
-		handler({args, output, admins, f}){
-			const infoList = setToArray(admins.findByName(args.player) as ObjectSet<PlayerInfo>);
-			if(infoList.length == 0) fail(`No players found.`);
+		handler({args, output, admins}){
+			const infoList = admins.findByName(args.player)
+				.toSeq()
+				.map(p => [p, FishPlayer.getById(p.id)] as const)
+				.sort(floatf(([info, fishP]) => {
+					if(!fishP) return -20000 + info.timesJoined;
+					return fishP.lastJoined;
+				}));
+			if(infoList.size == 0) fail(`No players found.`);
 			let outputString:string[] = [""];
-			for(const playerInfo of infoList){
-				const fishP = FishPlayer.getById(playerInfo.id);
+			for(const [playerInfo, fishP] of infoList.toArray()){
 				const flagsText = [
 					fishP?.marked() && `&lris marked&fr until ${formatTimeRelative(fishP.unmarkTime)}`,
 					fishP?.muted && "&lris muted&fr",
