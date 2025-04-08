@@ -708,7 +708,7 @@ exports.foolifyChat = memoizeChatFilter(function foolifyChat(message) {
     }
 });
 exports.addToTileHistory = logErrors("Error while saving a tilelog entry", function (e) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3;
     var tile, uuid, action, type, time = Date.now();
     if (e instanceof EventType.BlockBuildBeginEvent) {
         tile = e.tile;
@@ -801,10 +801,22 @@ exports.addToTileHistory = logErrors("Error while saving a tilelog entry", funct
         else
             return;
     }
+    else if (e instanceof EventType.UnitControlEvent) {
+        if (e.unit instanceof Packages.mindustry.gen.BlockUnitUnit) {
+            action = "controlled";
+            tile = (_0 = e.unit) === null || _0 === void 0 ? void 0 : _0.tile().tile;
+            if (!tile)
+                return;
+            type = (_2 = (_1 = tile.block()) === null || _1 === void 0 ? void 0 : _1.name) !== null && _2 !== void 0 ? _2 : "air";
+            uuid = e.player.uuid();
+        }
+        else
+            return;
+    }
     else if (e instanceof Object && "pos" in e && "uuid" in e && "action" in e && "type" in e) {
         var pos = void 0;
         (pos = e.pos, uuid = e.uuid, action = e.action, type = e.type);
-        tile = (_0 = Vars.world.tile(pos.split(",")[0], pos.split(",")[1])) !== null && _0 !== void 0 ? _0 : (0, funcs_1.crash)("Cannot log ".concat(action, " at ").concat(pos, ": Nonexistent tile"));
+        tile = (_3 = Vars.world.tile(pos.split(",")[0], pos.split(",")[1])) !== null && _3 !== void 0 ? _3 : (0, funcs_1.crash)("Cannot log ".concat(action, " at ").concat(pos, ": Nonexistent tile"));
     }
     else
         return;

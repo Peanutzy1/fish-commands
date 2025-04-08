@@ -655,6 +655,14 @@ export const addToTileHistory = logErrors("Error while saving a tilelog entry", 
 			if(!tile) return;
 			type = e.unit.type.name;
 		} else return;
+	} else if(e instanceof EventType.UnitControlEvent){
+		if(e.unit instanceof Packages.mindustry.gen.BlockUnitUnit){
+			action = "controlled";
+			tile = e.unit?.tile().tile;
+			if(!tile) return;
+			type = tile.block()?.name ?? "air";
+			uuid = (e.player as mindustryPlayer).uuid();
+		} else return;
 	} else if(e instanceof Object && "pos" in e && "uuid" in e && "action" in e && "type" in e){
 		let pos;
 		({pos, uuid, action, type} = e);

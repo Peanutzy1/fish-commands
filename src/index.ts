@@ -195,6 +195,7 @@ Events.on(EventType.PickupEvent, addToTileHistory);
 Events.on(EventType.PayloadDropEvent, addToTileHistory);
 Events.on(EventType.UnitDestroyEvent, addToTileHistory);
 Events.on(EventType.BlockDestroyEvent, addToTileHistory);
+Events.on(EventType.UnitControlEvent, addToTileHistory);
 
 
 Events.on(EventType.TapEvent, handleTapEvent);
