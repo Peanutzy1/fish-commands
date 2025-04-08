@@ -15,7 +15,7 @@ import { fishState, ipPattern, tileHistory, uuidPattern } from "./globals";
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
 import { colorNumber, fishCommandsRootDirPath, formatTime, formatTimeRelative, formatTimestamp, getAntiBotInfo, getIPRange, logAction, serverRestartLoop, updateBans } from "./utils";
-import { setToArray } from './funcs';
+import { escapeStringColorsServer, setToArray } from './funcs';
 
 
 export const commands = consoleCommandList({
@@ -65,18 +65,30 @@ export const commands = consoleCommandList({
 			let outputString:string[] = [""];
 			for(const playerInfo of infoList){
 				const fishP = FishPlayer.getById(playerInfo.id);
-				outputString.push(
-`Trace info for player &y${playerInfo.id}&fr / &c"${Strings.stripColors(playerInfo.lastName)}" &lk(${playerInfo.lastName})&fr
-	all names used: ${playerInfo.names.map((n:string) => `&c"${n}"&fr`).items.join(', ')}
-	all IPs used: ${playerInfo.ips.map((n:string) => (n == playerInfo.lastIP ? '&c' : '&w') + n + '&fr').items.join(", ")}
-	joined &c${playerInfo.timesJoined}&fr times, kicked &c${playerInfo.timesKicked}&fr times`
-+ (fishP ? `
-	USID: &c${fishP.usid()}&fr
-	Rank: &c${fishP.rank.name}&fr
-	Marked: ${fishP.marked() ? `&runtil ${formatTimeRelative(fishP.unmarkTime)}` : fishP.autoflagged ? "&rautoflagged" : "&gfalse"}&fr
-	Muted: &c${f.boolBad(fishP.muted)}&fr`
-: "")
-				);
+				const flagsText = [
+					fishP?.marked() && `&lris marked&fr until ${formatTimeRelative(fishP.unmarkTime)}`,
+					fishP?.muted && "&lris muted&fr",
+					fishP?.hasFlag("member") && "&lmis member&fr",
+					fishP?.autoflagged && "&lris autoflagged&fr",
+					playerInfo.banned && "&bris UUID banned&fr",
+				].filter(Boolean).join(", ");
+				const lastJoinedColor = fishP?.lastJoined && fishP.lastJoined !== -1 ? (() => {
+					const timeSinceLastJoin = (Date.now() - fishP.lastJoined) / 1000;
+					if(timeSinceLastJoin < 3600) return "&br";
+					if(timeSinceLastJoin < 24 * 3600) return "&by";
+					if(timeSinceLastJoin < 7 * 24 * 3600) return "&lw";
+					return "&lk";
+				})() : "&fr";
+				outputString.push([
+					`${lastJoinedColor}Trace info for player &fr&y${playerInfo.id}&fr${lastJoinedColor} / &c"${escapeStringColorsServer(Strings.stripColors(playerInfo.lastName))}" &lk(${escapeStringColorsServer(playerInfo.lastName)})&fr`,
+					playerInfo.names.size > 1 && `all names used: ${playerInfo.names.map(escapeStringColorsServer).map((n:string) => `&c"${n}"&fr`).items.join(', ')}`,
+					`all IPs used: ${playerInfo.ips.map((n:string) => (n == playerInfo.lastIP ? '&c' : '&w') + n + '&fr').items.join(", ")}`,
+					`joined &c${playerInfo.timesJoined}&fr times, kicked &c${playerInfo.timesKicked}&fr times`,
+					fishP && fishP.lastJoined !== -1 && `Last joined: ${formatTimeRelative(fishP.lastJoined)}`,
+					fishP && `USID: &c${fishP.usid()}&fr`,
+					fishP && fishP.rank !== Rank.player && `Rank: &c${fishP.rank.name}&fr`,
+					flagsText,
+				].filter(Boolean).map((l, i) => i == 0 ? l : '\t' + l).join("\n"));
 			}
 			output(outputString.join("\n"));
 		}

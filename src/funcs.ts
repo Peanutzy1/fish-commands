@@ -212,10 +212,11 @@ export function escapeStringColorsClient(str: string): string {
 // export function highlightStringColorsClient(str:string):string {
 // 	return str.replace(/(?<!\[)\[[a-z0-9#]{2,10}\]/gi, "[gray][$0[]");
 // }
-/** Prevents Mindustry from displaying color tags in a string by escaping them. Example: turns &bamogus to &&bamogus. */
 
+/** Prevents Mindustry from displaying color tags in a string by escaping them. Example: turns &bamogus to &\x02bamogus. */
 export function escapeStringColorsServer(str: string): string {
-	return str.replace(/&/g, "&&");
+	//throw in U+0002 as this seems to be ignored by most terminals
+	return str.replace(/&/g, "&\x02").replace(/\x1B/g, "&lr\\x1B&fr");
 }
 export function parseError(thing: unknown) {
 	if (thing instanceof Error) {

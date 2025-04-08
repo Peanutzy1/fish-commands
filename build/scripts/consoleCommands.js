@@ -111,9 +111,33 @@ exports.commands = (0, commands_1.consoleCommandList)({
             var outputString = [""];
             var _loop_1 = function (playerInfo) {
                 var fishP = players_1.FishPlayer.getById(playerInfo.id);
-                outputString.push("Trace info for player &y".concat(playerInfo.id, "&fr / &c\"").concat(Strings.stripColors(playerInfo.lastName), "\" &lk(").concat(playerInfo.lastName, ")&fr\n\tall names used: ").concat(playerInfo.names.map(function (n) { return "&c\"".concat(n, "\"&fr"); }).items.join(', '), "\n\tall IPs used: ").concat(playerInfo.ips.map(function (n) { return (n == playerInfo.lastIP ? '&c' : '&w') + n + '&fr'; }).items.join(", "), "\n\tjoined &c").concat(playerInfo.timesJoined, "&fr times, kicked &c").concat(playerInfo.timesKicked, "&fr times")
-                    + (fishP ? "\n\tUSID: &c".concat(fishP.usid(), "&fr\n\tRank: &c").concat(fishP.rank.name, "&fr\n\tMarked: ").concat(fishP.marked() ? "&runtil ".concat((0, utils_1.formatTimeRelative)(fishP.unmarkTime)) : fishP.autoflagged ? "&rautoflagged" : "&gfalse", "&fr\n\tMuted: &c").concat(f.boolBad(fishP.muted), "&fr")
-                        : ""));
+                var flagsText = [
+                    (fishP === null || fishP === void 0 ? void 0 : fishP.marked()) && "&lris marked&fr until ".concat((0, utils_1.formatTimeRelative)(fishP.unmarkTime)),
+                    (fishP === null || fishP === void 0 ? void 0 : fishP.muted) && "&lris muted&fr",
+                    (fishP === null || fishP === void 0 ? void 0 : fishP.hasFlag("member")) && "&lmis member&fr",
+                    (fishP === null || fishP === void 0 ? void 0 : fishP.autoflagged) && "&lris autoflagged&fr",
+                    playerInfo.banned && "&bris UUID banned&fr",
+                ].filter(Boolean).join(", ");
+                var lastJoinedColor = (fishP === null || fishP === void 0 ? void 0 : fishP.lastJoined) && fishP.lastJoined !== -1 ? (function () {
+                    var timeSinceLastJoin = (Date.now() - fishP.lastJoined) / 1000;
+                    if (timeSinceLastJoin < 3600)
+                        return "&br";
+                    if (timeSinceLastJoin < 24 * 3600)
+                        return "&by";
+                    if (timeSinceLastJoin < 7 * 24 * 3600)
+                        return "&lw";
+                    return "&lk";
+                })() : "&fr";
+                outputString.push([
+                    "".concat(lastJoinedColor, "Trace info for player &fr&y").concat(playerInfo.id, "&fr").concat(lastJoinedColor, " / &c\"").concat((0, funcs_1.escapeStringColorsServer)(Strings.stripColors(playerInfo.lastName)), "\" &lk(").concat((0, funcs_1.escapeStringColorsServer)(playerInfo.lastName), ")&fr"),
+                    playerInfo.names.size > 1 && "all names used: ".concat(playerInfo.names.map(funcs_1.escapeStringColorsServer).map(function (n) { return "&c\"".concat(n, "\"&fr"); }).items.join(', ')),
+                    "all IPs used: ".concat(playerInfo.ips.map(function (n) { return (n == playerInfo.lastIP ? '&c' : '&w') + n + '&fr'; }).items.join(", ")),
+                    "joined &c".concat(playerInfo.timesJoined, "&fr times, kicked &c").concat(playerInfo.timesKicked, "&fr times"),
+                    fishP && fishP.lastJoined !== -1 && "Last joined: ".concat((0, utils_1.formatTimeRelative)(fishP.lastJoined)),
+                    fishP && "USID: &c".concat(fishP.usid(), "&fr"),
+                    fishP && fishP.rank !== ranks_1.Rank.player && "Rank: &c".concat(fishP.rank.name, "&fr"),
+                    flagsText,
+                ].filter(Boolean).map(function (l, i) { return i == 0 ? l : '\t' + l; }).join("\n"));
             };
             try {
                 for (var infoList_1 = __values(infoList), infoList_1_1 = infoList_1.next(); !infoList_1_1.done; infoList_1_1 = infoList_1.next()) {
