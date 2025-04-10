@@ -574,10 +574,10 @@ exports.commands = (0, commands_1.consoleCommandList)({
                 }
             }
             else {
-                Call.sendMessage("[accent]---[[[coral]+++[]]---\n[accent]Server restart imminent. [green]We'll be back with 15 seconds of downtime, and all progress will be saved.[]\n[accent]---[[[coral]+++[]]---");
                 var time = (_b = args.time) !== null && _b !== void 0 ? _b : 60;
                 if (time < 0 || time > 100)
                     (0, commands_1.fail)("Invalid time: out of valid range.");
+                Call.sendMessage("[accent]---[[[coral]+++[]]---\n[accent]Server restart imminent. [green]We'll be back with 15 seconds of downtime, and all progress will be saved.[]\n[accent]---[[[coral]+++[]]---");
                 Log.info("Restarting in ".concat(time, " seconds..."));
                 (0, utils_1.serverRestartLoop)(time);
             }
