@@ -379,6 +379,7 @@ export const commands = consoleCommandList({
 		args: ["usid:string"],
 		description: `Sets the USID of a player.`,
 		handler({args, outputSuccess, f}){
+			if(args.usid.length !== 12) fail(`Invalid USID: should be 12 characters ending with an equal sign`);
 			const player = FishPlayer.lastAuthKicked ?? fail(`No authorization failures have occurred since the last restart.`);
 			player.setUSID(args.usid);
 			outputSuccess(f`Set USID for player ${player} to ${args.usid}.`);

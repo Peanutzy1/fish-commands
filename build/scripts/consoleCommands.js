@@ -494,6 +494,8 @@ exports.commands = (0, commands_1.consoleCommandList)({
         handler: function (_a) {
             var _b;
             var args = _a.args, outputSuccess = _a.outputSuccess, f = _a.f;
+            if (args.usid.length !== 12)
+                (0, commands_1.fail)("Invalid USID: should be 12 characters ending with an equal sign");
             var player = (_b = players_1.FishPlayer.lastAuthKicked) !== null && _b !== void 0 ? _b : (0, commands_1.fail)("No authorization failures have occurred since the last restart.");
             player.setUSID(args.usid);
             outputSuccess(f(templateObject_5 || (templateObject_5 = __makeTemplateObject(["Set USID for player ", " to ", "."], ["Set USID for player ", " to ", "."])), player, args.usid));
