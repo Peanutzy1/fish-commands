@@ -663,7 +663,7 @@ exports.commands = (0, commands_1.commandList)({
         handler: function (_a) {
             return __awaiter(this, arguments, void 0, function (_b) {
                 var i_1, before, i_2, before;
-                var _c = _b.args, team = _c.team, unit = _c.unit, sender = _b.sender, outputSuccess = _b.outputSuccess, outputFail = _b.outputFail, f = _b.f;
+                var _c = _b.args, team = _c.team, unit = _c.unit, sender = _b.sender, outputSuccess = _b.outputSuccess, f = _b.f;
                 return __generator(this, function (_d) {
                     switch (_d.label) {
                         case 0:
@@ -715,7 +715,7 @@ exports.commands = (0, commands_1.commandList)({
         handler: function (_a) {
             return __awaiter(this, arguments, void 0, function (_b) {
                 var count, count;
-                var team = _b.args.team, sender = _b.sender, outputSuccess = _b.outputSuccess, outputFail = _b.outputFail, f = _b.f;
+                var team = _b.args.team, sender = _b.sender, outputSuccess = _b.outputSuccess, f = _b.f;
                 return __generator(this, function (_c) {
                     switch (_c.label) {
                         case 0:

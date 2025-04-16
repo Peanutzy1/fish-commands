@@ -511,7 +511,7 @@ export const commands = commandList({
 		args: ["team:team?", "unit:unittype?"],
 		description: "Kills all units, optionally specifying a team and unit type.",
 		perm: Perm.massKill,
-		async handler({args:{team, unit}, sender, outputSuccess, outputFail, f}){
+		async handler({args:{team, unit}, sender, outputSuccess, f}){
 			if(team){
 				await Menu.confirmDangerous(sender,
 					`This will kill [scarlet]every ${unit ? unit.localizedName : "unit"}[] on the team ${team.coloredName()}.`,
@@ -553,7 +553,7 @@ export const commands = commandList({
 		args: ["team:team?"],
 		description: "Kills all buildings (except cores), optionally specifying a team.",
 		perm: Perm.massKill,
-		async handler({args:{team}, sender, outputSuccess, outputFail, f}){
+		async handler({args:{team}, sender, outputSuccess, f}){
 			if(team){
 				await Menu.confirmDangerous(sender,
 					`This will kill [scarlet]every building[] on the team ${team.coloredName()}, except cores.`,

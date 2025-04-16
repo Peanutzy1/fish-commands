@@ -777,7 +777,7 @@ Please stop attacking and [lime]build defenses[] first!`
 
 [blue]Available maps:
 _________________________
-${Vars.maps.customMaps().toArray().map((map, i) =>
+${Vars.maps.customMaps().toArray().map(map =>
 `[yellow]${map.name()}`
 ).join("\n")}`
 			);
