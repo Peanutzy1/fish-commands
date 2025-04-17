@@ -6,19 +6,14 @@ This file contains the in-game chat commands that can be run by trusted staff.
 import * as api from "./api";
 import { Perm, Req, command, commandList, fail } from "./commands";
 import { Gamemode, Mode, rules, stopAntiEvadeTime } from "./config";
-import { FishEvents, maxTime } from "./globals";
 import { updateMaps } from "./files";
 import * as fjsContext from "./fjsContext";
-import { fishState, ipPattern, uuidPattern } from "./globals";
+import { crash, escapeStringColorsClient, escapeTextDiscord, parseError, setToArray } from './funcs';
+import { FishEvents, fishState, ipPattern, maxTime, uuidPattern } from "./globals";
 import { Menu } from './menus';
 import { FishPlayer } from "./players";
 import { Rank } from "./ranks";
 import { addToTileHistory, formatTime, formatTimeRelative, getAntiBotInfo, logAction, match, serverRestartLoop, untilForever, updateBans } from "./utils";
-import { parseError } from './funcs';
-import { escapeStringColorsClient } from './funcs';
-import { escapeTextDiscord } from './funcs';
-import { crash } from './funcs';
-import { setToArray } from './funcs';
 
 export const commands = commandList({
 	warn: {

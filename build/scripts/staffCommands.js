@@ -84,19 +84,14 @@ exports.commands = void 0;
 var api = require("./api");
 var commands_1 = require("./commands");
 var config_1 = require("./config");
-var globals_1 = require("./globals");
 var files_1 = require("./files");
 var fjsContext = require("./fjsContext");
-var globals_2 = require("./globals");
+var funcs_1 = require("./funcs");
+var globals_1 = require("./globals");
 var menus_1 = require("./menus");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
-var funcs_1 = require("./funcs");
-var funcs_2 = require("./funcs");
-var funcs_3 = require("./funcs");
-var funcs_4 = require("./funcs");
-var funcs_5 = require("./funcs");
 exports.commands = (0, commands_1.commandList)({
     warn: {
         args: ['player:player', 'message:string?'],
@@ -283,7 +278,7 @@ exports.commands = (0, commands_1.commandList)({
                     switch (_h.label) {
                         case 0:
                             maxPlayers = 60;
-                            if (args.name && globals_2.uuidPattern.test(args.name)) {
+                            if (args.name && globals_1.uuidPattern.test(args.name)) {
                                 info = admins.getInfoOptional(args.name);
                                 if (info != null) {
                                     stop(info, (_f = args.time) !== null && _f !== void 0 ? _f : (0, utils_1.untilForever)());
@@ -294,9 +289,9 @@ exports.commands = (0, commands_1.commandList)({
                                 return [2 /*return*/];
                             }
                             if (args.name) {
-                                possiblePlayers = (0, funcs_5.setToArray)(admins.searchNames(args.name));
+                                possiblePlayers = (0, funcs_1.setToArray)(admins.searchNames(args.name));
                                 if (possiblePlayers.length > maxPlayers) {
-                                    exactPlayers = (0, funcs_5.setToArray)(admins.findByName(args.name));
+                                    exactPlayers = (0, funcs_1.setToArray)(admins.findByName(args.name));
                                     if (exactPlayers.length > 0) {
                                         possiblePlayers = exactPlayers;
                                     }
@@ -387,15 +382,15 @@ exports.commands = (0, commands_1.commandList)({
                     switch (_d.label) {
                         case 0:
                             maxPlayers = 300;
-                            if (args.name && globals_2.uuidPattern.test(args.name)) {
+                            if (args.name && globals_1.uuidPattern.test(args.name)) {
                                 info = (_c = admins.getInfoOptional(args.name)) !== null && _c !== void 0 ? _c : (0, commands_1.fail)(f(templateObject_23 || (templateObject_23 = __makeTemplateObject(["Unknown UUID ", ""], ["Unknown UUID ", ""])), args.name));
                                 mute(info);
                                 return [2 /*return*/];
                             }
                             if (args.name) {
-                                possiblePlayers = (0, funcs_5.setToArray)(admins.searchNames(args.name));
+                                possiblePlayers = (0, funcs_1.setToArray)(admins.searchNames(args.name));
                                 if (possiblePlayers.length > maxPlayers) {
-                                    exactPlayers = (0, funcs_5.setToArray)(admins.findByName(args.name));
+                                    exactPlayers = (0, funcs_1.setToArray)(admins.findByName(args.name));
                                     if (exactPlayers.length > 0) {
                                         possiblePlayers = exactPlayers;
                                     }
@@ -492,7 +487,7 @@ exports.commands = (0, commands_1.commandList)({
             var timeRemaining = args.time / 1000;
             var labelx = sender.unit().x;
             var labely = sender.unit().y;
-            globals_2.fishState.labels.push(Timer.schedule(function () {
+            globals_1.fishState.labels.push(Timer.schedule(function () {
                 if (timeRemaining > 0) {
                     var timeseconds = timeRemaining % 60;
                     var timeminutes = (timeRemaining - timeseconds) / 60;
@@ -512,7 +507,7 @@ exports.commands = (0, commands_1.commandList)({
             if (args.time > 36000000)
                 (0, commands_1.fail)("Time must be less than 10 hours.");
             var timeRemaining = args.time / 1000;
-            globals_2.fishState.labels.push(Timer.schedule(function () {
+            globals_1.fishState.labels.push(Timer.schedule(function () {
                 if (timeRemaining > 0) {
                     Call.label(args.message, 5, NaN, NaN);
                     timeRemaining -= 5;
@@ -527,7 +522,7 @@ exports.commands = (0, commands_1.commandList)({
         perm: commands_1.Perm.mod,
         handler: function (_a) {
             var outputSuccess = _a.outputSuccess;
-            globals_2.fishState.labels.forEach(function (l) { return l.cancel(); });
+            globals_1.fishState.labels.forEach(function (l) { return l.cancel(); });
             outputSuccess("Removed all labels.");
         }
     },
@@ -569,12 +564,12 @@ exports.commands = (0, commands_1.commandList)({
                 return __generator(this, function (_c) {
                     switch (_c.label) {
                         case 0:
-                            if (!(args.uuid_or_ip && globals_2.uuidPattern.test(args.uuid_or_ip))) return [3 /*break*/, 2];
+                            if (!(args.uuid_or_ip && globals_1.uuidPattern.test(args.uuid_or_ip))) return [3 /*break*/, 2];
                             uuid = args.uuid_or_ip;
                             data = void 0;
                             if ((data = admins.getInfoOptional(uuid)) != null && data.admin)
                                 (0, commands_1.fail)("Cannot ban an admin.");
-                            name = data ? "".concat((0, funcs_2.escapeStringColorsClient)(data.lastName), " (").concat(uuid, "/").concat(data.lastIP, ")") : uuid;
+                            name = data ? "".concat((0, funcs_1.escapeStringColorsClient)(data.lastName), " (").concat(uuid, "/").concat(data.lastIP, ")") : uuid;
                             return [4 /*yield*/, menus_1.Menu.confirmDangerous(sender, "Are you sure you want to ban ".concat(name, "?"))];
                         case 1:
                             _c.sent();
@@ -585,7 +580,7 @@ exports.commands = (0, commands_1.commandList)({
                                 api.ban({ ip: ip, uuid: uuid });
                                 Log.info("".concat(uuid, "/").concat(ip, " was banned."));
                                 (0, utils_1.logAction)("banned", sender, data);
-                                outputSuccess(f(templateObject_30 || (templateObject_30 = __makeTemplateObject(["Banned player ", " (", "/", ")"], ["Banned player ", " (", "/", ")"])), (0, funcs_2.escapeStringColorsClient)(data.lastName), uuid, ip));
+                                outputSuccess(f(templateObject_30 || (templateObject_30 = __makeTemplateObject(["Banned player ", " (", "/", ")"], ["Banned player ", " (", "/", ")"])), (0, funcs_1.escapeStringColorsClient)(data.lastName), uuid, ip));
                                 //TODO add way to specify whether to activate or escape color tags
                             }
                             else {
@@ -597,7 +592,7 @@ exports.commands = (0, commands_1.commandList)({
                             (0, utils_1.updateBans)(function (player) { return "[scarlet]Player [yellow]".concat(player.name, "[scarlet] has been whacked by ").concat(sender.prefixedName, "."); });
                             return [2 /*return*/];
                         case 2:
-                            if (!(args.uuid_or_ip && globals_2.ipPattern.test(args.uuid_or_ip))) return [3 /*break*/, 4];
+                            if (!(args.uuid_or_ip && globals_1.ipPattern.test(args.uuid_or_ip))) return [3 /*break*/, 4];
                             ip = args.uuid_or_ip;
                             return [4 /*yield*/, menus_1.Menu.confirmDangerous(sender, "Are you sure you want to ban IP ".concat(ip, "?"))];
                         case 3:
@@ -617,7 +612,7 @@ exports.commands = (0, commands_1.commandList)({
                             }
                             (0, utils_1.updateBans)(function (player) { return "[scarlet]Player [yellow]".concat(player.name, "[scarlet] has been whacked by ").concat(sender.prefixedName, "."); });
                             return [2 /*return*/];
-                        case 4: return [4 /*yield*/, menus_1.Menu.menu("[scarlet]BAN[]", "Choose a player to ban.", (0, funcs_5.setToArray)(Groups.player), sender, {
+                        case 4: return [4 /*yield*/, menus_1.Menu.menu("[scarlet]BAN[]", "Choose a player to ban.", (0, funcs_1.setToArray)(Groups.player), sender, {
                                 includeCancel: true,
                                 optionStringifier: function (opt) { return opt.name; }
                             })];
@@ -769,9 +764,9 @@ exports.commands = (0, commands_1.commandList)({
             var sender = _a.sender, args = _a.args, output = _a.output, f = _a.f;
             var info = args.target.info();
             var names = args.showColors
-                ? info.names.map(funcs_2.escapeStringColorsClient).toString(", ")
+                ? info.names.map(funcs_1.escapeStringColorsClient).toString(", ")
                 : __spreadArray([], __read(new Set(info.names.map(function (n) { return Strings.stripColors(n); }).toArray())), false).join(", ");
-            output(f(templateObject_44 || (templateObject_44 = __makeTemplateObject(["[accent]Info for player ", " [gray](", ") (#", ")\n\t[accent]Rank: ", "\n\t[accent]Role flags: ", "\n\t[accent]Stopped: ", "\n\t[accent]marked: ", "\n\t[accent]muted: ", "\n\t[accent]autoflagged: ", "\n\t[accent]VPN detected: ", "\n\t[accent]times joined / kicked: ", "/", "\n\t[accent]First joined: ", "\n\t[accent]Names used: [[", "]"], ["\\\n[accent]Info for player ", " [gray](", ") (#", ")\n\t[accent]Rank: ", "\n\t[accent]Role flags: ", "\n\t[accent]Stopped: ", "\n\t[accent]marked: ", "\n\t[accent]muted: ", "\n\t[accent]autoflagged: ", "\n\t[accent]VPN detected: ", "\n\t[accent]times joined / kicked: ", "/", "\n\t[accent]First joined: ", "\n\t[accent]Names used: [[", "]"])), args.target, (0, funcs_2.escapeStringColorsClient)(args.target.name), args.target.player.id.toString(), args.target.rank, Array.from(args.target.flags).map(function (f) { return f.coloredName(); }).join(" "), f.boolBad(!args.target.hasPerm("play")), args.target.marked() ? "until ".concat((0, utils_1.formatTimeRelative)(args.target.unmarkTime)) : "[green]false", f.boolBad(args.target.muted), f.boolBad(args.target.autoflagged), f.boolBad(args.target.ipDetectedVpn), info.timesJoined, info.timesKicked, (0, utils_1.formatTimeRelative)(args.target.firstJoined), names));
+            output(f(templateObject_44 || (templateObject_44 = __makeTemplateObject(["[accent]Info for player ", " [gray](", ") (#", ")\n\t[accent]Rank: ", "\n\t[accent]Role flags: ", "\n\t[accent]Stopped: ", "\n\t[accent]marked: ", "\n\t[accent]muted: ", "\n\t[accent]autoflagged: ", "\n\t[accent]VPN detected: ", "\n\t[accent]times joined / kicked: ", "/", "\n\t[accent]First joined: ", "\n\t[accent]Names used: [[", "]"], ["\\\n[accent]Info for player ", " [gray](", ") (#", ")\n\t[accent]Rank: ", "\n\t[accent]Role flags: ", "\n\t[accent]Stopped: ", "\n\t[accent]marked: ", "\n\t[accent]muted: ", "\n\t[accent]autoflagged: ", "\n\t[accent]VPN detected: ", "\n\t[accent]times joined / kicked: ", "/", "\n\t[accent]First joined: ", "\n\t[accent]Names used: [[", "]"])), args.target, (0, funcs_1.escapeStringColorsClient)(args.target.name), args.target.player.id.toString(), args.target.rank, Array.from(args.target.flags).map(function (f) { return f.coloredName(); }).join(" "), f.boolBad(!args.target.hasPerm("play")), args.target.marked() ? "until ".concat((0, utils_1.formatTimeRelative)(args.target.unmarkTime)) : "[green]false", f.boolBad(args.target.muted), f.boolBad(args.target.autoflagged), f.boolBad(args.target.ipDetectedVpn), info.timesJoined, info.timesKicked, (0, utils_1.formatTimeRelative)(args.target.firstJoined), names));
             if (sender.hasPerm("viewUUIDs"))
                 output(f(templateObject_45 || (templateObject_45 = __makeTemplateObject(["\t[#FFAAAA]UUID: ", "\n\t[#FFAAAA]IP: ", ""], ["\\\n\t[#FFAAAA]UUID: ", "\n\t[#FFAAAA]IP: ", ""])), args.target.uuid, args.target.ip()));
         }
@@ -827,7 +822,7 @@ exports.commands = (0, commands_1.commandList)({
             var _b, _c;
             var args = _a.args, sender = _a.sender, f = _a.f, x = _a.x, y = _a.y, outputSuccess = _a.outputSuccess;
             if (!args.block)
-                (0, funcs_4.crash)("uh oh");
+                (0, funcs_1.crash)("uh oh");
             var team = (_b = args.team) !== null && _b !== void 0 ? _b : sender.team();
             var tile = Vars.world.tile(x, y);
             if (args.rotation != null && (args.rotation < 0 || args.rotation > 3))
@@ -895,7 +890,7 @@ exports.commands = (0, commands_1.commandList)({
             //Additional validation couldn't hurt...
             var playerInfo_AdminUsid = sender.info().adminUsid;
             if (!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player.usid() || sender.usid() != sender.player.usid()) {
-                api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat(config_1.Gamemode.name(), " Player: ").concat((0, funcs_3.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
+                api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat(config_1.Gamemode.name(), " Player: ").concat((0, funcs_1.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
                 (0, commands_1.fail)("Authentication failure");
             }
             if (javascript == "Timer.instance().clear()")
@@ -937,7 +932,7 @@ exports.commands = (0, commands_1.commandList)({
             //Additional validation couldn't hurt...
             var playerInfo_AdminUsid = sender.info().adminUsid;
             if (!playerInfo_AdminUsid || playerInfo_AdminUsid != sender.player.usid() || sender.usid() != sender.player.usid()) {
-                api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat(config_1.Gamemode.name(), " Player: ").concat((0, funcs_3.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
+                api.sendModerationMessage("# !!!!! /js authentication failed !!!!!\nServer: ".concat(config_1.Gamemode.name(), " Player: ").concat((0, funcs_1.escapeTextDiscord)(sender.cleanedName), "/`").concat(sender.uuid, "`\n<@!709904412033810533>"));
                 (0, commands_1.fail)("Authentication failure");
             }
             fjsContext.runJS(javascript, output, outputFail, sender);
@@ -1071,25 +1066,25 @@ exports.commands = (0, commands_1.commandList)({
                 return __generator(this, function (_c) {
                     switch (_c.label) {
                         case 0:
-                            if (!globals_2.uuidPattern.test(input)) return [3 /*break*/, 1];
+                            if (!globals_1.uuidPattern.test(input)) return [3 /*break*/, 1];
                             fishP = players_1.FishPlayer.getById(input);
                             info = admins.getInfoOptional(input);
                             if (fishP == null && info == null)
                                 (0, commands_1.fail)(f(templateObject_56 || (templateObject_56 = __makeTemplateObject(["No stored data matched uuid ", "."], ["No stored data matched uuid ", "."])), input));
                             else if (fishP == null && info)
-                                output(f(templateObject_57 || (templateObject_57 = __makeTemplateObject(["[accent]Found player info (but no fish player data) for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nFound player info (but no fish player data) for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), input, info.plainLastName(), (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", ")));
+                                output(f(templateObject_57 || (templateObject_57 = __makeTemplateObject(["[accent]Found player info (but no fish player data) for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nFound player info (but no fish player data) for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), input, info.plainLastName(), (0, funcs_1.escapeStringColorsClient)(info.lastName), info.names.map(funcs_1.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", ")));
                             else if (fishP && info)
-                                output(f(templateObject_58 || (templateObject_58 = __makeTemplateObject(["[accent]Found fish player data for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nFound fish player data for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), input, fishP.name, (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", ")));
+                                output(f(templateObject_58 || (templateObject_58 = __makeTemplateObject(["[accent]Found fish player data for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nFound fish player data for uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), input, fishP.name, (0, funcs_1.escapeStringColorsClient)(info.lastName), info.names.map(funcs_1.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", ")));
                             else
                                 (0, commands_1.fail)(f(templateObject_59 || (templateObject_59 = __makeTemplateObject(["Super weird edge case: found fish player data but no player info for uuid ", "."], ["Super weird edge case: found fish player data but no player info for uuid ", "."])), input));
                             return [3 /*break*/, 5];
                         case 1:
-                            if (!globals_2.ipPattern.test(input)) return [3 /*break*/, 2];
+                            if (!globals_1.ipPattern.test(input)) return [3 /*break*/, 2];
                             matches = admins.findByIPs(input);
                             if (matches.isEmpty())
                                 (0, commands_1.fail)(f(templateObject_60 || (templateObject_60 = __makeTemplateObject(["No stored data matched IP ", ""], ["No stored data matched IP ", ""])), input));
                             output(f(templateObject_61 || (templateObject_61 = __makeTemplateObject(["[accent]Found ", " match", " for search \"", "\"."], ["[accent]Found ", " match", " for search \"", "\"."])), matches.size, matches.size == 1 ? "" : "es", input));
-                            matches.each(function (info) { return output(f(templateObject_62 || (templateObject_62 = __makeTemplateObject(["[accent]Player with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nPlayer with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), info.id, info.plainLastName(), (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", "))); });
+                            matches.each(function (info) { return output(f(templateObject_62 || (templateObject_62 = __makeTemplateObject(["[accent]Player with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nPlayer with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), info.id, info.plainLastName(), (0, funcs_1.escapeStringColorsClient)(info.lastName), info.names.map(funcs_1.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", "))); });
                             return [3 /*break*/, 5];
                         case 2:
                             matches_1 = Vars.netServer.admins.searchNames(input);
@@ -1097,7 +1092,7 @@ exports.commands = (0, commands_1.commandList)({
                                 (0, commands_1.fail)(f(templateObject_63 || (templateObject_63 = __makeTemplateObject(["No stored data matched name ", ""], ["No stored data matched name ", ""])), input));
                             output(f(templateObject_64 || (templateObject_64 = __makeTemplateObject(["[accent]Found ", " match", " for search \"", "\"."], ["[accent]Found ", " match", " for search \"", "\"."])), matches_1.size, matches_1.size == 1 ? "" : "es", input));
                             displayMatches = function () {
-                                matches_1.each(function (info) { return output(f(templateObject_65 || (templateObject_65 = __makeTemplateObject(["[accent]Player with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nPlayer with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), info.id, info.plainLastName(), (0, funcs_2.escapeStringColorsClient)(info.lastName), info.names.map(funcs_2.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", "))); });
+                                matches_1.each(function (info) { return output(f(templateObject_65 || (templateObject_65 = __makeTemplateObject(["[accent]Player with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""], ["[accent]\\\nPlayer with uuid ", "\nLast name used: \"", "\" [gray](", ")[] [[", "]\nIPs used: ", ""])), info.id, info.plainLastName(), (0, funcs_1.escapeStringColorsClient)(info.lastName), info.names.map(funcs_1.escapeStringColorsClient).items.join(", "), info.ips.map(function (i) { return "[blue]".concat(i, "[]"); }).toString(", "))); });
                             };
                             if (!(matches_1.size > 20)) return [3 /*break*/, 4];
                             return [4 /*yield*/, menus_1.Menu.confirm(sender, "Are you sure you want to view all ".concat(matches_1.size, " matches?"))];
@@ -1120,7 +1115,7 @@ exports.commands = (0, commands_1.commandList)({
         handler: function (_a) {
             var args = _a.args;
             if (args.peace) {
-                globals_2.fishState.peacefulMode = true;
+                globals_1.fishState.peacefulMode = true;
                 Groups.player.each(function (p) {
                     if (p.team() != Vars.state.rules.defaultTeam) {
                         p.team(Vars.state.rules.defaultTeam);
@@ -1129,7 +1124,7 @@ exports.commands = (0, commands_1.commandList)({
                 Call.sendMessage("[[Sandbox] [green]Enabled peaceful mode.");
             }
             else {
-                globals_2.fishState.peacefulMode = false;
+                globals_1.fishState.peacefulMode = false;
                 Call.sendMessage("[[Sandbox] [red]Disabled peaceful mode.");
             }
         },

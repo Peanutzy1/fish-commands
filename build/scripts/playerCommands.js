@@ -84,16 +84,14 @@ exports.commands = void 0;
 var api = require("./api");
 var commands_1 = require("./commands");
 var config_1 = require("./config");
+var funcs_1 = require("./funcs");
 var globals_1 = require("./globals");
+var maps_1 = require("./maps");
 var menus_1 = require("./menus");
 var players_1 = require("./players");
 var ranks_1 = require("./ranks");
 var utils_1 = require("./utils");
-var funcs_1 = require("./funcs");
-var funcs_2 = require("./funcs");
-var funcs_3 = require("./funcs");
 var votes_1 = require("./votes");
-var maps_1 = require("./maps");
 exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         args: [],
         description: 'Prints information about the plugin.',
@@ -200,7 +198,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             var _b;
             var tile = _a.tile, x = _a.x, y = _a.y, output = _a.output, sender = _a.sender, admins = _a.admins;
             var historyData = (_b = globals_1.tileHistory["".concat(x, ",").concat(y)]) !== null && _b !== void 0 ? _b : (0, commands_1.fail)("There is no recorded history for the selected tile (".concat(tile.x, ", ").concat(tile.y, ")."));
-            var history = funcs_2.StringIO.read(historyData, function (str) { return str.readArray(function (d) { return ({
+            var history = funcs_1.StringIO.read(historyData, function (str) { return str.readArray(function (d) { return ({
                 action: d.readString(2),
                 uuid: d.readString(3),
                 time: d.readNumber(16),
@@ -416,7 +414,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             var _b;
             var args = _a.args, output = _a.output, sender = _a.sender, allCommands = _a.allCommands;
             var formatCommand = function (name, color) {
-                return new funcs_2.StringBuilder()
+                return new funcs_1.StringBuilder()
                     .add("".concat(color, "/").concat(name))
                     .chunk("[white]".concat(allCommands[name].args.map(commands_1.formatArg).join(' ')))
                     .chunk("[lightgray]- ".concat(allCommands[name].description)).str;
@@ -442,7 +440,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
                     var _b = __read(_a, 2), name = _b[0], data = _b[1];
                     return (data.perm === commands_1.Perm.admin ? commands_2.admin : data.perm === commands_1.Perm.mod ? commands_2.mod : data.perm === commands_1.Perm.member ? commands_2.member : commands_2.player).push(name);
                 });
-                var chunkedPlayerCommands = (0, funcs_3.to2DArray)(commands_2.player, 15);
+                var chunkedPlayerCommands = (0, funcs_1.to2DArray)(commands_2.player, 15);
                 switch (args.name) {
                     case 'admin':
                         output("".concat(commands_1.Perm.admin.color, "-- Admin commands --\n") + formatList(commands_2.admin, commands_1.Perm.admin.color));
@@ -982,7 +980,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
                 (0, commands_1.fail)("Size ".concat(size, " is too high!"));
             if (Vars.state.rules.fog)
                 (0, commands_1.fail)("This command is disabled when fog is enabled.");
-            var options = (0, funcs_3.to2DArray)(Reflect.get(Vars.world.tiles, "array").map(function (tile) { return ({
+            var options = (0, funcs_1.to2DArray)(Reflect.get(Vars.world.tiles, "array").map(function (tile) { return ({
                 text: tile.block().emoji(),
                 data: null,
             }); }), Vars.world.width()).reverse();
