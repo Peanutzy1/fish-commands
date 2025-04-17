@@ -552,7 +552,12 @@ Available types:[yellow]
 				"Rules for [#0000ff]>|||> FISH [white]servers", rules.join("\n\n"),
 				["[green]I agree to abide by these rules[]", "No"], target,
 			).then((option) => {
-				if(option == "No") target.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
+				if(option == "No"){
+					target.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
+					outputSuccess('Player rejected the rules and was kicked.');
+				} else {
+					outputSuccess('Player acknowledged the rules.');
+				}
 			});
 			if(target !== sender) outputSuccess(f`Reminded ${target} of the rules.`);
 		},
@@ -573,8 +578,9 @@ Available types:[yellow]
 Power voids disable anything they are connected to.
 If you break it, [scarlet]you will get attacked[] by enemy units.
 Please stop attacking and [lime]build defenses[] first!`,
-					["I understand"], args.player
-				);
+					["I understand"], args.player,
+					{ onCancel: 'null' },
+				).then(() => outputSuccess(f`Player ${args.player!} acknowledged the warning.`));
 				logAction("showed void warning", sender, args.player);
 				outputSuccess(f`Warned ${args.player} about power voids with a popup message.`);
 			} else {

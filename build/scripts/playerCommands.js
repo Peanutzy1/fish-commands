@@ -610,8 +610,13 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
                     (0, commands_1.fail)(f(templateObject_9 || (templateObject_9 = __makeTemplateObject(["Player ", " is insufficiently trollable."], ["Player ", " is insufficiently trollable."])), args.player));
             }
             menus_1.Menu.menu("Rules for [#0000ff]>|||> FISH [white]servers", config_1.rules.join("\n\n"), ["[green]I agree to abide by these rules[]", "No"], target).then(function (option) {
-                if (option == "No")
+                if (option == "No") {
                     target.kick("You must agree to the rules to play on this server. Rejoin to agree to the rules.", 1);
+                    outputSuccess('Player rejected the rules and was kicked.');
+                }
+                else {
+                    outputSuccess('Player acknowledged the rules.');
+                }
             });
             if (target !== sender)
                 outputSuccess(f(templateObject_10 || (templateObject_10 = __makeTemplateObject(["Reminded ", " of the rules."], ["Reminded ", " of the rules."])), target));
@@ -630,9 +635,9 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
                     (0, commands_1.fail)("You do not have permission to show popups to other players, please run /void with no arguments to send a chat message to everyone.");
                 if (args.player !== sender && args.player.hasPerm("blockTrolling"))
                     (0, commands_1.fail)("Target player is insufficiently trollable.");
-                menus_1.Menu.menu("\uf83f [scarlet]WARNING[] \uf83f", "[white]Don't break the Power Void (\uF83F), it's a trap!\nPower voids disable anything they are connected to.\nIf you break it, [scarlet]you will get attacked[] by enemy units.\nPlease stop attacking and [lime]build defenses[] first!", ["I understand"], args.player);
+                menus_1.Menu.menu("\uf83f [scarlet]WARNING[] \uf83f", "[white]Don't break the Power Void (\uF83F), it's a trap!\nPower voids disable anything they are connected to.\nIf you break it, [scarlet]you will get attacked[] by enemy units.\nPlease stop attacking and [lime]build defenses[] first!", ["I understand"], args.player, { onCancel: 'null' }).then(function () { return outputSuccess(f(templateObject_11 || (templateObject_11 = __makeTemplateObject(["Player ", " acknowledged the warning."], ["Player ", " acknowledged the warning."])), args.player)); });
                 (0, utils_1.logAction)("showed void warning", sender, args.player);
-                outputSuccess(f(templateObject_11 || (templateObject_11 = __makeTemplateObject(["Warned ", " about power voids with a popup message."], ["Warned ", " about power voids with a popup message."])), args.player));
+                outputSuccess(f(templateObject_12 || (templateObject_12 = __makeTemplateObject(["Warned ", " about power voids with a popup message."], ["Warned ", " about power voids with a popup message."])), args.player));
             }
             else {
                 if (Date.now() - lastUsedSuccessfully < 10000)
@@ -662,7 +667,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             if (!sender.hasPerm("mod"))
                 sender.changedTeam = true;
             sender.setTeam(team);
-            outputSuccess(f(templateObject_12 || (templateObject_12 = __makeTemplateObject(["Changed your team to ", "."], ["Changed your team to ", "."])), team));
+            outputSuccess(f(templateObject_13 || (templateObject_13 = __makeTemplateObject(["Changed your team to ", "."], ["Changed your team to ", "."])), team));
             if (reason)
                 (0, utils_1.logAction)("changed team to ".concat(team.name, " on ").concat((0, funcs_1.escapeTextDiscord)(Vars.state.map.plainName()), " with reason ").concat((0, funcs_1.escapeTextDiscord)(reason)), sender);
         },
@@ -674,7 +679,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             var _b;
             var sender = _a.sender, _c = _a.args, team = _c.team, target = _c.target, outputSuccess = _a.outputSuccess, f = _a.f;
             if (!sender.canModerate(target, true, "mod", true))
-                (0, commands_1.fail)(f(templateObject_13 || (templateObject_13 = __makeTemplateObject(["You do not have permission to change the team of ", ""], ["You do not have permission to change the team of ", ""])), target));
+                (0, commands_1.fail)(f(templateObject_14 || (templateObject_14 = __makeTemplateObject(["You do not have permission to change the team of ", ""], ["You do not have permission to change the team of ", ""])), target));
             if (config_1.Gamemode.sandbox() && globals_1.fishState.peacefulMode && !sender.hasPerm("admin"))
                 (0, commands_1.fail)("You do not have permission to change teams because peaceful mode is on.");
             if (!sender.hasPerm("changeTeamExternal")) {
@@ -684,7 +689,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
                     target.forceRespawn();
             }
             target.setTeam(team);
-            outputSuccess(f(templateObject_14 || (templateObject_14 = __makeTemplateObject(["Changed team of player ", " to ", "."], ["Changed team of player ", " to ", "."])), target, team));
+            outputSuccess(f(templateObject_15 || (templateObject_15 = __makeTemplateObject(["Changed team of player ", " to ", "."], ["Changed team of player ", " to ", "."])), target, team));
         },
     }, rank: {
         args: ['player:player'],
@@ -692,7 +697,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         perm: commands_1.Perm.none,
         handler: function (_a) {
             var args = _a.args, output = _a.output, f = _a.f;
-            output(f(templateObject_15 || (templateObject_15 = __makeTemplateObject(["Player ", "'s rank is ", "."], ["Player ", "'s rank is ", "."])), args.player, args.player.rank));
+            output(f(templateObject_16 || (templateObject_16 = __makeTemplateObject(["Player ", "'s rank is ", "."], ["Player ", "'s rank is ", "."])), args.player, args.player.rank));
         },
     }, forcevnw: {
         args: ["force:boolean?"],
@@ -831,7 +836,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
                 Call.sendMessage("[red]Admin ".concat(sender.name, "[red] has cancelled the vote. The next map will be [yellow]").concat(args.map.name(), "."));
             }
             else {
-                outputSuccess(f(templateObject_16 || (templateObject_16 = __makeTemplateObject(["Forced the next map to be \"", "\" by ", ""], ["Forced the next map to be \"", "\" by ", ""])), args.map.name(), args.map.author()));
+                outputSuccess(f(templateObject_17 || (templateObject_17 = __makeTemplateObject(["Forced the next map to be \"", "\" by ", ""], ["Forced the next map to be \"", "\" by ", ""])), args.map.name(), args.map.author()));
             }
         },
     }, maps: {
@@ -964,7 +969,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         description: "Views a player's stats.",
         handler: function (_a) {
             var target = _a.args.target, output = _a.output, f = _a.f;
-            output(f(templateObject_17 || (templateObject_17 = __makeTemplateObject(["[accent]Statistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nTime in-game: ", "\nWin rate: ", ""], ["[accent]\\\nStatistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nTime in-game: ", "\nWin rate: ", ""])), target, target.stats.blocksBroken, target.stats.blocksPlaced, target.stats.chatMessagesSent, target.stats.gamesFinished, (0, utils_1.formatTime)(target.stats.timeInGame), target.stats.gamesWon / target.stats.gamesFinished));
+            output(f(templateObject_18 || (templateObject_18 = __makeTemplateObject(["[accent]Statistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nTime in-game: ", "\nWin rate: ", ""], ["[accent]\\\nStatistics for player ", ":\n(note: we started recording statistics on 22 Jan 2024)\n[white]--------------[]\nBlocks broken: ", "\nBlocks placed: ", "\nChat messages sent: ", "\nGames finished: ", "\nTime in-game: ", "\nWin rate: ", ""])), target, target.stats.blocksBroken, target.stats.blocksPlaced, target.stats.chatMessagesSent, target.stats.gamesFinished, (0, utils_1.formatTime)(target.stats.timeInGame), target.stats.gamesWon / target.stats.gamesFinished));
         }
     }, showworld: {
         args: ["x:number?", "y:number?", "size:number?"],
@@ -1006,4 +1011,4 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             }
         }
     } }));
-var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11, templateObject_12, templateObject_13, templateObject_14, templateObject_15, templateObject_16, templateObject_17;
+var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11, templateObject_12, templateObject_13, templateObject_14, templateObject_15, templateObject_16, templateObject_17, templateObject_18;
