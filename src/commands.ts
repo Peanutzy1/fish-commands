@@ -450,7 +450,7 @@ const fFunctions = {
 	},
 	percent(value:number, decimals = 0){
 		if(isNaN(value) || !isFinite(value)) return ["[gray]N/A[]", "N/A"];
-		const percent = (value * 100).toFixed(decimals) + "%";
+		const percent = (value * 100).toFixed(decimals + 2) + "%";
 		return [`${percent}`, `${percent}`];
 	},
 	number(value:number, decimals:number | null = null){
