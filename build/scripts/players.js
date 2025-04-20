@@ -550,6 +550,8 @@ var FishPlayer = /** @class */ (function () {
         this.lastJoined = Date.now();
         this.lastMousePosition = [0, 0];
         this.lastActive = Date.now();
+        if (this.highlight === "[white]")
+            this.highlight = null;
         this.shouldUpdateName = true;
         this.changedTeam = false;
         this.ipDetectedVpn = false;
