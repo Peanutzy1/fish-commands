@@ -226,32 +226,32 @@ export class FMap extends dataClass<FMapData>() {
 
 		const modeSpecificStats = match(Gamemode.name(), {
 			attack: `\
-[CCFFCC]Total runs: ${stats.allRunCount} (${stats.victories} wins, ${stats.totalLosses} losses, ${stats.earlyRTVs} RTVs)
-[CCFFCC]Outcomes: ${f.percent(stats.winRate, 1)} wins, ${f.percent(stats.lossRate, 1)} losses, ${f.percent(stats.earlyRTVRate, 1)} RTVs
-[CCFFCC]Average playtime: ${formatTime(stats.averagePlaytime)}
-[CCFFCC]Shortest win time: ${formatTime(stats.shortestWinTime)}`,
+[#CCFFCC]Total runs: ${stats.allRunCount} (${stats.victories} wins, ${stats.totalLosses} losses, ${stats.earlyRTVs} RTVs)
+[#CCFFCC]Outcomes: ${f.percent(stats.winRate, 1)} wins, ${f.percent(stats.lossRate, 1)} losses, ${f.percent(stats.earlyRTVRate, 1)} RTVs
+[#CCFFCC]Average playtime: ${formatTime(stats.averagePlaytime)}
+[#CCFFCC]Shortest win time: ${formatTime(stats.shortestWinTime)}`,
 			survival: `\
-[CCFFCC]Highest wave reached: ${stats.highestWave}
-[CCFFCC]Average wave reached: ${stats.averageWave}
-[CCFFCC]Total runs: ${stats.allRunCount} (${stats.earlyRTVs} RTVs)
-[CCFFCC]RTV rate: ${f.percent(stats.earlyRTVRate, 1)}
-[CCFFCC]Average duration: ${formatTime(stats.averagePlaytime)}
-[CCFFCC]Longest duration: ${formatTime(stats.longestTime)}`,
+[#CCFFCC]Highest wave reached: ${stats.highestWave}
+[#CCFFCC]Average wave reached: ${stats.averageWave}
+[#CCFFCC]Total runs: ${stats.allRunCount} (${stats.earlyRTVs} RTVs)
+[#CCFFCC]RTV rate: ${f.percent(stats.earlyRTVRate, 1)}
+[#CCFFCC]Average duration: ${formatTime(stats.averagePlaytime)}
+[#CCFFCC]Longest duration: ${formatTime(stats.longestTime)}`,
 			pvp: `\
-[CCFFCC]Total runs: ${stats.allRunCount} (${stats.earlyRTVs} RTVs)
-[CCFFCC]Team win rates: ${Object.entries(stats.teamWinRate).map(([team, rate]) => `${team} ${f.percent(rate, 1)}`).join(", ")}
-[CCFFCC]RTV rate: ${f.percent(stats.earlyRTVRate, 1)}
-[CCFFCC]Average match duration: ${formatTime(stats.averagePlaytime)}
-[CCFFCC]Shortest match duration: ${formatTime(stats.shortestWinTime)}`,
+[#CCFFCC]Total runs: ${stats.allRunCount} (${stats.earlyRTVs} RTVs)
+[#CCFFCC]Team win rates: ${Object.entries(stats.teamWinRate).map(([team, rate]) => `${team} ${f.percent(rate, 1)}`).join(", ")}
+[#CCFFCC]RTV rate: ${f.percent(stats.earlyRTVRate, 1)}
+[#CCFFCC]Average match duration: ${formatTime(stats.averagePlaytime)}
+[#CCFFCC]Shortest match duration: ${formatTime(stats.shortestWinTime)}`,
 			hexed: `\
-[CCFFCC]Total runs: ${stats.allRunCount} (${stats.earlyRTVs} RTVs)
-[CCFFCC]RTV rate: ${f.percent(stats.earlyRTVRate, 1)}
-[CCFFCC]Average match duration: ${formatTime(stats.averagePlaytime)}
-[CCFFCC]Shortest match duration: ${formatTime(stats.shortestWinTime)}`,
+[#CCFFCC]Total runs: ${stats.allRunCount} (${stats.earlyRTVs} RTVs)
+[#CCFFCC]RTV rate: ${f.percent(stats.earlyRTVRate, 1)}
+[#CCFFCC]Average match duration: ${formatTime(stats.averagePlaytime)}
+[#CCFFCC]Shortest match duration: ${formatTime(stats.shortestWinTime)}`,
 			sandbox: `\
-[CCFFCC]Total plays: ${stats.allRunCount}
-[CCFFCC]Average play time: ${formatTime(stats.averagePlaytime)}
-[CCFFCC]Shortest play time: ${formatTime(stats.shortestTime)}`,
+[#CCFFCC]Total plays: ${stats.allRunCount}
+[#CCFFCC]Average play time: ${formatTime(stats.averagePlaytime)}
+[#CCFFCC]Shortest play time: ${formatTime(stats.shortestTime)}`,
 		}, "");
 		return (`\
 [coral]${map.name()}
@@ -264,8 +264,8 @@ export class FMap extends dataClass<FMapData>() {
 [accent]BvB allowed: ${f.boolGood(rules.placeRangeCheck)}, unit item transfer allowed: ${f.boolGood(rules.onlyDepositCore)}
 
 ${modeSpecificStats}
-[CCFFCC]Longest play time: ${formatTime(stats.longestTime)}
-[CCFFCC]Average player count: ${f.number(stats.averageHighestPlayerCount, 1)}`
+[#CCFFCC]Longest play time: ${formatTime(stats.longestTime)}
+[#CCFFCC]Average player count: ${f.number(stats.averageHighestPlayerCount, 1)}`
 		);
 	}
 }
