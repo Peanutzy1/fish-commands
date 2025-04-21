@@ -72,7 +72,7 @@ export class PartialMapRun {
 			if(this.current){
 				//Add a new map run
 				FMap.getCreate(Vars.state.map)?.runs.push(
-					this.current.finish({winTeam: e.winner})
+					this.current.finish({winTeam: e.winner ?? Team.derelict})
 				);
 			}
 			Core.settings.remove(this.key);
@@ -156,6 +156,10 @@ export class FMap extends dataClass<FMapData>() {
 			//This event listener runs after the data has been loaded into allMaps
 			FMap.allMaps.forEach(map => {
 				FMap.maps[map.mapFileName] = map;
+				map.runs.forEach(run => {
+					//this should not even happen, I think GameOverEvent is sending winTeam as null sometimes??
+					run.winTeam ??= Team.derelict;
+				});
 			});
 			//create all the data
 			Vars.maps.customMaps().each(m => void FMap.getCreate(m));

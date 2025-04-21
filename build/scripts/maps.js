@@ -182,10 +182,10 @@ var PartialMapRun = /** @class */ (function () {
             (_b = _a.current) === null || _b === void 0 ? void 0 : _b.update();
         }, 0, 5);
         Events.on(EventType.GameOverEvent, function (e) {
-            var _b;
+            var _b, _c;
             if (_a.current) {
                 //Add a new map run
-                (_b = FMap.getCreate(Vars.state.map)) === null || _b === void 0 ? void 0 : _b.runs.push(_a.current.finish({ winTeam: e.winner }));
+                (_b = FMap.getCreate(Vars.state.map)) === null || _b === void 0 ? void 0 : _b.runs.push(_a.current.finish({ winTeam: (_c = e.winner) !== null && _c !== void 0 ? _c : Team.derelict }));
             }
             Core.settings.remove(_a.key);
             _a.current = null;
@@ -323,6 +323,11 @@ var FMap = function () {
                 //This event listener runs after the data has been loaded into allMaps
                 _b.allMaps.forEach(function (map) {
                     _b.maps[map.mapFileName] = map;
+                    map.runs.forEach(function (run) {
+                        var _c;
+                        //this should not even happen, I think GameOverEvent is sending winTeam as null sometimes??
+                        (_c = run.winTeam) !== null && _c !== void 0 ? _c : (run.winTeam = Team.derelict);
+                    });
                 });
                 //create all the data
                 Vars.maps.customMaps().each(function (m) { return void _b.getCreate(m); });
