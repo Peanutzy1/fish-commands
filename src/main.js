@@ -51,6 +51,15 @@ if(/ae?a/.test("aeea")){
 		return java.util.regex.Pattern.compile(this.source).matcher(input).find();
 	};
 }
+//Fix rhino Number.prototype.toFixed
+if(12.34.toFixed(1) !== '12.3'){
+	const toFixed = Number.prototype.toFixed;
+	Number.prototype.toFixed = function(fractionDigits){
+		const floorLog = Math.floor(Math.log10(this));
+		const output = toFixed.call(this, Math.max(floorLog, -1) + 1 + fractionDigits);
+		return output.toString().slice(0, Math.max(floorLog, 0) + 2 + fractionDigits);
+	}
+}
 
 this.Promise = require('promise').Promise;
 require("index");

@@ -608,7 +608,7 @@ var fFunctions = {
         if (decimals === void 0) { decimals = 0; }
         if (isNaN(value) || !isFinite(value))
             return ["[gray]N/A[]", "N/A"];
-        var percent = (value * 100).toFixed(decimals + 2) + "%";
+        var percent = (value * 100).toFixed(decimals) + "%";
         return ["".concat(percent), "".concat(percent)];
     },
     number: function (value, decimals) {
