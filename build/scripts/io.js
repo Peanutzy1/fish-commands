@@ -202,7 +202,8 @@ var Serializer = /** @class */ (function () {
                 }
                 break;
             case 'array':
-                this.writeNode(["number", schema[1]], value.length, output);
+                if (typeof schema[1] == "string")
+                    this.writeNode(["number", schema[1]], value.length, output);
                 for (var i = 0; i < value.length; i++) {
                     this.writeNode(schema[2], value[i], output);
                 }
@@ -269,7 +270,9 @@ var Serializer = /** @class */ (function () {
                 }
                 return new schema[1](classData);
             case 'array':
-                var length = this.readNode(["number", schema[1]], input);
+                var length = typeof schema[1] === "number" ?
+                    schema[1]
+                    : this.readNode(["number", schema[1]], input);
                 var array = new Array(length);
                 for (var i = 0; i < length; i++) {
                     array[i] = this.readNode(schema[2], input);
@@ -317,8 +320,8 @@ if (!Symbol.metadata)
         value: Symbol("Symbol.metadata")
     });
 function serialize(settingsKey, schema, oldSchema) {
-    return function (_, _a) {
-        var addInitializer = _a.addInitializer, access = _a.access;
+    return function decorate(_, _a) {
+        var addInitializer = _a.addInitializer, access = _a.access, name = _a.name;
         addInitializer(function () {
             var _this = this;
             var serializer = (0, funcs_1.lazy)(function () {
@@ -331,6 +334,12 @@ function serialize(settingsKey, schema, oldSchema) {
             });
             globals_1.FishEvents.on("saveData", function () {
                 serializer().writeSettings(access.get(_this));
+                try {
+                }
+                catch (err) {
+                    Log.err("Error while saving field ".concat(String(name), " on ").concat(String(_this === null || _this === void 0 ? void 0 : _this.name), " using settings key ").concat(settingsKey));
+                    throw err;
+                }
             });
         });
     };

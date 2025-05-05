@@ -24,12 +24,12 @@ export type Serializable = SerializablePrimitive | Array<Serializable> | {
 
 export type PrimitiveSchema<T extends SerializablePrimitive> =
 	T extends string ? ["string"] :
-	T extends number ? ["number", bytes:NumberRepresentation | number] :
+	T extends number ? ["number", bytes:NumberRepresentation] :
 	T extends boolean ? ["boolean"] :
   T extends Team ? ["team"] :
 never;
 export type ArraySchema<T extends Array<Serializable>> =
-	["array", length:NumberRepresentation & `u${string}`, element:Schema<T[number]>];
+	["array", length:number extends T["length"] ? NumberRepresentation & `u${string}` | number : T["length"], element:Schema<T[number]>];
 export type ObjectSchema<T extends Record<string, Serializable>> =
 	["object", children:Array<keyof T extends infer KT extends keyof T ? KT extends unknown ? [KT, Schema<T[KT]>] : never : never>];
 export type DataClassSchema<ClassInstance extends {}> =
@@ -141,7 +141,8 @@ export class Serializer<T extends Serializable> {
 				}
 				break;
 			case 'array':
-				this.writeNode(["number", schema[1]], (value as Serializable[]).length, output);
+				if(typeof schema[1] == "string")
+					this.writeNode(["number", schema[1]], (value as Serializable[]).length, output);
 				for(let i = 0; i < (value as Serializable[]).length; i ++){
 					this.writeNode(schema[2], (value as Serializable[])[i], output);
 				}
@@ -189,7 +190,9 @@ export class Serializer<T extends Serializable> {
 				}
 				return new schema[1](classData);
 			case 'array':
-				const length = this.readNode<number>(["number", schema[1]], input);
+				const length = typeof schema[1] === "number" ?
+					schema[1]
+				: this.readNode<number>(["number", schema[1]], input);
 				const array = new Array<Serializable>(length);
 				for(let i = 0; i < length; i ++){
 					array[i] = this.readNode<Serializable>(schema[2], input);
@@ -236,9 +239,9 @@ export function serialize<T extends Serializable>(
 	settingsKey: string,
 	schema: () => Schema<T>, oldSchema?: () => Schema<T>
 ){
-	return function<
+	return function decorate<
 		This extends { [P in Name]: T }, Name extends string | symbol
-	>(_: unknown, {addInitializer, access}:ClassFieldDecoratorContext<This, T> & {
+	>(_: unknown, {addInitializer, access, name}:ClassFieldDecoratorContext<This, T> & {
 		name: Name;
 		static: true;
 	}){
@@ -251,7 +254,12 @@ export function serialize<T extends Serializable>(
 				if(value) access.set(this, value);
 			});
 			FishEvents.on("saveData", () => {
-				serializer().writeSettings(access.get(this));
+				try {
+					serializer().writeSettings(access.get(this));
+				} catch(err){
+					Log.err(`Error while saving field ${String(name)} on ${String((this as any as Function)?.name)} using settings key ${settingsKey}`);
+					throw err;
+				}
 			});
 		});
 	};

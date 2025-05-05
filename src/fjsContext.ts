@@ -16,6 +16,7 @@ const globals = require("./globals");
 const maps = require("./maps");
 const { commands: memberCommands } = require("./memberCommands");
 const menus = require("./menus");
+const { Metrics } = require('./metrics');
 const packetHandlers = require("./packetHandlers");
 const { commands: playerCommands } = require("./playerCommands");
 const players = require("./players");

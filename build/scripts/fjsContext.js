@@ -15,6 +15,7 @@ var globals = require("./globals");
 var maps = require("./maps");
 var memberCommands = require("./memberCommands").commands;
 var menus = require("./menus");
+var Metrics = require('./metrics').Metrics;
 var packetHandlers = require("./packetHandlers");
 var playerCommands = require("./playerCommands").commands;
 var players = require("./players");

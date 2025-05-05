@@ -1,0 +1,57 @@
+import { serialize } from "./io";
+
+
+type MetricsWeek = Array<number> & {
+  length: 2520; /* 15 * 24 * 7 */
+};
+export class Metrics {
+  /** 4 May 2025 */
+  static readonly startDate = new Date(2025, 4, 4).getTime();
+  static readonly millisPerWeek = 604800_000;
+  static readonly millisBetweenReadings = 240_000;
+  static readonly noData = -1;
+  /**
+   * Weeks are numbered starting at the week of 4 May 2025.
+   * A value is taken every 4 minutes, for a total of 15 readings per hour.
+   */
+  @serialize("player-count-data", () => ["version", 0,
+    ["array", "u16", ["array", 2520, ["number", "i8"]]]
+  ])
+  static weeks: Array<MetricsWeek> = [];
+
+  static {
+    Timer.schedule(() => Metrics.update(), 15, 60);
+  }
+
+  static weekNumber(date = Date.now()){
+    return Math.floor((date - this.startDate) / this.millisPerWeek);
+  }
+  static readingNumber(date = Date.now()){
+    return Math.floor((date - this.startDate) / this.millisBetweenReadings % this.millisPerWeek);
+  }
+  static newWeek() {
+    return Array(2520 satisfies MetricsWeek["length"]).fill(this.noData) as MetricsWeek;
+  }
+  static currentWeek(){
+    return this.weeks[this.weekNumber()] ??= this.newWeek();
+  }
+  static update(){
+    const playerCount = Groups.player.size();
+    this.currentWeek()[this.readingNumber()] =
+      Math.max(playerCount, this.currentWeek()[this.readingNumber()]);
+  }
+
+  static exportRange(startDate:number, endDate:number){
+    if(typeof startDate !== "number") throw new Error('startDate should be a number');
+    const startWeek = this.weekNumber(startDate);
+    const endWeek = this.weekNumber(endDate);
+    return this.weeks.slice(startWeek, endWeek + 1).map((week, weekNumber) =>
+      week.filter(v => v >= 0).map((v, i) => [
+        v,
+        this.startDate +
+        weekNumber * this.millisPerWeek +
+        i * this.millisBetweenReadings
+      ] as [value:number, timestamp:number])
+    ).flat();
+  }
+}
