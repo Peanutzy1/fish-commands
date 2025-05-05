@@ -68,6 +68,8 @@ var Metrics = function () {
             };
             Metrics.exportRange = function (startDate, endDate) {
                 var _this = this;
+                if (startDate === void 0) { startDate = this.startDate; }
+                if (endDate === void 0) { endDate = Date.now(); }
                 if (typeof startDate !== "number")
                     throw new Error('startDate should be a number');
                 var startWeek = this.weekNumber(startDate);

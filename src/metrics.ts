@@ -41,7 +41,7 @@ export class Metrics {
       Math.max(playerCount, this.currentWeek()[this.readingNumber()]);
   }
 
-  static exportRange(startDate:number, endDate:number){
+  static exportRange(startDate = this.startDate, endDate = Date.now()){
     if(typeof startDate !== "number") throw new Error('startDate should be a number');
     const startWeek = this.weekNumber(startDate);
     const endWeek = this.weekNumber(endDate);
