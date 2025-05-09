@@ -466,7 +466,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             var args = _a.args, sender = _a.sender, output = _a.output, f = _a.f;
             globals_1.recentWhispers[args.player.uuid] = sender.uuid;
             args.player.sendMessage("".concat(sender.prefixedName, "[lightgray] whispered:[#BBBBBB] ").concat(args.message));
-            output(f(templateObject_7 || (templateObject_7 = __makeTemplateObject(["[#BBBBBB]Message sent to ", "."], ["[#BBBBBB]Message sent to ", "."])), args.player));
+            output(f(templateObject_7 || (templateObject_7 = __makeTemplateObject(["[lightgray]Whispered to ", "[lightgray]:[#BBBBBB] ", ""], ["[lightgray]Whispered to ", "[lightgray]:[#BBBBBB] ", ""])), args.player, args.message));
         },
     }, r: {
         args: ['message:string'],
@@ -480,7 +480,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
                 (0, commands_1.fail)("The person who last messaged you doesn't seem to exist anymore. Try whispering to someone with [white]\"/msg <player> <message>\"");
             globals_1.recentWhispers[globals_1.recentWhispers[sender.uuid]] = sender.uuid;
             recipient.sendMessage("".concat(sender.name, "[lightgray] whispered:[#BBBBBB] ").concat(args.message));
-            output(f(templateObject_8 || (templateObject_8 = __makeTemplateObject(["[#BBBBBB]Message sent to ", "[#BBBBBB]."], ["[#BBBBBB]Message sent to ", "[#BBBBBB]."])), recipient));
+            output(f(templateObject_8 || (templateObject_8 = __makeTemplateObject(["[lightgray]Whispered to ", "[lightgray]:[#BBBBBB] ", ""], ["[lightgray]Whispered to ", "[lightgray]:[#BBBBBB] ", ""])), recipient, args.message));
         },
     }, trail: {
         args: ['type:string?', 'color:string?'],

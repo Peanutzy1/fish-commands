@@ -392,7 +392,7 @@ export const commands = commandList({
 		handler({ args, sender, output, f }) {
 			recentWhispers[args.player.uuid] = sender.uuid;
 			args.player.sendMessage(`${sender.prefixedName}[lightgray] whispered:[#BBBBBB] ${args.message}`);
-			output(f`[#BBBBBB]Message sent to ${args.player}.`);
+			output(f`[lightgray]Whispered to ${args.player}[lightgray]:[#BBBBBB] ${args.message}`);
 		},
 	},
 
@@ -405,7 +405,7 @@ export const commands = commandList({
 			if(!(recipient?.connected())) fail(`The person who last messaged you doesn't seem to exist anymore. Try whispering to someone with [white]"/msg <player> <message>"`);
 			recentWhispers[recentWhispers[sender.uuid]] = sender.uuid;
 			recipient.sendMessage(`${sender.name}[lightgray] whispered:[#BBBBBB] ${args.message}`);
-			output(f`[#BBBBBB]Message sent to ${recipient}[#BBBBBB].`);
+			output(f`[lightgray]Whispered to ${recipient}[lightgray]:[#BBBBBB] ${args.message}`);
 		},
 	},
 
