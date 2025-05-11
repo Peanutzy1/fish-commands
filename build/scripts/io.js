@@ -202,8 +202,15 @@ var Serializer = /** @class */ (function () {
                 }
                 break;
             case 'array':
-                if (typeof schema[1] == "string")
+                if (typeof schema[1] == "string") {
                     this.writeNode(["number", schema[1]], value.length, output);
+                }
+                else {
+                    if (schema[1] !== value.length) {
+                        Log.err('SERIALIZATION WARNING: received invalid data: array with greater length than specified by schema');
+                        value.length = schema[1];
+                    }
+                }
                 for (var i = 0; i < value.length; i++) {
                     this.writeNode(schema[2], value[i], output);
                 }
@@ -333,8 +340,8 @@ function serialize(settingsKey, schema, oldSchema) {
                     access.set(_this, value);
             });
             globals_1.FishEvents.on("saveData", function () {
-                serializer().writeSettings(access.get(_this));
                 try {
+                    serializer().writeSettings(access.get(_this));
                 }
                 catch (err) {
                     Log.err("Error while saving field ".concat(String(name), " on ").concat(String(_this === null || _this === void 0 ? void 0 : _this.name), " using settings key ").concat(settingsKey));

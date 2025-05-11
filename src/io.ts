@@ -141,8 +141,14 @@ export class Serializer<T extends Serializable> {
 				}
 				break;
 			case 'array':
-				if(typeof schema[1] == "string")
+				if(typeof schema[1] == "string"){
 					this.writeNode(["number", schema[1]], (value as Serializable[]).length, output);
+				} else {
+					if(schema[1] !== (value as Serializable[]).length){
+						Log.err('SERIALIZATION WARNING: received invalid data: array with greater length than specified by schema');
+						(value as Serializable[]).length = schema[1];
+					}
+				}
 				for(let i = 0; i < (value as Serializable[]).length; i ++){
 					this.writeNode(schema[2], (value as Serializable[])[i], output);
 				}

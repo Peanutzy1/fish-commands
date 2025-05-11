@@ -27,7 +27,7 @@ export class Metrics {
     return Math.floor((date - this.startDate) / this.millisPerWeek);
   }
   static readingNumber(date = Date.now()){
-    return Math.floor((date - this.startDate) / this.millisBetweenReadings % this.millisPerWeek);
+    return Math.floor(((date - this.startDate) % this.millisPerWeek) / this.millisBetweenReadings);
   }
   static newWeek() {
     return Array(2520 satisfies MetricsWeek["length"]).fill(this.noData) as MetricsWeek;

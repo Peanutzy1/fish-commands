@@ -51,7 +51,7 @@ var Metrics = function () {
             };
             Metrics.readingNumber = function (date) {
                 if (date === void 0) { date = Date.now(); }
-                return Math.floor((date - this.startDate) / this.millisBetweenReadings % this.millisPerWeek);
+                return Math.floor(((date - this.startDate) % this.millisPerWeek) / this.millisBetweenReadings);
             };
             Metrics.newWeek = function () {
                 return Array(2520).fill(this.noData);
