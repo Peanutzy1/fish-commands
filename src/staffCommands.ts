@@ -576,9 +576,21 @@ export const commands = commandList({
 		perm: Perm.mod,
 		requirements: [Req.moderate("player", true, "mod", true)],
 		handler({args, outputSuccess, f}){
-			
 			args.player.forceRespawn();
 			outputSuccess(f`Respawned player ${args.player}.`);
+		}
+	},
+
+	stealunit: {
+		args: ["player:player"],
+		description: "Steals the unit of a player, putting you in their unit and forcing them to respawn.",
+		perm: Perm.mod,
+		requirements: [Req.moderate("player", true, "mod", true)],
+		handler({args, sender, outputSuccess, f}){
+			const unit = args.player.unit();
+			args.player.forceRespawn();
+			sender.unit(unit);
+			outputSuccess(f`Commandeered the unit of player ${args.player}.`);
 		}
 	},
 

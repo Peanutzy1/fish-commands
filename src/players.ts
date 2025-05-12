@@ -1019,8 +1019,11 @@ We apologize for the inconvenience.`
 	hasPerm(perm:PermType){
 		return Perm[perm].check(this);
 	}
-	unit():Unit {
-		return this.player!.unit();
+	unit():Unit;
+	unit(unit:Unit):void;
+	unit(unit?:Unit):Unit {
+		if(unit) return this.player!.unit(unit);
+		else return this.player!.unit();
 	}
 	team():Team {
 		return this.player!.team();

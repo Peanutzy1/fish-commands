@@ -1123,8 +1123,11 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.hasPerm = function (perm) {
         return commands_1.Perm[perm].check(this);
     };
-    FishPlayer.prototype.unit = function () {
-        return this.player.unit();
+    FishPlayer.prototype.unit = function (unit) {
+        if (unit)
+            return this.player.unit(unit);
+        else
+            return this.player.unit();
     };
     FishPlayer.prototype.team = function () {
         return this.player.team();
