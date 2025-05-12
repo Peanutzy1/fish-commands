@@ -231,7 +231,7 @@ exports.Req = {
         if (allowSelfIfUnauthorized === void 0) { allowSelfIfUnauthorized = false; }
         return function (_a) {
             var args = _a.args, sender = _a.sender;
-            return (sender.canModerate(args[argName], !allowSameRank, minimumLevel, allowSelfIfUnauthorized)
+            return (args[argName] == undefined || sender.canModerate(args[argName], !allowSameRank, minimumLevel, allowSelfIfUnauthorized)
                 || fail("You do not have permission to perform moderation actions on this player."));
         };
     },

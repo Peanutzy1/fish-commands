@@ -582,15 +582,20 @@ export const commands = commandList({
 	},
 
 	stealunit: {
-		args: ["player:player"],
+		args: ["target:player", "newcontroller:player?"],
 		description: "Steals the unit of a player, putting you in their unit and forcing them to respawn.",
 		perm: Perm.mod,
-		requirements: [Req.moderate("player", true, "mod", true)],
-		handler({args, sender, outputSuccess, f}){
-			const unit = args.player.unit();
-			args.player.forceRespawn();
-			sender.unit(unit);
-			outputSuccess(f`Commandeered the unit of player ${args.player}.`);
+		requirements: [Req.moderate("target", true, "mod", true), Req.moderate("newcontroller", true, "mod", true)],
+		handler({sender, args:{target, newcontroller = sender}, outputSuccess, f}){
+			const unit = target.unit();
+			target.forceRespawn();
+			newcontroller.unit(unit);
+			if(newcontroller == sender){
+				outputSuccess(f`Commandeered the unit of player ${target}.`);
+			} else {
+				outputSuccess(f`Transferred player ${newcontroller} into the unit of ${target}.`);
+				newcontroller.sendMessage(f`[green]You were transferred to the unit of player ${target} by ${sender}.`('[green]'));
+			}
 		}
 	},
 
