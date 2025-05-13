@@ -858,8 +858,6 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             votes.clear();
             voteEndTime = -1;
             task === null || task === void 0 ? void 0 : task.cancel();
-            lastVoteTurnout = 0;
-            lastVoteTime = 1;
         }
         function getMapData() {
             return __spreadArray([], __read(votes.values()), false).reduce(function (acc, map) { return (acc.increment(map), acc); }, new ObjectIntMap()).entries().toArray();

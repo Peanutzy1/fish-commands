@@ -800,8 +800,6 @@ ${Vars.maps.customMaps().toArray().map(map =>
 			votes.clear();
 			voteEndTime = -1;
 			task?.cancel();
-			lastVoteTurnout = 0;
-			lastVoteTime = 1;
 		}
 
 		function getMapData():Seq<ObjectIntMapEntry<MMap>> {
