@@ -143,7 +143,7 @@ export function getItem(item:string):Item | string {
  */
 export function matchFilter(input:string, wordList = "chat" as "chat" | "strict" | "name", aggressive = false):false | string | [string] {
 	const currentBannedWords = [
-		bannedWords.normal,
+		wordList == "name" ? bannedWords.normal.filter(w => w[0] !== "uwu") : bannedWords.normal,
 		(wordList == "strict" || wordList == "name") && bannedWords.strict,
 		wordList == "name" && bannedWords.names,
 	].filter(Boolean).flat();
