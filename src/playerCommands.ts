@@ -790,7 +790,7 @@ ${Vars.maps.customMaps().toArray().map(map =>
 
 	nextmap: command(() => {
 		const votes = new Map<FishPlayer, MMap>();
-		let lastVoteTurnout = 0;
+		let lastVoteCount = 0;
 		let lastVoteTime = 0;
 		let voteEndTime = -1;
 		const voteDuration = 1.5 * 60000; // 1.5 mins
@@ -827,13 +827,14 @@ ${getMapData().map(({key:map, value:votes}) =>
 			if(voteEndTime == -1) return; //aborted somehow
 			if(votes.size == 0) return; //no votes?
 
-			if((votes.size / Groups.player.size()) + 0.2 < lastVoteTurnout){
+			if(votes.size + 2 <= lastVoteCount && (Date.now() - lastVoteTime) < 600_000){
+				//If the number of votes is 2 less than the previous number of votes for a vote in the past 10 minutes, abor
 				Call.sendMessage("[cyan]Next Map Vote: [scarlet]Vote aborted because a previous vote had significantly higher turnout");
 				resetVotes();
 				return;
 			} else {
 				lastVoteTime = Date.now();
-				lastVoteTurnout = Math.max(lastVoteTurnout, votes.size / Groups.player.size());
+				lastVoteCount = votes.size;
 			}
 
 			const mapData = getMapData();

@@ -849,7 +849,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         }
     }, nextmap: (0, commands_1.command)(function () {
         var votes = new Map();
-        var lastVoteTurnout = 0;
+        var lastVoteCount = 0;
         var lastVoteTime = 0;
         var voteEndTime = -1;
         var voteDuration = 1.5 * 60000; // 1.5 mins
@@ -877,14 +877,15 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
                 return; //aborted somehow
             if (votes.size == 0)
                 return; //no votes?
-            if ((votes.size / Groups.player.size()) + 0.2 < lastVoteTurnout) {
+            if (votes.size + 2 <= lastVoteCount && (Date.now() - lastVoteTime) < 600000) {
+                //If the number of votes is 2 less than the previous number of votes for a vote in the past 10 minutes, abor
                 Call.sendMessage("[cyan]Next Map Vote: [scarlet]Vote aborted because a previous vote had significantly higher turnout");
                 resetVotes();
                 return;
             }
             else {
                 lastVoteTime = Date.now();
-                lastVoteTurnout = Math.max(lastVoteTurnout, votes.size / Groups.player.size());
+                lastVoteCount = votes.size;
             }
             var mapData = getMapData();
             var highestVoteCount = mapData.max(floatf(function (e) { return e.value; })).value;
