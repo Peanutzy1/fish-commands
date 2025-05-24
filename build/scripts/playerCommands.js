@@ -1018,6 +1018,8 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
             if (!sender.hasPerm('trusted'))
                 commands_1.Req.cooldownGlobal(30000);
+            //Unpause
+            Vars.state.set(GameState.State.playing);
             switch (args.mode) {
                 case "attack":
                     Vars.state.rules.attackMode = true;
@@ -1035,6 +1037,11 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
                     break;
                 default: (0, commands_1.fail)("Invalid mode, valid modes are: attack, survival, pvp");
             }
+            var reloader = new WorldReloader();
+            Reflect.set(reloader, "wasServer", true);
+            Reflect.set(reloader, "players", Groups.player.copy());
+            Call.worldDataBegin();
+            reloader.end();
             outputSuccess("Changed mode to ".concat(args.mode));
         }
     } }));

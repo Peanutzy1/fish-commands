@@ -985,6 +985,8 @@ Win rate: ${target.stats.gamesWon / target.stats.gamesFinished}`
 		requirements: [Req.cooldownGlobal(10_000)],
 		handler({args, sender, outputSuccess}){
 			if(!sender.hasPerm('trusted')) Req.cooldownGlobal(30_000);
+			//Unpause
+			Vars.state.set(GameState.State.playing);
 			switch(args.mode){
 				case "attack":
 					Vars.state.rules.attackMode = true;
@@ -1002,6 +1004,11 @@ Win rate: ${target.stats.gamesWon / target.stats.gamesFinished}`
 					break;
 				default: fail(`Invalid mode, valid modes are: attack, survival, pvp`);
 			}
+			const reloader = new WorldReloader();
+			Reflect.set(reloader, "wasServer", true);
+			Reflect.set(reloader, "players", Groups.player.copy());
+			Call.worldDataBegin();
+			reloader.end();
 			outputSuccess(`Changed mode to ${args.mode}`);
 		}
 	},

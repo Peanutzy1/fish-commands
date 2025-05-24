@@ -474,6 +474,7 @@ class ObjectIntMapEntry<K> {
 }
 class EntityGroup<T> {
 	add(type:T):void
+	copy():Seq<T>;
 	copy(seq:Seq<T>):Seq<T>;
 	each(func:(item:T) => unknown):void;
 	each(predicate:(item:T) => boolean, func:(item:T) => unknown):void;
@@ -735,5 +736,10 @@ const OS: {
 	 */
 	exec(...command:string[]):string;
 };
+
+class WorldReloader {
+	begin():void;
+	end():void;
+}
 
 }
