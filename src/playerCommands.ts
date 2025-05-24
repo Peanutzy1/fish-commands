@@ -13,7 +13,7 @@ import { Menu } from './menus';
 import { FishPlayer } from './players';
 import { Rank, RoleFlag } from './ranks';
 import type { FishCommandData } from './types';
-import { formatTime, formatTimeRelative, getColor, logAction, nearbyEnemyTile, neutralGameover, skipWaves, teleportPlayer } from './utils';
+import { formatTime, formatTimeRelative, getColor, logAction, match, nearbyEnemyTile, neutralGameover, skipWaves, teleportPlayer } from './utils';
 import { VoteManager } from './votes';
 
 export const commands = commandList({
@@ -974,5 +974,35 @@ Win rate: ${target.stats.gamesWon / target.stats.gamesFinished}`
 				).toArray())
 			}
 		}
-	}
+	},
+
+	gamemode: {
+		args: ["mode:string"],
+		perm: new Perm("changeGamemode", "manager").exceptModes({
+			testsrv: Perm.play,
+		}),
+		description: "Sets the gamemode.",
+		requirements: [Req.cooldownGlobal(10_000)],
+		handler({args, sender, outputSuccess}){
+			if(!sender.hasPerm('trusted')) Req.cooldownGlobal(30_000);
+			switch(args.mode){
+				case "attack":
+					Vars.state.rules.attackMode = true;
+					Vars.state.rules.pvp = false;
+					break;
+				case "survival":
+					Vars.state.rules.attackMode = false;
+					Vars.state.rules.waves = true;
+					Vars.state.rules.pvp = false;
+					break;
+				case "pvp":
+					Vars.state.rules.attackMode = true;
+					Vars.state.rules.pvp = true;
+					Vars.state.rules.waves = false;
+					break;
+				default: fail(`Invalid mode, valid modes are: attack, survival, pvp`);
+			}
+			outputSuccess(`Changed mode to ${args.mode}`);
+		}
+	},
 });

@@ -43,6 +43,8 @@ class Rules {
 	placeRangeCheck: boolean;
 	onlyDepositCore: boolean;
 	getClass(): typeof Rules;
+	attackMode: boolean;
+	pvp: boolean;
 }
 
 const Vars: {

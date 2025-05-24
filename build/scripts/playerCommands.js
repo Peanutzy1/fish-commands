@@ -1007,5 +1007,35 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
                 }).toArray());
             }
         }
+    }, gamemode: {
+        args: ["mode:string"],
+        perm: new commands_1.Perm("changeGamemode", "manager").exceptModes({
+            testsrv: commands_1.Perm.play,
+        }),
+        description: "Sets the gamemode.",
+        requirements: [commands_1.Req.cooldownGlobal(10000)],
+        handler: function (_a) {
+            var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
+            if (!sender.hasPerm('trusted'))
+                commands_1.Req.cooldownGlobal(30000);
+            switch (args.mode) {
+                case "attack":
+                    Vars.state.rules.attackMode = true;
+                    Vars.state.rules.pvp = false;
+                    break;
+                case "survival":
+                    Vars.state.rules.attackMode = false;
+                    Vars.state.rules.waves = true;
+                    Vars.state.rules.pvp = false;
+                    break;
+                case "pvp":
+                    Vars.state.rules.attackMode = true;
+                    Vars.state.rules.pvp = true;
+                    Vars.state.rules.waves = false;
+                    break;
+                default: (0, commands_1.fail)("Invalid mode, valid modes are: attack, survival, pvp");
+            }
+            outputSuccess("Changed mode to ".concat(args.mode));
+        }
     } }));
 var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11, templateObject_12, templateObject_13, templateObject_14, templateObject_15, templateObject_16, templateObject_17, templateObject_18;
