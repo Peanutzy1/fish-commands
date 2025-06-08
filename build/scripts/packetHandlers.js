@@ -171,7 +171,7 @@ exports.commands = (0, commands_1.commandList)({
     pklast: {
         args: [],
         description: 'Tells you who last accessed the packet handlers.',
-        perm: commands_1.Perm.mod,
+        perm: commands_1.Perm.none,
         handler: function (_a) {
             var output = _a.output;
             var outputLines = [];

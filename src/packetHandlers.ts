@@ -182,7 +182,7 @@ export const commands = commandList({
 	pklast: {
 		args: [],
 		description: 'Tells you who last accessed the packet handlers.',
-		perm: Perm.mod,
+		perm: Perm.none,
 		handler({output}) {
 			const outputLines:string[] = [];
 
