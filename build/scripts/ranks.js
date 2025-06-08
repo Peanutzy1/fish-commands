@@ -88,6 +88,7 @@ var RoleFlag = /** @class */ (function () {
     RoleFlag.member = new RoleFlag("member", "[black]<[yellow]\uE809[]>[]", "Awarded to our awesome donors who support the server.", "[pink]", true, false);
     RoleFlag.illusionist = new RoleFlag("illusionist", "", "Assigned to to individuals who have earned access to enhanced visual effect features.", "[lightgrey]", true, true);
     RoleFlag.chief_map_analyst = new RoleFlag("chief map analyst", "[black]<[#5800FF]\uE833[]>[]", "Assigned to the chief map analyst, who oversees map management.", "[#5800FF]", true, true);
+    RoleFlag.no_effects = new RoleFlag("no_effects", "", "Given to people who have abused the visual effects.", "", true, true);
     return RoleFlag;
 }());
 exports.RoleFlag = RoleFlag;
