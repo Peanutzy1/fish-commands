@@ -970,7 +970,7 @@ IPs used: ${info.ips.map(i => `[blue]${i}[]`).toString(", ")}`
 			const unit = target.unit();
 			if(!unit || unit.dead) fail(f`${target}'s unit is dead.`);
 			const ticks = (args.duration ?? 1e12) / 1000 * 60;
-			applyEffectMode(args.mode, target, ticks);
+			applyEffectMode(args.mode, unit, ticks);
 			outputSuccess(`${args.mode === "clear" ? "Cleared" : "Applied"} effects.`);
 			if(!Gamemode.sandbox()) logAction(`applied **${args.mode}** effects to`, sender, target);
 		}

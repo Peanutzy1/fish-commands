@@ -1168,7 +1168,7 @@ exports.commands = (0, commands_1.commandList)({
             if (!unit || unit.dead)
                 (0, commands_1.fail)(f(templateObject_70 || (templateObject_70 = __makeTemplateObject(["", "'s unit is dead."], ["", "'s unit is dead."])), target));
             var ticks = ((_d = args.duration) !== null && _d !== void 0 ? _d : 1e12) / 1000 * 60;
-            (0, utils_1.applyEffectMode)(args.mode, target, ticks);
+            (0, utils_1.applyEffectMode)(args.mode, unit, ticks);
             outputSuccess("".concat(args.mode === "clear" ? "Cleared" : "Applied", " effects."));
             if (!config_1.Gamemode.sandbox())
                 (0, utils_1.logAction)("applied **".concat(args.mode, "** effects to"), sender, target);
