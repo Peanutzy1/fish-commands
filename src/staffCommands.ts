@@ -647,7 +647,10 @@ export const commands = commandList({
 			const x = args.x ? (args.x * 8) : sender.player!.x;
 			const y = args.y ? (args.y * 8) : sender.player!.y;
 			const team = args.team ?? sender.team();
-			const unit = args.type.spawn(team, x, y);
+			const unit = args.type.create(team);
+			unit.set(x, y);
+			if(args.effects) applyEffectMode(args.effects, unit, 1e12);
+			unit.add();
 			data.push(unit);
 			if(!Gamemode.sandbox()) logAction(`spawned unit ${args.type.name} at ${Math.round(x / 8)}, ${Math.round(y / 8)}`, sender);
 			outputSuccess(f`Spawned unit ${args.type} at (${Math.round(x / 8)}, ${Math.round(y / 8)})`);

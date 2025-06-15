@@ -801,7 +801,11 @@ exports.commands = (0, commands_1.commandList)({
             var x = args.x ? (args.x * 8) : sender.player.x;
             var y = args.y ? (args.y * 8) : sender.player.y;
             var team = (_b = args.team) !== null && _b !== void 0 ? _b : sender.team();
-            var unit = args.type.spawn(team, x, y);
+            var unit = args.type.create(team);
+            unit.set(x, y);
+            if (args.effects)
+                (0, utils_1.applyEffectMode)(args.effects, unit, 1e12);
+            unit.add();
             data.push(unit);
             if (!config_1.Gamemode.sandbox())
                 (0, utils_1.logAction)("spawned unit ".concat(args.type.name, " at ").concat(Math.round(x / 8), ", ").concat(Math.round(y / 8)), sender);
