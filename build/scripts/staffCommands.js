@@ -791,7 +791,7 @@ exports.commands = (0, commands_1.commandList)({
         }
     },
     spawn: {
-        args: ["type:unittype", "x:number?", "y:number?", "team:team?"],
+        args: ["type:unittype", "x:number?", "y:number?", "team:team?", "effects:string?"],
         description: "Spawns a unit of specified type at your position. [scarlet]Usage will be logged.[]",
         perm: commands_1.Perm.admin,
         data: [],
@@ -1153,81 +1153,21 @@ exports.commands = (0, commands_1.commandList)({
         description: "Applies effects to a player's unit.",
         perm: commands_1.Perm.admin,
         handler: function (_a) {
-            var e_2, _b;
-            var _c, _d, _e, _f;
+            var _b, _c, _d;
             var args = _a.args, sender = _a.sender, f = _a.f, outputSuccess = _a.outputSuccess;
-            if ((_c = args.player) === null || _c === void 0 ? void 0 : _c.hasPerm("blockTrolling"))
+            if ((_b = args.player) === null || _b === void 0 ? void 0 : _b.hasPerm("blockTrolling"))
                 (0, commands_1.fail)(f(templateObject_69 || (templateObject_69 = __makeTemplateObject(["Player ", " is insufficiently trollable."], ["Player ", " is insufficiently trollable."])), args.player));
             if (args.player && !sender.canModerate(args.player, false))
                 (0, commands_1.fail)("You do not have permission to perform moderation actions on this player.");
-            var target = (_d = args.player) !== null && _d !== void 0 ? _d : sender;
+            var target = (_c = args.player) !== null && _c !== void 0 ? _c : sender;
             var unit = target.unit();
             if (!unit || unit.dead)
                 (0, commands_1.fail)(f(templateObject_70 || (templateObject_70 = __makeTemplateObject(["", "'s unit is dead."], ["", "'s unit is dead."])), target));
-            var ticks = ((_e = args.duration) !== null && _e !== void 0 ? _e : 1e12) / 1000 * 60;
-            if (args.mode === "clear") {
-                unit.clearStatuses();
-                return;
-            }
-            var modes = {
-                fast: [StatusEffects.fast],
-                fast2: [StatusEffects.fast, StatusEffects.overdrive, StatusEffects.overclock],
-                boss: [StatusEffects.boss],
-                health: [StatusEffects.boss, StatusEffects.shielded],
-                slow: [StatusEffects.slow],
-                slow2: [
-                    StatusEffects.slow,
-                    StatusEffects.freezing,
-                    StatusEffects.wet,
-                    StatusEffects.muddy,
-                    StatusEffects.sapped,
-                    StatusEffects.sporeSlowed,
-                    StatusEffects.electrified,
-                    StatusEffects.tarred,
-                ],
-                freeze: [StatusEffects.unmoving],
-                disarm: [StatusEffects.disarmed],
-                invincible: [StatusEffects.invincible],
-                boost: [
-                    StatusEffects.fast,
-                    StatusEffects.overdrive,
-                    StatusEffects.overclock,
-                    StatusEffects.boss,
-                    StatusEffects.shielded,
-                ],
-                damage: [
-                    StatusEffects.burning,
-                    StatusEffects.freezing,
-                    StatusEffects.wet,
-                    StatusEffects.muddy,
-                    StatusEffects.melting,
-                    StatusEffects.sapped,
-                    StatusEffects.tarred,
-                    StatusEffects.shocked,
-                    StatusEffects.blasted,
-                    StatusEffects.corroded,
-                    StatusEffects.sporeSlowed,
-                    StatusEffects.electrified,
-                    StatusEffects.fast,
-                ],
-            };
-            var effects = (_f = (0, utils_1.match)(args.mode, modes, null)) !== null && _f !== void 0 ? _f : (0, commands_1.fail)("Invalid mode. Supported modes: ".concat(Object.keys(modes).join(", ")));
-            try {
-                for (var effects_1 = __values(effects), effects_1_1 = effects_1.next(); !effects_1_1.done; effects_1_1 = effects_1.next()) {
-                    var effect = effects_1_1.value;
-                    unit.apply(effect, ticks);
-                }
-            }
-            catch (e_2_1) { e_2 = { error: e_2_1 }; }
-            finally {
-                try {
-                    if (effects_1_1 && !effects_1_1.done && (_b = effects_1.return)) _b.call(effects_1);
-                }
-                finally { if (e_2) throw e_2.error; }
-            }
-            outputSuccess("Applied effects.");
+            var ticks = ((_d = args.duration) !== null && _d !== void 0 ? _d : 1e12) / 1000 * 60;
+            (0, utils_1.applyEffectMode)(args.mode, target, ticks);
+            outputSuccess("".concat(args.mode === "clear" ? "Cleared" : "Applied", " effects."));
             if (!config_1.Gamemode.sandbox())
-                (0, utils_1.logAction)("applied ".concat(args.mode, " effects"), sender, target);
+                (0, utils_1.logAction)("applied **".concat(args.mode, "** effects to"), sender, target);
         }
     },
     items: {

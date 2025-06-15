@@ -758,3 +758,76 @@ export function fishCommandsRootDirPath():Path {
 	}
 	return fishCommandsRootDirPath;
 }
+
+/** Fails if "mode" is invalid. */
+export function applyEffectMode(mode:string, unit:Unit, ticks:number){
+	const modes = {
+		fast: [StatusEffects.fast],
+		fast2: [StatusEffects.fast, StatusEffects.overdrive, StatusEffects.overclock],
+		boss: [StatusEffects.boss],
+		health: [StatusEffects.boss, StatusEffects.shielded],
+		slow: [StatusEffects.slow],
+		slow2: [
+			StatusEffects.slow,
+			StatusEffects.freezing,
+			StatusEffects.wet,
+			StatusEffects.muddy,
+			StatusEffects.sapped,
+			StatusEffects.sporeSlowed,
+			StatusEffects.electrified,
+			StatusEffects.tarred,
+		],
+		freeze: [StatusEffects.unmoving],
+		disarm: [StatusEffects.disarmed],
+		invincible: [StatusEffects.invincible],
+		boost: [
+			StatusEffects.fast,
+			StatusEffects.overdrive,
+			StatusEffects.overclock,
+			StatusEffects.boss,
+			StatusEffects.shielded,
+		],
+		damage: [
+			StatusEffects.burning,
+			StatusEffects.freezing,
+			StatusEffects.wet,
+			StatusEffects.muddy,
+			StatusEffects.melting,
+			StatusEffects.sapped,
+			StatusEffects.tarred,
+			StatusEffects.shocked,
+			StatusEffects.blasted,
+			StatusEffects.corroded,
+			StatusEffects.sporeSlowed,
+			StatusEffects.electrified,
+			StatusEffects.fast,
+		],
+		clear(unit){
+			unit.clearStatuses();
+			unit.maxHealth = unit.type.maxHealth;
+		},
+		paper(unit){
+			unit.health = 1;
+			unit.maxHealth = 1;
+			unit.apply(StatusEffects.disarmed, Number.MAX_VALUE / 2);
+		},
+		heal(unit){
+			unit.health = unit.type.maxHealth;
+		},
+		overheal(unit){
+			unit.maxHealth = unit.health = 1e15;
+		},
+		shield(unit){
+			unit.shield = 1e15;
+		}
+	} satisfies Record<string, StatusEffect[] | ((u:Unit) => void)>;
+	const effects = match(mode, modes, null) ?? fail(`Invalid mode. Supported modes: ${Object.keys(modes).join(", ")}`);
+	if(typeof effects === "function"){
+		effects(unit);
+	} else {
+		for(const effect of effects){
+			unit.apply(effect, ticks);
+		}
+	}
+}
+

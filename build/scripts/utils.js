@@ -82,6 +82,7 @@ exports.getIPRange = getIPRange;
 exports.getHash = getHash;
 exports.match = match;
 exports.fishCommandsRootDirPath = fishCommandsRootDirPath;
+exports.applyEffectMode = applyEffectMode;
 var api = require("./api");
 var commands_1 = require("./commands");
 var config_1 = require("./config");
@@ -910,4 +911,88 @@ function fishCommandsRootDirPath() {
         fishCommandsRootDirPath = fishCommandsRootDirPath.toRealPath().getParent();
     }
     return fishCommandsRootDirPath;
+}
+/** Fails if "mode" is invalid. */
+function applyEffectMode(mode, unit, ticks) {
+    var e_7, _a;
+    var _b;
+    var modes = {
+        fast: [StatusEffects.fast],
+        fast2: [StatusEffects.fast, StatusEffects.overdrive, StatusEffects.overclock],
+        boss: [StatusEffects.boss],
+        health: [StatusEffects.boss, StatusEffects.shielded],
+        slow: [StatusEffects.slow],
+        slow2: [
+            StatusEffects.slow,
+            StatusEffects.freezing,
+            StatusEffects.wet,
+            StatusEffects.muddy,
+            StatusEffects.sapped,
+            StatusEffects.sporeSlowed,
+            StatusEffects.electrified,
+            StatusEffects.tarred,
+        ],
+        freeze: [StatusEffects.unmoving],
+        disarm: [StatusEffects.disarmed],
+        invincible: [StatusEffects.invincible],
+        boost: [
+            StatusEffects.fast,
+            StatusEffects.overdrive,
+            StatusEffects.overclock,
+            StatusEffects.boss,
+            StatusEffects.shielded,
+        ],
+        damage: [
+            StatusEffects.burning,
+            StatusEffects.freezing,
+            StatusEffects.wet,
+            StatusEffects.muddy,
+            StatusEffects.melting,
+            StatusEffects.sapped,
+            StatusEffects.tarred,
+            StatusEffects.shocked,
+            StatusEffects.blasted,
+            StatusEffects.corroded,
+            StatusEffects.sporeSlowed,
+            StatusEffects.electrified,
+            StatusEffects.fast,
+        ],
+        clear: function (unit) {
+            unit.clearStatuses();
+            unit.maxHealth = unit.type.maxHealth;
+        },
+        paper: function (unit) {
+            unit.health = 1;
+            unit.maxHealth = 1;
+            unit.apply(StatusEffects.disarmed, Number.MAX_VALUE / 2);
+        },
+        heal: function (unit) {
+            unit.health = unit.type.maxHealth;
+        },
+        overheal: function (unit) {
+            unit.maxHealth = unit.health = 1e15;
+        },
+        shield: function (unit) {
+            unit.shield = 1e15;
+        }
+    };
+    var effects = (_b = match(mode, modes, null)) !== null && _b !== void 0 ? _b : (0, commands_1.fail)("Invalid mode. Supported modes: ".concat(Object.keys(modes).join(", ")));
+    if (typeof effects === "function") {
+        effects(unit);
+    }
+    else {
+        try {
+            for (var effects_1 = __values(effects), effects_1_1 = effects_1.next(); !effects_1_1.done; effects_1_1 = effects_1.next()) {
+                var effect = effects_1_1.value;
+                unit.apply(effect, ticks);
+            }
+        }
+        catch (e_7_1) { e_7 = { error: e_7_1 }; }
+        finally {
+            try {
+                if (effects_1_1 && !effects_1_1.done && (_a = effects_1.return)) _a.call(effects_1);
+            }
+            finally { if (e_7) throw e_7.error; }
+        }
+    }
 }
