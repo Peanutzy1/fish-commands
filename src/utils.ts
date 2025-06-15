@@ -804,7 +804,7 @@ export function applyEffectMode(mode:string, unit:Unit, ticks:number){
 		],
 		clear(unit){
 			unit.clearStatuses();
-			unit.maxHealth = unit.type.maxHealth;
+			unit.maxHealth = unit.type.health;
 		},
 		paper(unit){
 			unit.health = 1;
@@ -812,7 +812,7 @@ export function applyEffectMode(mode:string, unit:Unit, ticks:number){
 			unit.apply(StatusEffects.disarmed, Number.MAX_VALUE / 2);
 		},
 		heal(unit){
-			unit.health = unit.type.maxHealth;
+			unit.health = unit.maxHealth;
 		},
 		overheal(unit){
 			unit.maxHealth = unit.health = 1e15;
