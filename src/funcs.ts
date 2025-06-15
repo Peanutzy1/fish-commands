@@ -306,6 +306,11 @@ export function invalidtoNull(input:number):number | null {
 	if(isNaN(input) || !isFinite(input)) return null;
 	return input;
 }
+/** Prevents improperly formed color tags from breaking when combined with other strings. */
+export function cleanColors(input:string){
+	if(input.endsWith("[") && !input.endsWith("[[")) return input + "[";
+	else return input;
+}
 
 export function computeStatistics(data:number[]){
 	if(data.length == 0) data = [NaN]; //return NaN for all properties

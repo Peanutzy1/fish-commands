@@ -612,6 +612,9 @@ var FishPlayer = /** @class */ (function () {
                 this.name = replacedName = "[brown]script kiddie";
             }
         }
+        else if (this.name.endsWith("[") && !this.name.endsWith("[[")) {
+            replacedName = this.name + "[";
+        }
         else
             replacedName = this.name;
         this.player.name = this.prefixedName = prefix + replacedName;
@@ -722,7 +725,7 @@ var FishPlayer = /** @class */ (function () {
             this.kick("[scarlet]\"".concat(this.name, "[scarlet]\" is not an allowed name because it contains a banned word.\n\nIf you are unable to change it, please download Mindustry from Steam or itch.io."), 1);
         }
         else if (Strings.stripColors(this.name).trim().length == 0) {
-            this.kick("[scarlet]\"".concat((0, funcs_2.escapeStringColorsClient)(this.name), "[scarlet]\" is not an allowed name because it is blank. Please change it."), 1);
+            this.kick("[scarlet]\"".concat((0, funcs_2.escapeStringColorsClient)(this.name), "[scarlet]\" is not an allowed name because it is empty. Please change it."), 1);
         }
         else {
             return true;

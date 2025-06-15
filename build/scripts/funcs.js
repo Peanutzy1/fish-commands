@@ -42,6 +42,7 @@ exports.random = random;
 exports.getIPAddress = getIPAddress;
 exports.lazy = lazy;
 exports.invalidtoNull = invalidtoNull;
+exports.cleanColors = cleanColors;
 exports.computeStatistics = computeStatistics;
 var storedValues = {};
 /**
@@ -360,6 +361,13 @@ function invalidtoNull(input) {
     if (isNaN(input) || !isFinite(input))
         return null;
     return input;
+}
+/** Prevents improperly formed color tags from breaking when combined with other strings. */
+function cleanColors(input) {
+    if (input.endsWith("[") && !input.endsWith("[["))
+        return input + "[";
+    else
+        return input;
 }
 function computeStatistics(data) {
     if (data.length == 0)
