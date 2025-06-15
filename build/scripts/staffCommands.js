@@ -756,6 +756,11 @@ exports.commands = (0, commands_1.commandList)({
             var sender = _a.sender, _b = _a.args, target = _b.target, _c = _b.newcontroller, newcontroller = _c === void 0 ? sender : _c, outputSuccess = _a.outputSuccess, f = _a.f;
             var unit = target.unit();
             target.forceRespawn();
+            if (!sender.hasPerm("changeTeamExternal")) {
+                if (!sender.hasPerm("changeTeam"))
+                    (0, commands_1.fail)("You do not have permission to change teams.");
+                newcontroller.setTeam(unit.team());
+            }
             newcontroller.unit(unit);
             if (newcontroller == sender) {
                 outputSuccess(f(templateObject_44 || (templateObject_44 = __makeTemplateObject(["Commandeered the unit of player ", "."], ["Commandeered the unit of player ", "."])), target));

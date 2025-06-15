@@ -589,6 +589,10 @@ export const commands = commandList({
 		handler({sender, args:{target, newcontroller = sender}, outputSuccess, f}){
 			const unit = target.unit();
 			target.forceRespawn();
+			if(!sender.hasPerm("changeTeamExternal")){
+				if(!sender.hasPerm("changeTeam")) fail(`You do not have permission to change teams.`);
+				newcontroller.setTeam(unit.team());
+			}
 			newcontroller.unit(unit);
 			if(newcontroller == sender){
 				outputSuccess(f`Commandeered the unit of player ${target}.`);
