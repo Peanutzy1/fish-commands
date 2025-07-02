@@ -155,6 +155,7 @@ export const mapRepoURLs:Record<GamemodeName, string> = {
 	sandbox: "https://api.github.com/repos/Fish-Community/fish-maps/contents/sandbox",
 	hardcore: "https://api.github.com/repos/Fish-Community/fish-maps/contents/hardcore",
 	testsrv: "https://api.github.com/repos/Fish-Community/fish-maps/contents/testsrv",
+	minigame: "https://api.github.com/repos/Fish-Community/fish-maps/contents/minigame",
 };
 
 
@@ -210,12 +211,13 @@ export type GamemodeName = keyof typeof Gamemode extends infer K extends keyof t
 export const Gamemode = {
 	attack: () => Gamemode.name() == "attack",
 	survival: () => Gamemode.name() == "survival",
-	pvp: () => Gamemode.name() == "pvp" || Gamemode.name() == "hexed",
+	pvp: () => Gamemode.name() == "pvp" || Gamemode.name() == "hexed" || Gamemode.name() == "minigame",
 	sandbox: () => Gamemode.name() == "sandbox",
 	hexed: () => Gamemode.name() == "hexed",
 	hardcore: () => Gamemode.name() == "hardcore",
 	testsrv: () => Gamemode.name() == "testsrv",
-	name: () => Core.settings.get("mode", Vars.state.rules.mode().name()) as "attack" | "survival" | "pvp" | "sandbox" | "hexed" | "hardcore" | "testsrv",
+	minigame: () => Gamemode.name() == "minigame",
+	name: () => Core.settings.get("mode", Vars.state.rules.mode().name()) as "attack" | "survival" | "pvp" | "sandbox" | "hexed" | "hardcore" | "testsrv" | "minigame",
 };
 //#endregion
 //#region text content
