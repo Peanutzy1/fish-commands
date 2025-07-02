@@ -197,11 +197,19 @@ exports.commands = (0, commands_1.consoleCommandList)({
         description: "Unblacklists an ip from the DOS blacklist.",
         handler: function (_a) {
             var args = _a.args, output = _a.output, admins = _a.admins;
-            var blacklist = admins.dosBlacklist;
-            if (blacklist.remove(args.ip))
-                output("Removed ".concat(args.ip, " from the DOS blacklist."));
-            else
-                (0, commands_1.fail)("IP address ".concat(args.ip, " is not DOS blacklisted."));
+            if (args.ip === '*') {
+                var size = admins.dosBlacklist.size;
+                if (size == 0)
+                    (0, commands_1.fail)('DOS blacklist is already empty.');
+                admins.dosBlacklist.clear();
+                output("Cleared ".concat(size, " IPs from the DOS blacklist."));
+            }
+            else {
+                if (admins.dosBlacklist.remove(args.ip))
+                    output("Removed ".concat(args.ip, " from the DOS blacklist."));
+                else
+                    (0, commands_1.fail)("IP address ".concat(args.ip, " is not DOS blacklisted."));
+            }
         }
     },
     blacklist: {

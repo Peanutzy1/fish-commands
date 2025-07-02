@@ -449,6 +449,7 @@ class ObjectSet<T> {
 	toSeq():Seq<T>;
 	get(key:T):T;
 	first():T;
+	clear():void;
 }
 class ObjectMap<K, V> {
 	put(key:K, value:V):void;

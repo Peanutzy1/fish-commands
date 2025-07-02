@@ -124,9 +124,15 @@ export const commands = consoleCommandList({
 		args: ["ip:string"],
 		description: "Unblacklists an ip from the DOS blacklist.",
 		handler({args, output, admins}){
-			const blacklist = admins.dosBlacklist as ObjectSet<string>;
-			if(blacklist.remove(args.ip)) output(`Removed ${args.ip} from the DOS blacklist.`);
-			else fail(`IP address ${args.ip} is not DOS blacklisted.`);
+			if(args.ip === '*'){
+				const size = admins.dosBlacklist.size;
+				if(size == 0) fail('DOS blacklist is already empty.');
+				admins.dosBlacklist.clear();
+				output(`Cleared ${size} IPs from the DOS blacklist.`)
+			} else {
+				if(admins.dosBlacklist.remove(args.ip)) output(`Removed ${args.ip} from the DOS blacklist.`);
+				else fail(`IP address ${args.ip} is not DOS blacklisted.`);
+			}
 		}
 	},
 	blacklist: {
