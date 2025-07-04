@@ -54,6 +54,7 @@ export function formatModeName(name:GamemodeName){
 		"sandbox": "Sandbox",
 		"hardcore": "Hardcore",
 		"testsrv": "Testing Server",
+		"minigame": "Minigames",
 	}[name];
 }
 

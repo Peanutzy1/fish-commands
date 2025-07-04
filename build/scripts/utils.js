@@ -129,6 +129,7 @@ function formatModeName(name) {
         "sandbox": "Sandbox",
         "hardcore": "Hardcore",
         "testsrv": "Testing Server",
+        "minigame": "Minigames",
     }[name];
 }
 function formatTimestamp(time) {
