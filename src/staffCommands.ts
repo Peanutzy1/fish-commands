@@ -645,7 +645,7 @@ export const commands = commandList({
 	},
 
 	spawn: {
-		args: ["type:unittype", "x:number?", "y:number?", "team:team?", "effects:string?"],
+		args: ["type:unittype", "x:number?", "y:number?", "count:number?", "team:team?", "effects:string?", "stack:boolean?"],
 		description: "Spawns a unit of specified type at your position. [scarlet]Usage will be logged.[]",
 		perm: Perm.admin,
 		data: [],
@@ -653,12 +653,17 @@ export const commands = commandList({
 			const x = args.x ? (args.x * 8) : sender.player!.x;
 			const y = args.y ? (args.y * 8) : sender.player!.y;
 			const team = args.team ?? sender.team();
-			const unit = args.type.create(team);
-			unit.set(x, y);
-			if(args.effects) applyEffectMode(args.effects, unit, 1e12);
-			unit.add();
-			data.push(unit);
-			if(!Gamemode.sandbox()) logAction(`spawned unit ${args.type.name} at ${Math.round(x / 8)}, ${Math.round(y / 8)}`, sender);
+			const count = Math.min(args.count ?? 1, 1000);
+			for(let i = 0; i < count; i ++){
+				const unit = args.type.create(team);
+				const xOffset = args.stack ? 0 : 0.01 * i;
+				const yOffset = args.stack ? 0 : 0.5 * (i % 10);
+				unit.set(x + xOffset, y + yOffset);
+				if(args.effects) applyEffectMode(args.effects, unit, 1e12);
+				unit.add();
+				data.push(unit);
+			}
+			if(!Gamemode.sandbox() && args.effects !== 'paper') logAction(`spawned unit ${args.type.name}${count == 1 ? '' : ` x${count}`} at ${Math.round(x / 8)}, ${Math.round(y / 8)}` + (args.effects ? `with ${args.effects} effects` : ''), sender);
 			outputSuccess(f`Spawned unit ${args.type} at (${Math.round(x / 8)}, ${Math.round(y / 8)})`);
 		}
 	},

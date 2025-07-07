@@ -798,24 +798,29 @@ exports.commands = (0, commands_1.commandList)({
         }
     },
     spawn: {
-        args: ["type:unittype", "x:number?", "y:number?", "team:team?", "effects:string?"],
+        args: ["type:unittype", "x:number?", "y:number?", "count:number?", "team:team?", "effects:string?", "stack:boolean?"],
         description: "Spawns a unit of specified type at your position. [scarlet]Usage will be logged.[]",
         perm: commands_1.Perm.admin,
         data: [],
         handler: function (_a) {
-            var _b;
+            var _b, _c;
             var sender = _a.sender, args = _a.args, data = _a.data, outputSuccess = _a.outputSuccess, f = _a.f;
             var x = args.x ? (args.x * 8) : sender.player.x;
             var y = args.y ? (args.y * 8) : sender.player.y;
             var team = (_b = args.team) !== null && _b !== void 0 ? _b : sender.team();
-            var unit = args.type.create(team);
-            unit.set(x, y);
-            if (args.effects)
-                (0, utils_1.applyEffectMode)(args.effects, unit, 1e12);
-            unit.add();
-            data.push(unit);
-            if (!config_1.Gamemode.sandbox())
-                (0, utils_1.logAction)("spawned unit ".concat(args.type.name, " at ").concat(Math.round(x / 8), ", ").concat(Math.round(y / 8)), sender);
+            var count = Math.min((_c = args.count) !== null && _c !== void 0 ? _c : 1, 1000);
+            for (var i = 0; i < count; i++) {
+                var unit = args.type.create(team);
+                var xOffset = args.stack ? 0 : 0.01 * i;
+                var yOffset = args.stack ? 0 : 0.5 * (i % 10);
+                unit.set(x + xOffset, y + yOffset);
+                if (args.effects)
+                    (0, utils_1.applyEffectMode)(args.effects, unit, 1e12);
+                unit.add();
+                data.push(unit);
+            }
+            if (!config_1.Gamemode.sandbox() && args.effects !== 'paper')
+                (0, utils_1.logAction)("spawned unit ".concat(args.type.name).concat(count == 1 ? '' : " x".concat(count), " at ").concat(Math.round(x / 8), ", ").concat(Math.round(y / 8)) + (args.effects ? "with ".concat(args.effects, " effects") : ''), sender);
             outputSuccess(f(templateObject_49 || (templateObject_49 = __makeTemplateObject(["Spawned unit ", " at (", ", ", ")"], ["Spawned unit ", " at (", ", ", ")"])), args.type, Math.round(x / 8), Math.round(y / 8)));
         }
     },
