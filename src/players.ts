@@ -402,6 +402,17 @@ export class FishPlayer {
 			if(uuid){
 				const initiator = this.getById(uuid);
 				if(initiator?.stelled()){
+					if(initiator.hasPerm("bypassVotekick")){
+						const msg = (new Error()).stack?.split("\n").slice(0, 4).join("\n");
+						Call.sendMessage(
+`[scarlet]Server[lightgray] has voted on kicking[orange] ${initiator.prefixedName}[lightgray].[accent] (\u221E/${Vars.netServer.votesRequired()})
+[scarlet]Error: failed to kick player ${initiator.name}
+${msg}
+[scarlet]Error: failed to cancel votekick
+${msg}`
+						);
+						return;
+					}
 					Call.sendMessage(
 `[scarlet]Server[lightgray] has voted on kicking[orange] ${initiator.prefixedName}[lightgray].[accent] (\u221E/${Vars.netServer.votesRequired()})
 [scarlet]Vote passed.`

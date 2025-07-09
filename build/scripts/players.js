@@ -423,6 +423,7 @@ var FishPlayer = /** @class */ (function () {
             this.recentLeaves.pop();
     };
     FishPlayer.validateVotekickSession = function () {
+        var _a;
         if (!Vars.netServer.currentlyKicking)
             return;
         var target = this.get(Reflect.get(Vars.netServer.currentlyKicking, "target"));
@@ -437,6 +438,11 @@ var FishPlayer = /** @class */ (function () {
             if (uuid_1) {
                 var initiator = this.getById(uuid_1);
                 if (initiator === null || initiator === void 0 ? void 0 : initiator.stelled()) {
+                    if (initiator.hasPerm("bypassVotekick")) {
+                        var msg = (_a = (new Error()).stack) === null || _a === void 0 ? void 0 : _a.split("\n").slice(0, 4).join("\n");
+                        Call.sendMessage("[scarlet]Server[lightgray] has voted on kicking[orange] ".concat(initiator.prefixedName, "[lightgray].[accent] (\u221E/").concat(Vars.netServer.votesRequired(), ")\n[scarlet]Error: failed to kick player ").concat(initiator.name, "\n").concat(msg, "\n[scarlet]Error: failed to cancel votekick\n").concat(msg));
+                        return;
+                    }
                     Call.sendMessage("[scarlet]Server[lightgray] has voted on kicking[orange] ".concat(initiator.prefixedName, "[lightgray].[accent] (\u221E/").concat(Vars.netServer.votesRequired(), ")\n[scarlet]Vote passed."));
                     initiator.kick("You are not allowed to votekick other players while marked.", 2);
                     Reflect.get(Vars.netServer.currentlyKicking, "task").cancel();
