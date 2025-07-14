@@ -80,8 +80,10 @@ function runServer(){
 	console.log("Starting fish-commands Mindustry development server...");
 	const { status } = spawnSync(`which`, ["rlwrap"]);
 	const memory = "1G";
-	execSync(`${status === 0 ? "rlwrap " : ""}java -Xmx${memory} -Xms${memory} -jar "server-release.jar"`, {
-		stdio: "inherit",
-		cwd: path.join(fcRootDirectory, "dev-server")
-	});
+	try {
+		execSync(`${status === 0 ? "rlwrap " : ""}java -Xmx${memory} -Xms${memory} -jar "server-release.jar"`, {
+			stdio: "inherit",
+			cwd: path.join(fcRootDirectory, "dev-server")
+		});
+	} catch {}
 }
