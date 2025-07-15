@@ -17,7 +17,7 @@ export class Metrics {
   @serialize("player-count-data", () => ["version", 0,
     ["array", "u16", ["array", 2520, ["number", "i8"]]]
   ])
-  static weeks: Array<MetricsWeek> = Array.from({length: this.weekNumber() + 1}, () => this.newWeek());
+  static weeks: Array<MetricsWeek> = Array(this.weekNumber() + 1).fill(0).map(() => this.newWeek());
 
   static {
     Timer.schedule(() => Metrics.update(), 15, 60);

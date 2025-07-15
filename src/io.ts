@@ -264,6 +264,7 @@ export function serialize<T extends Serializable>(
 					serializer().writeSettings(access.get(this));
 				} catch(err){
 					Log.err(`Error while saving field ${String(name)} on ${String((this as any as Function)?.name)} using settings key ${settingsKey}`);
+					Log.info(JSON.stringify(access.get(this)));
 					throw err;
 				}
 			});

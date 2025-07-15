@@ -44,6 +44,11 @@ String.raw = function(callSite){
 		return substitutions[i - 1] ? substitutions[i - 1] + chunk : chunk;
 	}).join('');
 }
+const Arrayfrom = Array.from;
+Array.from = function(iterable, mapfn){
+	if(mapfn) return Arrayfrom(iterable).map(mapfn);
+	return Arrayfrom(iterable);
+}
 //Fix rhino regex
 if(/ae?a/.test("aeea")){
 	RegExp.prototype.test = function(input){

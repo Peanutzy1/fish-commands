@@ -32,7 +32,6 @@ exports.setToArray = setToArray;
 exports.crash = crash;
 exports.capitalizeText = capitalizeText;
 exports.escapeTextDiscord = escapeTextDiscord;
-exports.repeatAlternate = repeatAlternate;
 exports.escapeStringColorsClient = escapeStringColorsClient;
 exports.escapeStringColorsServer = escapeStringColorsServer;
 exports.parseError = parseError;
@@ -269,9 +268,6 @@ function capitalizeText(text) {
 var pattern = Pattern.compile("([*\\_~`|:])");
 function escapeTextDiscord(text) {
     return pattern.matcher(text).replaceAll("\\\\$1\u200B");
-}
-function repeatAlternate(a, b, numARepeats) {
-    return Array.from({ length: numARepeats * 2 - 1 }, function (_, i) { return i % 2 ? b : a; }).join("");
 }
 /** Prevents Mindustry from displaying color tags in a string by escaping them. Example: turns [scarlet]red to [[scarlet]red. */
 function escapeStringColorsClient(str) {

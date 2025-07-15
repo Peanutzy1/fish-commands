@@ -345,6 +345,7 @@ function serialize(settingsKey, schema, oldSchema) {
                 }
                 catch (err) {
                     Log.err("Error while saving field ".concat(String(name), " on ").concat(String(_this === null || _this === void 0 ? void 0 : _this.name), " using settings key ").concat(settingsKey));
+                    Log.info(JSON.stringify(access.get(_this)));
                     throw err;
                 }
             });
