@@ -66,5 +66,5 @@ if(12.34.toFixed(1) !== '12.3'){
 	}
 }
 
-this.Promise = require('promise').Promise;
+this.Promise = require('/promise').Promise;
 require("index");
