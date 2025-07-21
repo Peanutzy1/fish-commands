@@ -11,7 +11,7 @@ import { uuidPattern } from "./globals";
 import { Menu } from "./menus";
 import { Rank, RankName, RoleFlag, RoleFlagName } from "./ranks";
 import type { FishCommandArgType, FishPlayerData, PlayerHistoryEntry } from "./types";
-import { cleanText, formatTime, formatTimeRelative, isImpersonator, logAction, logHTrip, matchFilter } from "./utils";
+import { cleanText, formatTime, formatTimeRelative, isImpersonator, logAction, logHTrip, match, matchFilter } from "./utils";
 import { parseError } from './funcs';
 import { escapeStringColorsClient, escapeStringColorsServer } from './funcs';
 import { crash } from './funcs';
@@ -22,7 +22,7 @@ import { setToArray } from './funcs';
 export class FishPlayer {
 	static cachedPlayers:Record<string, FishPlayer> = {};
 	static readonly maxHistoryLength = 5;
-	static readonly saveVersion = 9;
+	static readonly saveVersion = 10;
 	static readonly chunkSize = 50000;
 
 	//Static transients
@@ -92,6 +92,7 @@ export class FishPlayer {
 	lastRatelimitedMessage = -1;
 	changedTeam = false;
 	ipDetectedVpn = false;
+	lastPollSent = -1;
 	
 	//Stored data
 	uuid: string;
@@ -121,11 +122,21 @@ export class FishPlayer {
 		gamesWon: number;
 	};
 	showRankPrefix:boolean;
+	/**
+	 * 0: unknown
+	 * 1: refused / cancelled poll
+	 * 2: I won't or can't update to v8
+	 * 3: I will update to v8 if Fish updates to v8
+	 * 4: I have already updated to v8
+	 */
+	pollResponse: 0 | 1 | 2 | 3 | 4;
 
+	//TODO: fix this absolute mess of a constructor! I don't remember why this exists
 	constructor({
 		uuid, name, muted = false, autoflagged = false, unmarkTime: unmarked = -1,
 		highlight = null, history = [], rainbow = null, rank = "player", flags = [], usid,
 		chatStrictness = "chat", lastJoined, firstJoined, stats, showRankPrefix = true,
+		pollResponse = 0,
 	}:Partial<FishPlayerData>, player:mindustryPlayer | null){
 		this.uuid = uuid ?? player?.uuid() ?? crash(`Attempted to create FishPlayer with no UUID`);
 		this.name = name ?? player?.name ?? "Unnamed player [ERROR]";
@@ -153,6 +164,7 @@ export class FishPlayer {
 			gamesWon: 0,
 		};
 		this.showRankPrefix = showRankPrefix;
+		this.pollResponse = pollResponse;
 	}
 
 	//#region getplayer
@@ -298,6 +310,7 @@ export class FishPlayer {
 	/** Must be run on PlayerConnectEvent. */
 	static onPlayerConnect(player:mindustryPlayer){
 		let fishPlayer = this.cachedPlayers[player.uuid()] ??= this.createFromPlayer(player);
+		const previousJoin = fishPlayer.lastJoined;
 		fishPlayer.updateSavedInfoFromPlayer(player);
 		if(fishPlayer.validate()){
 			if(!fishPlayer.hasPerm("bypassNameCheck")){
@@ -326,6 +339,12 @@ export class FishPlayer {
 				["[green]I understand and agree to these terms"],
 				fishPlayer
 			);
+			//Only show this to active players
+			//At least 10 joins, and has joined at least once in the past month
+			//Also, don't spam it if the player doesn't respond (wait 5 hours before asking again)
+			if(fishPlayer.joinsAtLeast(10) && Date.now() - previousJoin < 2592000_000 && fishPlayer.pollResponse === 0 && Date.now() - fishPlayer.lastPollSent > 5 * 3600_000){
+				fishPlayer.runv8poll();
+			}
 
 		}
 	}
@@ -758,6 +777,72 @@ We apologize for the inconvenience.`
 			Timer.schedule(() => this.sendMessage(message), 3);
 		}
 	}
+	runv8poll(){
+		this.lastPollSent = Date.now();
+		Menu.buttons<'close' | 2 | 3 | 4 | 'help', "ignore">(
+			this,
+			"V8 Migration Poll",
+`[scarlet]IMPORTANT![]
+
+The next version of Mindustry, v8, is now available in early access.
+v8 has new blocks, features, turret ammo, balance improvements, and better performance.
+
+The >|||>Fish servers are planning to update soon to the latest beta version.
+Will you be able to update?`,
+			[
+				[{text: "I don't know [accent](More information)[]", data: 'help'}],
+				[{text: "[#FFCCCC]I can't or won't update to v8", data: 2}],
+				[{text: "[#CCFFCC]I will update once Fish updates", data: 3}],
+				[{text: "[#CCCCFF]I have already updated to v8", data: 4}],
+				[{text: "[#AAAAAA]Close", data: 'close'}],
+			],
+			{ onCancel: 'ignore' }
+		).then(response => {
+			if(response == 'close'){
+				this.pollResponse = 1;
+				return;
+			}
+			if(response != 'help'){
+				this.pollResponse = response;
+				this.sendMessage(`Your response has been recorded. To change it, run [accent]/v8poll[]`);
+				return;
+			}
+			Menu.menu(
+				"V8 Migration Information",
+				`Where did you download Mindustry?`,
+				this.con.mobile ? [
+					"Google Play Store",
+					"Apple App Store",
+					"itch.io",
+					"F-Droid (APK)",
+				] as const : [
+					"Steam",
+					"itch.io",
+					"GitHub",
+					"Foo's Client",
+					"MindustryLauncher",
+				] as const,
+				this,
+				{ onCancel: 'reject', includeCancel: true }
+			).then(response => {
+				const message = match(response, {
+					"Google Play Store": `It is possible to update by selecting the "Join the beta" option in the app's page, and then updating the game. It is also possible to switch back to v7 by leaving the beta program.`,
+					"Foo's Client": `It is easy to switch between v7 and v8 by simply clicking the button on the title screen.`,
+					"GitHub": `It is easy to update by downloading the Mindustry.jar file from the latest "pre-release" release. It is also easy to switch back to v7, by running your current Mindustry.jar file.`,
+					"itch.io": `It is easy to update by downloading the file marked "unstable". It is also easy to switch back to v7, by opening your existing installation of the game.`,
+					"F-Droid (APK)": `It is easy to update by downloading the latest release from F-Droid.`,
+					"Apple App Store": `It is possible to update to v8 by installing the TestFlight app and then using this link https://testflight.apple.com/join/79Azm1hZ to join the beta.`,
+					"Steam": `It is possible to update to v8 by right-clicking Mindustry in your library, selecting Properties -> Betas and selecting v8 beta. You can also switch back to v7 using this method.`,
+					"MindustryLauncher": `It is easy to update to v8 by specifying the version as "v149" or "foo-v8-latest" with the --version flag.`
+				});
+				this.sendMessage(`[coral]V8 Migration[] for [accent]${response}[]: ${message}\nRun [accent]/v8poll[] to record your response.`);
+			}).catch(err => {
+				if(err === "cancel"){
+					this.player?.sendMessage(`To see the v8 migration survey again, run [accent]/v8poll[].`);
+				} else throw err;
+			});
+		});
+	}
 	checkAutoRanks(){
 		if(this.stelled()) return;
 		for(const rankToAssign of Rank.autoRanks){
@@ -873,6 +958,37 @@ We apologize for the inconvenience.`
 					},
 					showRankPrefix: fishPlayerData.readBool(),
 				}, player);
+			case 10:
+				return new this({
+					uuid: fishPlayerData.readString(2) ?? crash("Failed to deserialize FishPlayer: UUID was null."),
+					name: fishPlayerData.readString(2) ?? "Unnamed player [ERROR]",
+					muted: fishPlayerData.readBool(),
+					autoflagged: fishPlayerData.readBool(),
+					unmarkTime: fishPlayerData.readNumber(13),
+					highlight: fishPlayerData.readString(2),
+					history: fishPlayerData.readArray(str => ({
+						action: str.readString(2) ?? "null",
+						by: str.readString(2) ?? "null",
+						time: str.readNumber(15)
+					})),
+					rainbow: (n => n == 0 ? null : {speed: n})(fishPlayerData.readNumber(2)),
+					rank: fishPlayerData.readString(2) ?? "",
+					flags: fishPlayerData.readArray(str => str.readString(2), 2).filter((s):s is string => s != null),
+					usid: fishPlayerData.readString(2),
+					chatStrictness: fishPlayerData.readEnumString(["chat", "strict"]),
+					lastJoined: fishPlayerData.readNumber(15),
+					firstJoined: fishPlayerData.readNumber(15),
+					stats: {
+						blocksBroken: fishPlayerData.readNumber(10),
+						blocksPlaced: fishPlayerData.readNumber(10),
+						timeInGame: fishPlayerData.readNumber(15),
+						chatMessagesSent: fishPlayerData.readNumber(7),
+						gamesFinished: fishPlayerData.readNumber(5),
+						gamesWon: fishPlayerData.readNumber(5),
+					},
+					showRankPrefix: fishPlayerData.readBool(),
+					pollResponse: fishPlayerData.readNumber(1) as 0 | 1 | 2 | 3,
+				}, player);
 			default: crash(`Unknown save version ${version}`);
 		}
 	}
@@ -903,6 +1019,7 @@ We apologize for the inconvenience.`
 		out.writeNumber(this.stats.gamesFinished, 5, true);
 		out.writeNumber(this.stats.gamesWon, 5, true);
 		out.writeBool(this.showRankPrefix);
+		out.writeNumber(this.pollResponse, 1);
 	}
 	/** Saves cached FishPlayers to JSON in Core.settings. */
 	static saveAll(){

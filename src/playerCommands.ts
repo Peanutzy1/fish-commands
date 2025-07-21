@@ -1012,4 +1012,33 @@ Win rate: ${target.stats.gamesWon / target.stats.gamesFinished}`
 			outputSuccess(`Changed mode to ${args.mode}`);
 		}
 	},
+	v8poll: {
+		args: [],
+		perm: Perm.none,
+		description: `Displays the v8 poll.`,
+		handler({sender}){
+			sender.runv8poll();
+		}
+	},
+	v8pollresults: {
+		args: [],
+		perm: Perm.mod,
+		description: `Displays v8 poll results.`,
+		requirements: [Req.cooldownGlobal(10_000)],
+		handler({output}){
+			const totals = [0, 0, 0, 0, 0];
+			for(const player of Object.values(FishPlayer.cachedPlayers)){
+				if(player.info().timesJoined >= 10){
+					totals[player.pollResponse] ++;
+				}
+			}
+			output(`\
+Poll not viewed: ${totals[0]}
+Poll canceled: ${totals[1]}
+I won't or can't update to v8: ${totals[2]}
+I will update to v8 if Fish updates to v8: ${totals[3]}
+I have already updated to v8: ${totals[4]}`
+			);
+		}
+	},
 });

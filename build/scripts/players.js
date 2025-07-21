@@ -61,10 +61,11 @@ var funcs_3 = require("./funcs");
 var funcs_4 = require("./funcs");
 var funcs_5 = require("./funcs");
 var FishPlayer = /** @class */ (function () {
+    //TODO: fix this absolute mess of a constructor! I don't remember why this exists
     function FishPlayer(_a, player) {
         var _b;
-        var uuid = _a.uuid, name = _a.name, _c = _a.muted, muted = _c === void 0 ? false : _c, _d = _a.autoflagged, autoflagged = _d === void 0 ? false : _d, _e = _a.unmarkTime, unmarked = _e === void 0 ? -1 : _e, _f = _a.highlight, highlight = _f === void 0 ? null : _f, _g = _a.history, history = _g === void 0 ? [] : _g, _h = _a.rainbow, rainbow = _h === void 0 ? null : _h, _j = _a.rank, rank = _j === void 0 ? "player" : _j, _k = _a.flags, flags = _k === void 0 ? [] : _k, usid = _a.usid, _l = _a.chatStrictness, chatStrictness = _l === void 0 ? "chat" : _l, lastJoined = _a.lastJoined, firstJoined = _a.firstJoined, stats = _a.stats, _m = _a.showRankPrefix, showRankPrefix = _m === void 0 ? true : _m;
-        var _o, _p, _q, _r;
+        var uuid = _a.uuid, name = _a.name, _c = _a.muted, muted = _c === void 0 ? false : _c, _d = _a.autoflagged, autoflagged = _d === void 0 ? false : _d, _e = _a.unmarkTime, unmarked = _e === void 0 ? -1 : _e, _f = _a.highlight, highlight = _f === void 0 ? null : _f, _g = _a.history, history = _g === void 0 ? [] : _g, _h = _a.rainbow, rainbow = _h === void 0 ? null : _h, _j = _a.rank, rank = _j === void 0 ? "player" : _j, _k = _a.flags, flags = _k === void 0 ? [] : _k, usid = _a.usid, _l = _a.chatStrictness, chatStrictness = _l === void 0 ? "chat" : _l, lastJoined = _a.lastJoined, firstJoined = _a.firstJoined, stats = _a.stats, _m = _a.showRankPrefix, showRankPrefix = _m === void 0 ? true : _m, _o = _a.pollResponse, pollResponse = _o === void 0 ? 0 : _o;
+        var _p, _q, _r, _s;
         //Transients
         this.player = null;
         this.pet = "";
@@ -96,21 +97,22 @@ var FishPlayer = /** @class */ (function () {
         this.lastRatelimitedMessage = -1;
         this.changedTeam = false;
         this.ipDetectedVpn = false;
+        this.lastPollSent = -1;
         this.chatStrictness = "chat";
-        this.uuid = (_o = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _o !== void 0 ? _o : (0, funcs_3.crash)("Attempted to create FishPlayer with no UUID");
-        this.name = (_p = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _p !== void 0 ? _p : "Unnamed player [ERROR]";
+        this.uuid = (_p = uuid !== null && uuid !== void 0 ? uuid : player === null || player === void 0 ? void 0 : player.uuid()) !== null && _p !== void 0 ? _p : (0, funcs_3.crash)("Attempted to create FishPlayer with no UUID");
+        this.name = (_q = name !== null && name !== void 0 ? name : player === null || player === void 0 ? void 0 : player.name) !== null && _q !== void 0 ? _q : "Unnamed player [ERROR]";
         this.prefixedName = this.name;
         this.muted = muted;
         this.unmarkTime = unmarked;
         this.lastJoined = lastJoined !== null && lastJoined !== void 0 ? lastJoined : -1;
-        this.firstJoined = (_q = firstJoined !== null && firstJoined !== void 0 ? firstJoined : lastJoined) !== null && _q !== void 0 ? _q : Date.now();
+        this.firstJoined = (_r = firstJoined !== null && firstJoined !== void 0 ? firstJoined : lastJoined) !== null && _r !== void 0 ? _r : Date.now();
         this.autoflagged = autoflagged;
         this.highlight = highlight;
         this.history = history;
         this.player = player;
         this.rainbow = rainbow;
         this.cleanedName = (0, funcs_2.escapeStringColorsServer)(Strings.stripColors(this.name));
-        this.rank = (_r = ranks_1.Rank.getByName(rank)) !== null && _r !== void 0 ? _r : ranks_1.Rank.player;
+        this.rank = (_s = ranks_1.Rank.getByName(rank)) !== null && _s !== void 0 ? _s : ranks_1.Rank.player;
         this.flags = new Set(flags.map(ranks_1.RoleFlag.getByName).filter(function (f) { return f != null; }));
         this.usidMapping = typeof usid === "string" ? (_b = {}, _b[config_1.localIPAddress] = usid, _b) : (usid !== null && usid !== void 0 ? usid : {});
         this.chatStrictness = chatStrictness;
@@ -123,6 +125,7 @@ var FishPlayer = /** @class */ (function () {
             gamesWon: 0,
         };
         this.showRankPrefix = showRankPrefix;
+        this.pollResponse = pollResponse;
     }
     //#region getplayer
     //Contains methods used to get FishPlayer instances.
@@ -330,6 +333,7 @@ var FishPlayer = /** @class */ (function () {
         var _a;
         var _b, _c;
         var fishPlayer = (_a = (_b = this.cachedPlayers)[_c = player.uuid()]) !== null && _a !== void 0 ? _a : (_b[_c] = this.createFromPlayer(player));
+        var previousJoin = fishPlayer.lastJoined;
         fishPlayer.updateSavedInfoFromPlayer(player);
         if (fishPlayer.validate()) {
             if (!fishPlayer.hasPerm("bypassNameCheck")) {
@@ -355,6 +359,12 @@ var FishPlayer = /** @class */ (function () {
             //I think this is a better spot for this
             if (fishPlayer.firstJoin())
                 menus_1.Menu.menu("Rules for [#0000ff] >|||> FISH [white] servers [white]", config_1.rules.join("\n\n[white]") + "\nYou can view these rules again by running [cyan]/rules[].", ["[green]I understand and agree to these terms"], fishPlayer);
+            //Only show this to active players
+            //At least 10 joins, and has joined at least once in the past month
+            //Also, don't spam it if the player doesn't respond (wait 5 hours before asking again)
+            if (fishPlayer.joinsAtLeast(10) && Date.now() - previousJoin < 2592000000 && fishPlayer.pollResponse === 0 && Date.now() - fishPlayer.lastPollSent > 5 * 3600000) {
+                fishPlayer.runv8poll();
+            }
         }
     };
     /** Must be run on PlayerJoinEvent. */
@@ -812,6 +822,58 @@ var FishPlayer = /** @class */ (function () {
             Timer.schedule(function () { return _this.sendMessage(message_1); }, 3);
         }
     };
+    FishPlayer.prototype.runv8poll = function () {
+        var _this = this;
+        this.lastPollSent = Date.now();
+        menus_1.Menu.buttons(this, "V8 Migration Poll", "[scarlet]IMPORTANT![]\n\nThe next version of Mindustry, v8, is now available in early access.\nv8 has new blocks, features, turret ammo, balance improvements, and better performance.\n\nThe >|||>Fish servers are planning to update soon to the latest beta version.\nWill you be able to update?", [
+            [{ text: "I don't know [accent](More information)[]", data: 'help' }],
+            [{ text: "[#FFCCCC]I can't or won't update to v8", data: 2 }],
+            [{ text: "[#CCFFCC]I will update once Fish updates", data: 3 }],
+            [{ text: "[#CCCCFF]I have already updated to v8", data: 4 }],
+            [{ text: "[#AAAAAA]Close", data: 'close' }],
+        ], { onCancel: 'ignore' }).then(function (response) {
+            if (response == 'close') {
+                _this.pollResponse = 1;
+                return;
+            }
+            if (response != 'help') {
+                _this.pollResponse = response;
+                _this.sendMessage("Your response has been recorded. To change it, run [accent]/v8poll[]");
+                return;
+            }
+            menus_1.Menu.menu("V8 Migration Information", "Where did you download Mindustry?", _this.con.mobile ? [
+                "Google Play Store",
+                "Apple App Store",
+                "itch.io",
+                "F-Droid (APK)",
+            ] : [
+                "Steam",
+                "itch.io",
+                "GitHub",
+                "Foo's Client",
+                "MindustryLauncher",
+            ], _this, { onCancel: 'reject', includeCancel: true }).then(function (response) {
+                var message = (0, utils_1.match)(response, {
+                    "Google Play Store": "It is possible to update by selecting the \"Join the beta\" option in the app's page, and then updating the game. It is also possible to switch back to v7 by leaving the beta program.",
+                    "Foo's Client": "It is easy to switch between v7 and v8 by simply clicking the button on the title screen.",
+                    "GitHub": "It is easy to update by downloading the Mindustry.jar file from the latest \"pre-release\" release. It is also easy to switch back to v7, by running your current Mindustry.jar file.",
+                    "itch.io": "It is easy to update by downloading the file marked \"unstable\". It is also easy to switch back to v7, by opening your existing installation of the game.",
+                    "F-Droid (APK)": "It is easy to update by downloading the latest release from F-Droid.",
+                    "Apple App Store": "It is possible to update to v8 by installing the TestFlight app and then using this link https://testflight.apple.com/join/79Azm1hZ to join the beta.",
+                    "Steam": "It is possible to update to v8 by right-clicking Mindustry in your library, selecting Properties -> Betas and selecting v8 beta. You can also switch back to v7 using this method.",
+                    "MindustryLauncher": "It is easy to update to v8 by specifying the version as \"v149\" or \"foo-v8-latest\" with the --version flag."
+                });
+                _this.sendMessage("[coral]V8 Migration[] for [accent]".concat(response, "[]: ").concat(message, "\nRun [accent]/v8poll[] to record your response."));
+            }).catch(function (err) {
+                var _a;
+                if (err === "cancel") {
+                    (_a = _this.player) === null || _a === void 0 ? void 0 : _a.sendMessage("To see the v8 migration survey again, run [accent]/v8poll[].");
+                }
+                else
+                    throw err;
+            });
+        });
+    };
     FishPlayer.prototype.checkAutoRanks = function () {
         var e_7, _a;
         if (this.stelled())
@@ -845,7 +907,7 @@ var FishPlayer = /** @class */ (function () {
         return new this(JSON.parse(fishPlayerData), player);
     };
     FishPlayer.read = function (version, fishPlayerData, player) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
         switch (version) {
             case 0:
             case 1:
@@ -951,6 +1013,40 @@ var FishPlayer = /** @class */ (function () {
                     },
                     showRankPrefix: fishPlayerData.readBool(),
                 }, player);
+            case 10:
+                return new this({
+                    uuid: (_k = fishPlayerData.readString(2)) !== null && _k !== void 0 ? _k : (0, funcs_3.crash)("Failed to deserialize FishPlayer: UUID was null."),
+                    name: (_l = fishPlayerData.readString(2)) !== null && _l !== void 0 ? _l : "Unnamed player [ERROR]",
+                    muted: fishPlayerData.readBool(),
+                    autoflagged: fishPlayerData.readBool(),
+                    unmarkTime: fishPlayerData.readNumber(13),
+                    highlight: fishPlayerData.readString(2),
+                    history: fishPlayerData.readArray(function (str) {
+                        var _a, _b;
+                        return ({
+                            action: (_a = str.readString(2)) !== null && _a !== void 0 ? _a : "null",
+                            by: (_b = str.readString(2)) !== null && _b !== void 0 ? _b : "null",
+                            time: str.readNumber(15)
+                        });
+                    }),
+                    rainbow: (function (n) { return n == 0 ? null : { speed: n }; })(fishPlayerData.readNumber(2)),
+                    rank: (_m = fishPlayerData.readString(2)) !== null && _m !== void 0 ? _m : "",
+                    flags: fishPlayerData.readArray(function (str) { return str.readString(2); }, 2).filter(function (s) { return s != null; }),
+                    usid: fishPlayerData.readString(2),
+                    chatStrictness: fishPlayerData.readEnumString(["chat", "strict"]),
+                    lastJoined: fishPlayerData.readNumber(15),
+                    firstJoined: fishPlayerData.readNumber(15),
+                    stats: {
+                        blocksBroken: fishPlayerData.readNumber(10),
+                        blocksPlaced: fishPlayerData.readNumber(10),
+                        timeInGame: fishPlayerData.readNumber(15),
+                        chatMessagesSent: fishPlayerData.readNumber(7),
+                        gamesFinished: fishPlayerData.readNumber(5),
+                        gamesWon: fishPlayerData.readNumber(5),
+                    },
+                    showRankPrefix: fishPlayerData.readBool(),
+                    pollResponse: fishPlayerData.readNumber(1),
+                }, player);
             default: (0, funcs_3.crash)("Unknown save version ".concat(version));
         }
     };
@@ -983,6 +1079,7 @@ var FishPlayer = /** @class */ (function () {
         out.writeNumber(this.stats.gamesFinished, 5, true);
         out.writeNumber(this.stats.gamesWon, 5, true);
         out.writeBool(this.showRankPrefix);
+        out.writeNumber(this.pollResponse, 1);
     };
     /** Saves cached FishPlayers to JSON in Core.settings. */
     FishPlayer.saveAll = function () {
@@ -1505,7 +1602,7 @@ var FishPlayer = /** @class */ (function () {
     };
     FishPlayer.cachedPlayers = {};
     FishPlayer.maxHistoryLength = 5;
-    FishPlayer.saveVersion = 9;
+    FishPlayer.saveVersion = 10;
     FishPlayer.chunkSize = 50000;
     //Static transients
     FishPlayer.stats = {

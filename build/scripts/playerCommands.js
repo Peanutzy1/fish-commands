@@ -79,6 +79,17 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
+var __values = (this && this.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
 var api = require("./api");
@@ -1043,6 +1054,40 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             Call.worldDataBegin();
             reloader.end();
             outputSuccess("Changed mode to ".concat(args.mode));
+        }
+    }, v8poll: {
+        args: [],
+        perm: commands_1.Perm.none,
+        description: "Displays the v8 poll.",
+        handler: function (_a) {
+            var sender = _a.sender;
+            sender.runv8poll();
+        }
+    }, v8pollresults: {
+        args: [],
+        perm: commands_1.Perm.mod,
+        description: "Displays v8 poll results.",
+        requirements: [commands_1.Req.cooldownGlobal(10000)],
+        handler: function (_a) {
+            var e_1, _b;
+            var output = _a.output;
+            var totals = [0, 0, 0, 0, 0];
+            try {
+                for (var _c = __values(Object.values(players_1.FishPlayer.cachedPlayers)), _d = _c.next(); !_d.done; _d = _c.next()) {
+                    var player = _d.value;
+                    if (player.info().timesJoined >= 10) {
+                        totals[player.pollResponse]++;
+                    }
+                }
+            }
+            catch (e_1_1) { e_1 = { error: e_1_1 }; }
+            finally {
+                try {
+                    if (_d && !_d.done && (_b = _c.return)) _b.call(_c);
+                }
+                finally { if (e_1) throw e_1.error; }
+            }
+            output("Poll not viewed: ".concat(totals[0], "\nPoll canceled: ").concat(totals[1], "\nI won't or can't update to v8: ").concat(totals[2], "\nI will update to v8 if Fish updates to v8: ").concat(totals[3], "\nI have already updated to v8: ").concat(totals[4]));
         }
     } }));
 var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11, templateObject_12, templateObject_13, templateObject_14, templateObject_15, templateObject_16, templateObject_17, templateObject_18;
