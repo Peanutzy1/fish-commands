@@ -835,7 +835,7 @@ Will you be able to update?`,
 					"Steam": `It is possible to update to v8 by right-clicking Mindustry in your library, selecting Properties -> Betas and selecting v8 beta. You can also switch back to v7 using this method.`,
 					"MindustryLauncher": `It is easy to update to v8 by specifying the version as "v149" or "foo-v8-latest" with the --version flag.`
 				});
-				this.sendMessage(`[coral]V8 Migration[] for [accent]${response}[]: ${message}\nRun [accent]/v8poll[] to record your response.`);
+				this.sendMessage(`[coral]V8 Migration[] for [accent]${response}[]: ${message}\nIf you update now, you will not be able to join Fish anymore without downgrading to v7! Wait until Fish updates before updating.\nRun [accent]/v8poll[] to let us know if you will update when that happens.`);
 			}).catch(err => {
 				if(err === "cancel"){
 					this.player?.sendMessage(`To see the v8 migration survey again, run [accent]/v8poll[].`);
