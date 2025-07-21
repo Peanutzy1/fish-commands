@@ -825,7 +825,7 @@ var FishPlayer = /** @class */ (function () {
     FishPlayer.prototype.runv8poll = function () {
         var _this = this;
         this.lastPollSent = Date.now();
-        menus_1.Menu.buttons(this, "V8 Migration Poll", "[scarlet]IMPORTANT![]\n\nThe next version of Mindustry, v8, is now available in early access.\nv8 has new blocks, features, turret ammo, balance improvements, and better performance.\n\nThe >|||>Fish servers are planning to update soon to the latest beta version.\nWill you be able to update?", [
+        menus_1.Menu.buttons(this, "V8 Migration Poll", "[scarlet]IMPORTANT![]\n\nThe next version of Mindustry, v8, is now available in early access.\nv8 has new blocks, features, turret ammo, balance improvements, and better performance.\n\nThe >|||>Fish servers are considering updating to the latest beta version.\nWill you be able to update?", [
             [{ text: "I don't know [accent](More information)[]", data: 'help' }],
             [{ text: "[#FFCCCC]I can't or won't update to v8", data: 2 }],
             [{ text: "[#CCFFCC]I will update once Fish updates", data: 3 }],
