@@ -315,7 +315,7 @@ export function isBuildable(block:Block){
 	return block == Blocks.powerVoid || (block.buildType != Blocks.air.buildType && !(block instanceof ConstructBlock));
 }
 
-export function getUnitType(type:string):Unit | string {
+export function getUnitType(type:string):UnitType | string {
 	validUnits ??= Vars.content.units().select((u:UnitType) => !(u instanceof MissileUnitType || u.internal));
 	let temp;
 	if(temp = validUnits!.find(u => u.name == type)) return temp;
@@ -371,9 +371,13 @@ export function getBlock(block:string, filter:"buildable" | "air" | "all"):Block
 
 export function teleportPlayer(player:mindustryPlayer, to:mindustryPlayer){
 	Timer.schedule(() => {
-		player.unit().set(to.unit().x, to.unit().y);
-		Call.setPosition(player.con, to.unit().x, to.unit().y);
-		Call.setCameraPosition(player.con, to.unit().x, to.unit().y);
+		const p = player.unit();
+		const t = to.unit();
+		if(p && t){
+			p.set(t.x, t.y);
+			Call.setPosition(player.con, t.x, t.y);
+			Call.setCameraPosition(player.con, t.x, t.y);
+		}
 	}, 0, 0.016, 10);
 }
 

@@ -504,8 +504,8 @@ ${msg}`
 		this.ignoreGameOver = false;
 	}
 	/** Must be run on UnitChangeEvent. */
-	static onUnitChange(player:mindustryPlayer, unit:Unit){
-		if(unit.spawnedByCore)
+	static onUnitChange(player:mindustryPlayer, unit:Unit | null){
+		if(unit?.spawnedByCore)
 			this.onRespawn(player);
 	}
 	private static onRespawn(player:mindustryPlayer){
@@ -1149,9 +1149,9 @@ Will you be able to update?`,
 	hasPerm(perm:PermType){
 		return Perm[perm].check(this);
 	}
-	unit():Unit;
+	unit():Unit | null;
 	unit(unit:Unit):void;
-	unit(unit?:Unit):Unit {
+	unit(unit?:Unit):Unit | null | void {
 		if(unit) return this.player!.unit(unit);
 		else return this.player!.unit();
 	}
@@ -1399,11 +1399,12 @@ Will you be able to update?`,
 	}
 
 	stopUnit(){
-		if(this.connected() && this.unit()){
-			if(this.unit().spawnedByCore){
-				this.unit().type = UnitTypes.stell;
-				this.unit().health = UnitTypes.stell.health;
-				this.unit().apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
+		const unit = this.unit();
+		if(this.connected() && unit){
+			if(unit.spawnedByCore){
+				unit.type = UnitTypes.stell;
+				unit.health = UnitTypes.stell.health;
+				unit.apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
 			} else {
 				this.forceRespawn();
 				//This will cause FishPlayer.onRespawn to run, calling this function again, but then the player will be in a core unit, which can be safely stell'd

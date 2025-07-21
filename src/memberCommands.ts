@@ -27,8 +27,8 @@ export const commands = commandList({
 				if(pet) pet.kill();
 				sender.pet = '';
 			}
-
-			const pet = UnitTypes.merui.spawn(sender.team(), sender.unit().x, sender.unit().y);
+			const unit = sender.unit() ?? fail(`You do not have a unit for the pet to follow.`);
+			const pet = UnitTypes.merui.spawn(sender.team(), unit.x, unit.y);
 			pet.apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
 			sender.pet = pet.id;
 
@@ -39,13 +39,14 @@ export const commands = commandList({
 				petName: string; pet: Unit; fishPlayer: FishPlayer;
 			}){
 				return Timer.schedule(() => {
-					if(pet.id !== fishPlayer.pet || !fishPlayer.connected()){
+					const unit = fishPlayer.unit();
+					if(pet.id !== fishPlayer.pet || !fishPlayer.connected() || !unit){
 						pet.kill();
 						return;
 					}
 
-					const distX = fishPlayer.unit().x - pet.x;
-					const distY = fishPlayer.unit().y - pet.y;
+					const distX = unit.x - pet.x;
+					const distY = unit.y - pet.y;
 					if(distX >= 50 || distX <= -50 || distY >= 50 || distY <= -50){
 						pet.approach(new Vec2(distX, distY));
 					}

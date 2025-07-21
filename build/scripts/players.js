@@ -520,7 +520,7 @@ var FishPlayer = /** @class */ (function () {
     };
     /** Must be run on UnitChangeEvent. */
     FishPlayer.onUnitChange = function (player, unit) {
-        if (unit.spawnedByCore)
+        if (unit === null || unit === void 0 ? void 0 : unit.spawnedByCore)
             this.onRespawn(player);
     };
     FishPlayer.onRespawn = function (player) {
@@ -1509,11 +1509,12 @@ var FishPlayer = /** @class */ (function () {
         FishPlayer.saveAll();
     };
     FishPlayer.prototype.stopUnit = function () {
-        if (this.connected() && this.unit()) {
-            if (this.unit().spawnedByCore) {
-                this.unit().type = UnitTypes.stell;
-                this.unit().health = UnitTypes.stell.health;
-                this.unit().apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
+        var unit = this.unit();
+        if (this.connected() && unit) {
+            if (unit.spawnedByCore) {
+                unit.type = UnitTypes.stell;
+                unit.health = UnitTypes.stell.health;
+                unit.apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
             }
             else {
                 this.forceRespawn();

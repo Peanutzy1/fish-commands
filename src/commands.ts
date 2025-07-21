@@ -172,7 +172,11 @@ export const Req = {
 			|| fail(`This game is over, please wait for the next map to load.`),
 	teamAlive: ({sender}:{sender:FishPlayer}) =>
 		sender.team().active()
-			|| fail(`Your team is dead.`)
+			|| fail(`Your team is dead.`),
+	unitExists: (message = "You must be in a unit to use this command.") =>
+		({sender}:{sender:FishPlayer}) =>
+			(sender.connected() && sender.unit()?.added && !sender.unit()!.dead)
+				|| fail(message)
 };
 
 /** Takes an arg string, like `reason:string?` and converts it to a CommandArg. */

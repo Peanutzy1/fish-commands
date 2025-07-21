@@ -349,9 +349,10 @@ export const commands = commandList({
 		perm: Perm.mod,
 		handler({args, sender, outputSuccess, f}){
 			if(args.time > 36000_000) fail(`Time must be less than 10 hours.`);
+			const unit = sender.unit() ?? fail(`You must be in a unit to use this command.`);
 			let timeRemaining = args.time / 1000;
-			const labelx = sender.unit().x;
-			const labely = sender.unit().y;
+			const labelx = unit.x;
+			const labely = unit.y;
 			fishState.labels.push(Timer.schedule(() => {
 				if(timeRemaining > 0){
 					let timeseconds = timeRemaining % 60;
@@ -587,7 +588,7 @@ export const commands = commandList({
 		perm: Perm.mod,
 		requirements: [Req.moderate("target", true, "mod", true), Req.moderate("newcontroller", true, "mod", true)],
 		handler({sender, args:{target, newcontroller = sender}, outputSuccess, f}){
-			const unit = target.unit();
+			const unit = target.unit() ?? fail(f`Targeted player ${target} is not in a unit.`);
 			if(target.team() !== newcontroller.team()){
 				if(!sender.hasPerm("changeTeamExternal")){
 					if(!sender.hasPerm("changeTeam")) fail(`You do not have permission to change teams.`);
@@ -851,8 +852,8 @@ ${getAntiBotInfo("client")}`
 			description: "Puts you in an emanate.",
 			perm: Perm.admin,
 			data: {unitMapping},
+			requirements: [],
 			handler({sender, outputSuccess}){
-				if(!sender.connected() || !sender.unit().added || sender.unit().dead) fail("You cannot spawn an emanate because you are dead.");
 				const emanate = UnitTypes.emanate.spawn(sender.team(), sender.player!.x, sender.player!.y);
 				sender.player!.unit(emanate);
 				unitMapping[sender.uuid] = emanate;

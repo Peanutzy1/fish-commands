@@ -507,9 +507,13 @@ function getBlock(block, filter) {
 }
 function teleportPlayer(player, to) {
     Timer.schedule(function () {
-        player.unit().set(to.unit().x, to.unit().y);
-        Call.setPosition(player.con, to.unit().x, to.unit().y);
-        Call.setCameraPosition(player.con, to.unit().x, to.unit().y);
+        var p = player.unit();
+        var t = to.unit();
+        if (p && t) {
+            p.set(t.x, t.y);
+            Call.setPosition(player.con, t.x, t.y);
+            Call.setCameraPosition(player.con, t.x, t.y);
+        }
     }, 0, 0.016, 10);
 }
 function logErrors(message, func) {

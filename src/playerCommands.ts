@@ -62,7 +62,7 @@ export const commands = commandList({
 		handler({ args, sender }) {
 			if(!sender.unit()?.spawnedByCore) fail(`Can only teleport while in a core unit.`);
 			if(sender.team() !== args.player.team()) fail(`Cannot teleport to players on another team.`);
-			if(sender.unit().hasPayload?.()) fail(`Cannot teleport to players while holding a payload.`);
+			if(sender.unit()!.hasPayload?.()) fail(`Cannot teleport to players while holding a payload.`);
 			teleportPlayer(sender.player!, args.player.player!);
 		},
 	},
@@ -267,14 +267,14 @@ export const commands = commandList({
 				sender.watch = false;
 			} else if(args.player){
 				sender.watch = true;
-				const stayX = sender.unit().x;
-				const stayY = sender.unit().y;
+				const stayX = sender.unit()?.x;
+				const stayY = sender.unit()?.y;
 				const target = args.player.player!;
 				const watch = () => {
-					if(sender.watch){
+					if(sender.watch && target.unit()){
 						// Self.X+(172.5-Self.X)/10
-						Call.setCameraPosition(sender.con, target.unit().x, target.unit().y);
-						sender.unit().set(stayX, stayY);
+						Call.setCameraPosition(sender.con, target.unit()!.x, target.unit()!.y);
+						sender.unit()?.set?.(stayX, stayY);
 						Timer.schedule(() => watch(), 0.1, 0.1, 0);
 					} else {
 						Call.setCameraPosition(sender.con, stayX, stayY);
@@ -502,16 +502,18 @@ Available types:[yellow]
 			});
 			return Ohnos;
 		},
-		requirements: [Req.gameRunning, Req.modeNot("pvp")],
+		requirements: [
+			Req.gameRunning, Req.modeNot("pvp"),
+			Req.unitExists(`You cannot spawn ohnos while dead.`)
+		],
 		handler({sender, data:Ohnos}){
 			if(!Ohnos.enabled) fail(`Ohnos have been temporarily disabled.`);
-			if(!(sender.connected() && sender.unit().added && !sender.unit().dead)) fail(`You cannot spawn ohnos while dead.`);
 			Ohnos.updateLength();
 			if(
 				Ohnos.ohnos.length >= (Groups.player.size() + 1) ||
 				sender.team().data().countType(UnitTypes.alpha) >= Units.getCap(sender.team())
 			) fail(`Sorry, the max number of ohno units has been reached.`);
-			if(nearbyEnemyTile(sender.unit(), 6) != null) fail(`Too close to an enemy tile!`);
+			if(nearbyEnemyTile((sender.unit()!), 6) != null) fail(`Too close to an enemy building!`);
 			if(!UnitTypes.alpha.supportsEnv(Vars.state.rules.env)) fail(`Ohnos cannot survive in this map.`);
 	
 			Ohnos.makeOhno(sender.team(), sender.player!.x, sender.player!.y);

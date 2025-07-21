@@ -251,7 +251,7 @@ class Player {
 	uuid():string;
 	usid():string;
 	sendMessage(message:string):void;
-	unit():Unit;
+	unit():Unit | null;
 	unit(unit:Unit):void;
 	team():Team;
 	team(team:Team):void;
@@ -501,7 +501,7 @@ interface PlayerAction {
 }
 type ActionType = any;
 const ActionType:Record<string, ActionType>;
-type Unit = any;
+type Unit = Record<string, any>;
 type NetConnection = any;
 class Command {
 	text:string;

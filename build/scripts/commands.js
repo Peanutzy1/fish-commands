@@ -253,6 +253,15 @@ exports.Req = {
         var sender = _a.sender;
         return sender.team().active()
             || fail("Your team is dead.");
+    },
+    unitExists: function (message) {
+        if (message === void 0) { message = "You must be in a unit to use this command."; }
+        return function (_a) {
+            var _b;
+            var sender = _a.sender;
+            return (sender.connected() && ((_b = sender.unit()) === null || _b === void 0 ? void 0 : _b.added) && !sender.unit().dead)
+                || fail(message);
+        };
     }
 };
 /** Takes an arg string, like `reason:string?` and converts it to a CommandArg. */

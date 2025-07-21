@@ -12,6 +12,7 @@ exports.commands = (0, commands_1.commandList)({
         description: 'Spawns a cool pet with a displayed name that follows you around.',
         perm: commands_1.Perm.member,
         handler: function (_a) {
+            var _b;
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess;
             if (!args.name) {
                 var pet_1 = Groups.unit.find(function (u) { return u.id === sender.pet; });
@@ -31,7 +32,8 @@ exports.commands = (0, commands_1.commandList)({
                     pet_2.kill();
                 sender.pet = '';
             }
-            var pet = UnitTypes.merui.spawn(sender.team(), sender.unit().x, sender.unit().y);
+            var unit = (_b = sender.unit()) !== null && _b !== void 0 ? _b : (0, commands_1.fail)("You do not have a unit for the pet to follow.");
+            var pet = UnitTypes.merui.spawn(sender.team(), unit.x, unit.y);
             pet.apply(StatusEffects.disarmed, Number.MAX_SAFE_INTEGER);
             sender.pet = pet.id;
             Call.infoPopup('[#7FD7FD7f]\uE81B', 5, Align.topRight, 180, 0, 0, 10);
@@ -39,12 +41,13 @@ exports.commands = (0, commands_1.commandList)({
             function controlUnit(_a) {
                 var pet = _a.pet, fishPlayer = _a.fishPlayer, petName = _a.petName;
                 return Timer.schedule(function () {
-                    if (pet.id !== fishPlayer.pet || !fishPlayer.connected()) {
+                    var unit = fishPlayer.unit();
+                    if (pet.id !== fishPlayer.pet || !fishPlayer.connected() || !unit) {
                         pet.kill();
                         return;
                     }
-                    var distX = fishPlayer.unit().x - pet.x;
-                    var distY = fishPlayer.unit().y - pet.y;
+                    var distX = unit.x - pet.x;
+                    var distY = unit.y - pet.y;
                     if (distX >= 50 || distX <= -50 || distY >= 50 || distY <= -50) {
                         pet.approach(new Vec2(distX, distY));
                     }

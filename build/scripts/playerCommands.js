@@ -344,6 +344,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         description: "Watch/unwatch a player.",
         perm: commands_1.Perm.none,
         handler: function (_a) {
+            var _b, _c;
             var args = _a.args, sender = _a.sender, outputSuccess = _a.outputSuccess, outputFail = _a.outputFail;
             if (sender.watch) {
                 outputSuccess("No longer watching a player.");
@@ -351,14 +352,15 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             }
             else if (args.player) {
                 sender.watch = true;
-                var stayX_1 = sender.unit().x;
-                var stayY_1 = sender.unit().y;
+                var stayX_1 = (_b = sender.unit()) === null || _b === void 0 ? void 0 : _b.x;
+                var stayY_1 = (_c = sender.unit()) === null || _c === void 0 ? void 0 : _c.y;
                 var target_1 = args.player.player;
                 var watch_1 = function () {
-                    if (sender.watch) {
+                    var _a, _b;
+                    if (sender.watch && target_1.unit()) {
                         // Self.X+(172.5-Self.X)/10
                         Call.setCameraPosition(sender.con, target_1.unit().x, target_1.unit().y);
-                        sender.unit().set(stayX_1, stayY_1);
+                        (_b = (_a = sender.unit()) === null || _a === void 0 ? void 0 : _a.set) === null || _b === void 0 ? void 0 : _b.call(_a, stayX_1, stayY_1);
                         Timer.schedule(function () { return watch_1(); }, 0.1, 0.1, 0);
                     }
                     else {
@@ -572,19 +574,20 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             });
             return Ohnos;
         },
-        requirements: [commands_1.Req.gameRunning, commands_1.Req.modeNot("pvp")],
+        requirements: [
+            commands_1.Req.gameRunning, commands_1.Req.modeNot("pvp"),
+            commands_1.Req.unitExists("You cannot spawn ohnos while dead.")
+        ],
         handler: function (_a) {
             var sender = _a.sender, Ohnos = _a.data;
             if (!Ohnos.enabled)
                 (0, commands_1.fail)("Ohnos have been temporarily disabled.");
-            if (!(sender.connected() && sender.unit().added && !sender.unit().dead))
-                (0, commands_1.fail)("You cannot spawn ohnos while dead.");
             Ohnos.updateLength();
             if (Ohnos.ohnos.length >= (Groups.player.size() + 1) ||
                 sender.team().data().countType(UnitTypes.alpha) >= Units.getCap(sender.team()))
                 (0, commands_1.fail)("Sorry, the max number of ohno units has been reached.");
-            if ((0, utils_1.nearbyEnemyTile)(sender.unit(), 6) != null)
-                (0, commands_1.fail)("Too close to an enemy tile!");
+            if ((0, utils_1.nearbyEnemyTile)((sender.unit()), 6) != null)
+                (0, commands_1.fail)("Too close to an enemy building!");
             if (!UnitTypes.alpha.supportsEnv(Vars.state.rules.env))
                 (0, commands_1.fail)("Ohnos cannot survive in this map.");
             Ohnos.makeOhno(sender.team(), sender.player.x, sender.player.y);
