@@ -3,12 +3,12 @@ Copyright © BalaM314, 2025. All Rights Reserved.
 Unfinished.
 */
 
-import { FFunction } from './commands';
-import { computeStatistics } from './funcs';
-import { FishEvents } from './globals';
-import { dataClass, serialize } from './io';
-import { formatTime, match } from './utils';
-import { Gamemode } from './config';
+import { FFunction } from '/commands';
+import { computeStatistics } from '/funcs';
+import { FishEvents } from '/globals';
+import { dataClass, serialize } from '/io';
+import { formatTime, match } from '/utils';
+import { Gamemode } from '/config';
 
 type FinishedMapRunData = {
 	winTeam:Team;

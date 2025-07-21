@@ -3,10 +3,10 @@ Copyright © BalaM314, 2025. All Rights Reserved.
 This file contains configurable constants.
 */
 
-import type { PermType } from "./commands";
-import { ipPattern, ipPortPattern, uuidPattern } from "./globals";
-import { Rank } from "./ranks";
-import { getIPAddress, random } from './funcs';
+import type { PermType } from "/commands";
+import { ipPattern, ipPortPattern, uuidPattern } from "/globals";
+import { Rank } from "/ranks";
+import { getIPAddress, random } from '/funcs';
 
 
 

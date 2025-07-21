@@ -3,13 +3,13 @@ Copyright © BalaM314, 2025. All Rights Reserved.
 This file contains timers that run code at regular intervals.
 */
 
-import { getStaffMessages } from './api';
-import * as config from "./config";
-import { Gamemode } from "./config";
-import { updateMaps } from './files';
-import { FishEvents, ipJoins } from "./globals";
-import { FishPlayer } from "./players";
-import { definitelyRealMemoryCorruption, neutralGameover } from "./utils";
+import { getStaffMessages } from '/api';
+import * as config from "/config";
+import { Gamemode } from "/config";
+import { updateMaps } from '/files';
+import { FishEvents, ipJoins } from "/globals";
+import { FishPlayer } from "/players";
+import { definitelyRealMemoryCorruption, neutralGameover } from "/utils";
 
 
 /** Must be called once, and only once, on server start. */

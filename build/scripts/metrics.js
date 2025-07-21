@@ -36,7 +36,7 @@ var __runInitializers = (this && this.__runInitializers) || function (thisArg, i
 var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Metrics = void 0;
-var io_1 = require("./io");
+var io_1 = require("/io");
 var Metrics = function () {
     var _a;
     var _static_weeks_decorators;

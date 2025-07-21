@@ -45,8 +45,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SettingsSerializer = exports.Serializer = exports.DataClass = void 0;
 exports.dataClass = dataClass;
 exports.serialize = serialize;
-var funcs_1 = require("./funcs");
-var globals_1 = require("./globals");
+var funcs_1 = require("/funcs");
+var globals_1 = require("/globals");
 var DataClass = /** @class */ (function () {
     function DataClass(data) {
         Object.assign(this, data);

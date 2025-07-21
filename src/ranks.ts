@@ -3,7 +3,7 @@ Copyright © BalaM314, 2025. All Rights Reserved.
 This file contains the definitions for ranks and role flags.
 */
 
-import type { SelectEnumClassKeys } from "./types";
+import type { SelectEnumClassKeys } from "/types";
 
 /** Each player has one rank, which is used to determine their prefix, permissions, and which other players they can perform moderation actions on. */
 export class Rank {

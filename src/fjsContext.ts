@@ -3,29 +3,29 @@ Copyright © BalaM314, 2025. All Rights Reserved.
 This file contains the context for the "fjs" command, which executes code with access to the plugin's internals.
 */
 
-import type { FishPlayer as tFishPlayer } from "./players";
+import type { FishPlayer as tFishPlayer } from "/players";
 type FishPlayer = tFishPlayer; //absurd
 
-const api = require("./api");
-const commands = require("./commands");
-const config = require("./config");
-const { commands: consoleCommands } = require("./consoleCommands");
-const files = require("./files");
-const funcs = require("./funcs");
-const globals = require("./globals");
-const maps = require("./maps");
-const { commands: memberCommands } = require("./memberCommands");
-const menus = require("./menus");
-const { Metrics } = require('./metrics');
-const packetHandlers = require("./packetHandlers");
-const { commands: playerCommands } = require("./playerCommands");
-const players = require("./players");
-const ranks = require("./ranks");
-const { commands: staffCommands } = require("./staffCommands");
-const timers = require("./timers");
-const utils = require("./utils");
-const votes = require("./votes");
-const { Promise } = require("./promise");
+const api = require("/api");
+const commands = require("/commands");
+const config = require("/config");
+const { commands: consoleCommands } = require("/consoleCommands");
+const files = require("/files");
+const funcs = require("/funcs");
+const globals = require("/globals");
+const maps = require("/maps");
+const { commands: memberCommands } = require("/memberCommands");
+const menus = require("/menus");
+const { Metrics } = require('/metrics');
+const packetHandlers = require("/packetHandlers");
+const { commands: playerCommands } = require("/playerCommands");
+const players = require("/players");
+const ranks = require("/ranks");
+const { commands: staffCommands } = require("/staffCommands");
+const timers = require("/timers");
+const utils = require("/utils");
+const votes = require("/votes");
+const { Promise } = require("/promise");
 
 const { Perm, allCommands } = commands;
 const { FishPlayer } = players;

@@ -3,14 +3,14 @@ Copyright © BalaM314, 2025. All Rights Reserved.
 This file contains many utility functions.
 */
 
-import * as api from './api';
-import { fail } from './commands';
-import { Gamemode, GamemodeName, adminNames, bannedWords, text, multiCharSubstitutions, substitutions } from "./config";
-import { crash, escapeStringColorsServer, escapeTextDiscord, parseError, random, StringIO } from './funcs';
-import { maxTime } from "./globals";
-import { fishState, ipPattern, ipPortPattern, ipRangeCIDRPattern, ipRangeWildcardPattern, tileHistory, uuidPattern } from './globals';
-import { FishPlayer } from "./players";
-import { Boolf, PartialFormatString, SelectEnumClassKeys } from './types';
+import * as api from '/api';
+import { fail } from '/commands';
+import { Gamemode, GamemodeName, adminNames, bannedWords, text, multiCharSubstitutions, substitutions } from "/config";
+import { crash, escapeStringColorsServer, escapeTextDiscord, parseError, random, StringIO } from '/funcs';
+import { maxTime } from "/globals";
+import { fishState, ipPattern, ipPortPattern, ipRangeCIDRPattern, ipRangeWildcardPattern, tileHistory, uuidPattern } from '/globals';
+import { FishPlayer } from "/players";
+import { Boolf, PartialFormatString, SelectEnumClassKeys } from '/types';
 
 
 export function memoizeChatFilter(impl:(arg:string) => string){

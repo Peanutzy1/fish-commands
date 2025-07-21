@@ -81,17 +81,17 @@ var __values = (this && this.__values) || function(o) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
-var api = require("./api");
-var commands_1 = require("./commands");
-var config_1 = require("./config");
-var files_1 = require("./files");
-var fjsContext = require("./fjsContext");
-var funcs_1 = require("./funcs");
-var globals_1 = require("./globals");
-var menus_1 = require("./menus");
-var players_1 = require("./players");
-var ranks_1 = require("./ranks");
-var utils_1 = require("./utils");
+var api = require("/api");
+var commands_1 = require("/commands");
+var config_1 = require("/config");
+var files_1 = require("/files");
+var fjsContext = require("/fjsContext");
+var funcs_1 = require("/funcs");
+var globals_1 = require("/globals");
+var menus_1 = require("/menus");
+var players_1 = require("/players");
+var ranks_1 = require("/ranks");
+var utils_1 = require("/utils");
 exports.commands = (0, commands_1.commandList)({
     warn: {
         args: ['player:player', 'message:string?'],

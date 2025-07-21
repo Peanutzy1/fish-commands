@@ -3,8 +3,8 @@ Copyright © BalaM314, 2025. All Rights Reserved.
 This file contains member commands, which are fun cosmetics for donators.
 */
 
-import { Perm, commandList, fail } from "./commands";
-import { FishPlayer } from "./players";
+import { Perm, commandList, fail } from "/commands";
+import { FishPlayer } from "/players";
 
 
 export const commands = commandList({

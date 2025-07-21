@@ -3,20 +3,20 @@ Copyright © BalaM314, 2025. All Rights Reserved.
 This file contains the FishPlayer class, and many player-related functions.
 */
 
-import * as api from "./api";
-import { Perm, PermType } from "./commands";
-import * as globals from "./globals";
-import { FColor, Gamemode, heuristics, localIPAddress, Mode, prefixes, rules, stopAntiEvadeTime, text, tips } from "./config";
-import { uuidPattern } from "./globals";
-import { Menu } from "./menus";
-import { Rank, RankName, RoleFlag, RoleFlagName } from "./ranks";
-import type { FishCommandArgType, FishPlayerData, PlayerHistoryEntry } from "./types";
-import { cleanText, formatTime, formatTimeRelative, isImpersonator, logAction, logHTrip, match, matchFilter } from "./utils";
-import { parseError } from './funcs';
-import { escapeStringColorsClient, escapeStringColorsServer } from './funcs';
-import { crash } from './funcs';
-import { StringIO } from './funcs';
-import { setToArray } from './funcs';
+import * as api from "/api";
+import { Perm, PermType } from "/commands";
+import * as globals from "/globals";
+import { FColor, Gamemode, heuristics, localIPAddress, Mode, prefixes, rules, stopAntiEvadeTime, text, tips } from "/config";
+import { uuidPattern } from "/globals";
+import { Menu } from "/menus";
+import { Rank, RankName, RoleFlag, RoleFlagName } from "/ranks";
+import type { FishCommandArgType, FishPlayerData, PlayerHistoryEntry } from "/types";
+import { cleanText, formatTime, formatTimeRelative, isImpersonator, logAction, logHTrip, match, matchFilter } from "/utils";
+import { parseError } from '/funcs';
+import { escapeStringColorsClient, escapeStringColorsServer } from '/funcs';
+import { crash } from '/funcs';
+import { StringIO } from '/funcs';
+import { setToArray } from '/funcs';
 
 
 export class FishPlayer {

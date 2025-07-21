@@ -3,19 +3,19 @@ Copyright © BalaM314, 2025. All Rights Reserved.
 This file contains all the console commands, which can be run through the server console.
 */
 
-import * as api from "./api";
-import { consoleCommandList, fail } from "./commands";
-import { localIPAddress, Mode } from "./config";
-import * as globals from "./globals";
-import { Gamemode, mapRepoURLs } from "./config";
-import { maxTime } from "./globals";
-import { updateMaps } from "./files";
-import * as fjsContext from "./fjsContext";
-import { fishState, ipPattern, tileHistory, uuidPattern } from "./globals";
-import { FishPlayer } from "./players";
-import { Rank } from "./ranks";
-import { colorNumber, fishCommandsRootDirPath, formatTime, formatTimeRelative, formatTimestamp, getAntiBotInfo, getIPRange, logAction, serverRestartLoop, updateBans } from "./utils";
-import { escapeStringColorsServer, setToArray } from './funcs';
+import * as api from "/api";
+import { consoleCommandList, fail } from "/commands";
+import { localIPAddress, Mode } from "/config";
+import * as globals from "/globals";
+import { Gamemode, mapRepoURLs } from "/config";
+import { maxTime } from "/globals";
+import { updateMaps } from "/files";
+import * as fjsContext from "/fjsContext";
+import { fishState, ipPattern, tileHistory, uuidPattern } from "/globals";
+import { FishPlayer } from "/players";
+import { Rank } from "/ranks";
+import { colorNumber, fishCommandsRootDirPath, formatTime, formatTimeRelative, formatTimestamp, getAntiBotInfo, getIPRange, logAction, serverRestartLoop, updateBans } from "/utils";
+import { escapeStringColorsServer, setToArray } from '/funcs';
 
 
 export const commands = consoleCommandList({

@@ -1,4 +1,4 @@
-import type { PartialFormatString, TagFunction } from './types.js';
+import type { PartialFormatString, TagFunction } from '/types.js';
 
 const storedValues: Record<string, {
 	value: unknown;

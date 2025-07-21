@@ -64,12 +64,12 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.listeners = exports.Menu = void 0;
 exports.registerListeners = registerListeners;
-var commands_1 = require("./commands");
-var players_1 = require("./players");
-var utils_1 = require("./utils");
-var funcs_1 = require("./funcs");
-var funcs_2 = require("./funcs");
-var promise_1 = require("./promise");
+var commands_1 = require("/commands");
+var players_1 = require("/players");
+var utils_1 = require("/utils");
+var funcs_1 = require("/funcs");
+var funcs_2 = require("/funcs");
+var promise_1 = require("/promise");
 /** Used to change the behavior of adding another menu when being run in a menu callback. */
 var isInMenuCallback = false;
 /** Stores a mapping from name to the numeric id of a listener that has been registered. */

@@ -3,9 +3,9 @@ Copyright © BalaM314, 2025. All Rights Reserved.
 This file contains a wrapper over the API calls to the backend server.
 */
 
-import { Gamemode, backendIP, Mode } from './config';
-import { maxTime } from "./globals";
-import { FishPlayer } from './players';
+import { Gamemode, backendIP, Mode } from '/config';
+import { maxTime } from "/globals";
+import { FishPlayer } from '/players';
 
 /** Mark a player as stopped until time */
 export function addStopped(uuid: string, time:number) {

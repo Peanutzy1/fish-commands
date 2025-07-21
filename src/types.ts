@@ -3,9 +3,9 @@ Copyright © BalaM314, 2025. All Rights Reserved.
 This file contains type definitions that are shared across files.
 */
 
-import type { CommandArgType, FFunction, Perm } from "./commands";
-import type { FishPlayer } from "./players";
-import type { Rank, RoleFlag } from "./ranks";
+import type { CommandArgType, FFunction, Perm } from "/commands";
+import type { FishPlayer } from "/players";
+import type { Rank, RoleFlag } from "/ranks";
 
 /**
  * Selects the type of the string keys of an enum-like class, like this:

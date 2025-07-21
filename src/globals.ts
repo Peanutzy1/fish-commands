@@ -3,8 +3,8 @@ Copyright © BalaM314, 2025. All Rights Reserved.
 This file contains mutable global variables, and global constants.
 */
 
-import { EventEmitter } from "./funcs";
-import type { FishPlayer } from "./players";
+import { EventEmitter } from "/funcs";
+import type { FishPlayer } from "/players";
 
 export const tileHistory:Record<string, string> = {};
 export const recentWhispers:Record<string, string> = {};

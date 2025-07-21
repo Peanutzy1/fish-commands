@@ -15,19 +15,19 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var api = require("./api");
-var commands = require("./commands");
-var commands_1 = require("./commands");
-var consoleCommands_1 = require("./consoleCommands");
-var globals_1 = require("./globals");
-var memberCommands_1 = require("./memberCommands");
-var menus = require("./menus");
-var packetHandlers_1 = require("./packetHandlers");
-var playerCommands_1 = require("./playerCommands");
-var players_1 = require("./players");
-var staffCommands_1 = require("./staffCommands");
-var timers = require("./timers");
-var utils_1 = require("./utils");
+var api = require("/api");
+var commands = require("/commands");
+var commands_1 = require("/commands");
+var consoleCommands_1 = require("/consoleCommands");
+var globals_1 = require("/globals");
+var memberCommands_1 = require("/memberCommands");
+var menus = require("/menus");
+var packetHandlers_1 = require("/packetHandlers");
+var playerCommands_1 = require("/playerCommands");
+var players_1 = require("/players");
+var staffCommands_1 = require("/staffCommands");
+var timers = require("/timers");
+var utils_1 = require("/utils");
 Events.on(EventType.ConnectionEvent, function (e) {
     if (Vars.netServer.admins.bannedIPs.contains(e.connection.address)) {
         api.getBanned({

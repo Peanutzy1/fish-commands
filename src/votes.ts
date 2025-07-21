@@ -4,9 +4,9 @@ This file contains the voting system.
 Some contributions: @author Jurorno9
 */
 
-import { FishPlayer } from "./players";
-import { crash } from "./funcs";
-import { EventEmitter } from "./funcs";
+import { FishPlayer } from "/players";
+import { crash } from "/funcs";
+import { EventEmitter } from "/funcs";
 
 /** Event data for each voting event. */
 export type VoteEventMapping = {

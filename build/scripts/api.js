@@ -14,9 +14,9 @@ exports.sendStaffMessage = sendStaffMessage;
 exports.ban = ban;
 exports.unban = unban;
 exports.getBanned = getBanned;
-var config_1 = require("./config");
-var globals_1 = require("./globals");
-var players_1 = require("./players");
+var config_1 = require("/config");
+var globals_1 = require("/globals");
+var players_1 = require("/players");
 /** Mark a player as stopped until time */
 function addStopped(uuid, time) {
     if (config_1.Mode.localDebug)

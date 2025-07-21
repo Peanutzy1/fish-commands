@@ -5,7 +5,7 @@ This file contains mutable global variables, and global constants.
 */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FishEvents = exports.maxTime = exports.ipRangeWildcardPattern = exports.ipRangeCIDRPattern = exports.ipPortPattern = exports.ipPattern = exports.uuidPattern = exports.ipJoins = exports.fishPlugin = exports.fishState = exports.recentWhispers = exports.tileHistory = void 0;
-var funcs_1 = require("./funcs");
+var funcs_1 = require("/funcs");
 exports.tileHistory = {};
 exports.recentWhispers = {};
 exports.fishState = {

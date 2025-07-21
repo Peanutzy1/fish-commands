@@ -45,19 +45,19 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
-var api = require("./api");
-var commands_1 = require("./commands");
-var config_1 = require("./config");
-var globals = require("./globals");
-var config_2 = require("./config");
-var globals_1 = require("./globals");
-var files_1 = require("./files");
-var fjsContext = require("./fjsContext");
-var globals_2 = require("./globals");
-var players_1 = require("./players");
-var ranks_1 = require("./ranks");
-var utils_1 = require("./utils");
-var funcs_1 = require("./funcs");
+var api = require("/api");
+var commands_1 = require("/commands");
+var config_1 = require("/config");
+var globals = require("/globals");
+var config_2 = require("/config");
+var globals_1 = require("/globals");
+var files_1 = require("/files");
+var fjsContext = require("/fjsContext");
+var globals_2 = require("/globals");
+var players_1 = require("/players");
+var ranks_1 = require("/ranks");
+var utils_1 = require("/utils");
+var funcs_1 = require("/funcs");
 exports.commands = (0, commands_1.consoleCommandList)({
     setrank: {
         args: ["player:player", "rank:rank"],

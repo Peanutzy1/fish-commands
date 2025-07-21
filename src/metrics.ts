@@ -1,4 +1,4 @@
-import { serialize } from "./io";
+import { serialize } from "/io";
 
 
 type MetricsWeek = Array<number> & {

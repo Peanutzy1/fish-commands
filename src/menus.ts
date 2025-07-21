@@ -3,12 +3,12 @@ Copyright © BalaM314, 2025. All Rights Reserved.
 This file contains the menu system.
 */
 
-import { CommandError, fail } from "./commands";
-import { FishPlayer } from "./players";
-import { outputFail } from "./utils";
-import { parseError } from './funcs';
-import { to2DArray } from './funcs';
-import { Promise } from "./promise";
+import { CommandError, fail } from "/commands";
+import { FishPlayer } from "/players";
+import { outputFail } from "/utils";
+import { parseError } from '/funcs';
+import { to2DArray } from '/funcs';
+import { Promise } from "/promise";
 
 /** Used to change the behavior of adding another menu when being run in a menu callback. */
 let isInMenuCallback = false;

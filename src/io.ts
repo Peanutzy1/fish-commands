@@ -1,5 +1,5 @@
-import { crash, lazy } from "./funcs";
-import { FishEvents } from "./globals";
+import { crash, lazy } from "/funcs";
+import { FishEvents } from "/globals";
 
 
 export class DataClass<T extends Serializable> {

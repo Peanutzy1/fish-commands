@@ -4,17 +4,17 @@ This file contains the commands system.
 */
 //Behold, the power of typescript!
 
-import { FColor, Gamemode, GamemodeName, text } from "./config";
-import { ipPattern, uuidPattern } from "./globals";
-import { Menu } from "./menus";
-import { FishPlayer } from "./players";
-import { Rank, RankName, RoleFlag } from "./ranks";
-import type { ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishCommandHandlerData, FishCommandHandlerUtils, FishConsoleCommandData, Formattable, PartialFormatString, SelectEnumClassKeys, ServerCommandHandler, TagFunction } from "./types";
-import { formatModeName, getBlock, getItem, getMap, getTeam, getUnitType, outputConsole, outputFail, outputMessage, outputSuccess, parseTimeString } from "./utils";
-import { tagProcessorPartial } from './funcs';
-import { parseError } from './funcs';
-import { escapeStringColorsClient, escapeStringColorsServer } from './funcs';
-import { crash } from './funcs';
+import { FColor, Gamemode, GamemodeName, text } from "/config";
+import { ipPattern, uuidPattern } from "/globals";
+import { Menu } from "/menus";
+import { FishPlayer } from "/players";
+import { Rank, RankName, RoleFlag } from "/ranks";
+import type { ClientCommandHandler, CommandArg, FishCommandArgType, FishCommandData, FishCommandHandlerData, FishCommandHandlerUtils, FishConsoleCommandData, Formattable, PartialFormatString, SelectEnumClassKeys, ServerCommandHandler, TagFunction } from "/types";
+import { formatModeName, getBlock, getItem, getMap, getTeam, getUnitType, outputConsole, outputFail, outputMessage, outputSuccess, parseTimeString } from "/utils";
+import { tagProcessorPartial } from '/funcs';
+import { parseError } from '/funcs';
+import { escapeStringColorsClient, escapeStringColorsServer } from '/funcs';
+import { crash } from '/funcs';
 
 const hiddenUnauthorizedMessage = "[scarlet]Unknown command. Check [lightgray]/help[scarlet].";
 

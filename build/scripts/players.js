@@ -47,19 +47,19 @@ var __read = (this && this.__read) || function (o, n) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FishPlayer = void 0;
-var api = require("./api");
-var commands_1 = require("./commands");
-var globals = require("./globals");
-var config_1 = require("./config");
-var globals_1 = require("./globals");
-var menus_1 = require("./menus");
-var ranks_1 = require("./ranks");
-var utils_1 = require("./utils");
-var funcs_1 = require("./funcs");
-var funcs_2 = require("./funcs");
-var funcs_3 = require("./funcs");
-var funcs_4 = require("./funcs");
-var funcs_5 = require("./funcs");
+var api = require("/api");
+var commands_1 = require("/commands");
+var globals = require("/globals");
+var config_1 = require("/config");
+var globals_1 = require("/globals");
+var menus_1 = require("/menus");
+var ranks_1 = require("/ranks");
+var utils_1 = require("/utils");
+var funcs_1 = require("/funcs");
+var funcs_2 = require("/funcs");
+var funcs_3 = require("/funcs");
+var funcs_4 = require("/funcs");
+var funcs_5 = require("/funcs");
 var FishPlayer = /** @class */ (function () {
     //TODO: fix this absolute mess of a constructor! I don't remember why this exists
     function FishPlayer(_a, player) {

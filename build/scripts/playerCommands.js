@@ -92,17 +92,17 @@ var __values = (this && this.__values) || function(o) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.commands = void 0;
-var api = require("./api");
-var commands_1 = require("./commands");
-var config_1 = require("./config");
-var funcs_1 = require("./funcs");
-var globals_1 = require("./globals");
-var maps_1 = require("./maps");
-var menus_1 = require("./menus");
-var players_1 = require("./players");
-var ranks_1 = require("./ranks");
-var utils_1 = require("./utils");
-var votes_1 = require("./votes");
+var api = require("/api");
+var commands_1 = require("/commands");
+var config_1 = require("/config");
+var funcs_1 = require("/funcs");
+var globals_1 = require("/globals");
+var maps_1 = require("/maps");
+var menus_1 = require("/menus");
+var players_1 = require("/players");
+var ranks_1 = require("/ranks");
+var utils_1 = require("/utils");
+var votes_1 = require("/votes");
 exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
         args: [],
         description: 'Prints information about the plugin.',
