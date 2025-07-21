@@ -24,8 +24,8 @@ exports.commands = (0, commands_1.commandList)({
             }
             if (args.name.length > 500)
                 (0, commands_1.fail)("Name cannot be more than 500 characters.");
-            if (Strings.stripColors(args.name).length > 150)
-                (0, commands_1.fail)("Name cannot be more than 150 characters, not including color tags.");
+            if (Strings.stripColors(args.name).length > 70)
+                (0, commands_1.fail)("Name cannot be more than 70 characters, not including color tags.");
             if (sender.pet !== '') {
                 var pet_2 = Groups.unit.find(function (u) { return u.id === sender.pet; });
                 if (pet_2)

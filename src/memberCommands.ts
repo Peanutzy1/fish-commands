@@ -21,7 +21,7 @@ export const commands = commandList({
 				return;
 			}
 			if(args.name.length > 500) fail(`Name cannot be more than 500 characters.`);
-			if(Strings.stripColors(args.name).length > 150) fail(`Name cannot be more than 150 characters, not including color tags.`);
+			if(Strings.stripColors(args.name).length > 70) fail(`Name cannot be more than 70 characters, not including color tags.`);
 			if(sender.pet !== ''){
 				const pet = Groups.unit.find(u => u.id === sender.pet);
 				if(pet) pet.kill();
