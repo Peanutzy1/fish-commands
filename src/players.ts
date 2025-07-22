@@ -30,13 +30,6 @@ export class FishPlayer {
 		numIpsChecked: 0,
 		numIpsFlagged: 0,
 		numIpsErrored: 0,
-		heuristics: {
-			tripped: {} as Record<string, "waiting" | false | true>,
-			numTripped: 0,
-			total: 0,
-			trippedCorrect: 0,
-			blocksBroken: {} as Record<string, number>
-		}
 	};
 	static lastAuthKicked:FishPlayer | null = null;
 	//If a new account joins from one of these IPs, the IP gets banned.
@@ -1482,10 +1475,8 @@ Will you be able to update?`,
 		//Blocks broken check
 		if(this.joinsLessThan(5)){
 			let tripped = false;
-			FishPlayer.stats.heuristics.total ++;
 			Timer.schedule(() => {
 				if(this.connected() && !tripped){
-					FishPlayer.stats.heuristics.blocksBroken[this.uuid] = this.tstats.blocksBroken;
 					if(this.tstats.blocksBroken > heuristics.blocksBrokenAfterJoin){
 						tripped = true;
 						logHTrip(this, "blocks broken after join", `${this.tstats.blocksBroken}/${heuristics.blocksBrokenAfterJoin}`);
@@ -1493,16 +1484,9 @@ Will you be able to update?`,
 						FishPlayer.messageAllExcept(this,
 `[yellow]Player ${this.cleanedName} has been stopped automatically due to suspected griefing.
 Please look at ${this.position()} and see if they were actually griefing. If they were not, please inform a staff member.`);
-						FishPlayer.stats.heuristics.numTripped ++;
-						FishPlayer.stats.heuristics.tripped[this.uuid] = "waiting";
-						Timer.schedule(() => {
-							if(FishPlayer.stats.heuristics.tripped[this.uuid] == "waiting")
-								FishPlayer.stats.heuristics.tripped[this.uuid] = this.marked();
-							if(this.marked()) FishPlayer.stats.heuristics.trippedCorrect ++;
-						}, 1200);
 					}
 				}
-			}, 0, 1, this.firstJoin() ? 30 : 20);
+			}, 0, 1, this.firstJoin() ? 30 : this.joinsLessThan(3) ? 25 : 15);
 		}
 	}
 	//#endregion

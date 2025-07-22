@@ -1579,26 +1579,16 @@ var FishPlayer = /** @class */ (function () {
         //Blocks broken check
         if (this.joinsLessThan(5)) {
             var tripped_1 = false;
-            FishPlayer.stats.heuristics.total++;
             Timer.schedule(function () {
                 if (_this.connected() && !tripped_1) {
-                    FishPlayer.stats.heuristics.blocksBroken[_this.uuid] = _this.tstats.blocksBroken;
                     if (_this.tstats.blocksBroken > config_1.heuristics.blocksBrokenAfterJoin) {
                         tripped_1 = true;
                         (0, utils_1.logHTrip)(_this, "blocks broken after join", "".concat(_this.tstats.blocksBroken, "/").concat(config_1.heuristics.blocksBrokenAfterJoin));
                         _this.stop("automod", globals.maxTime, "Automatic stop due to suspicious activity");
                         FishPlayer.messageAllExcept(_this, "[yellow]Player ".concat(_this.cleanedName, " has been stopped automatically due to suspected griefing.\nPlease look at ").concat(_this.position(), " and see if they were actually griefing. If they were not, please inform a staff member."));
-                        FishPlayer.stats.heuristics.numTripped++;
-                        FishPlayer.stats.heuristics.tripped[_this.uuid] = "waiting";
-                        Timer.schedule(function () {
-                            if (FishPlayer.stats.heuristics.tripped[_this.uuid] == "waiting")
-                                FishPlayer.stats.heuristics.tripped[_this.uuid] = _this.marked();
-                            if (_this.marked())
-                                FishPlayer.stats.heuristics.trippedCorrect++;
-                        }, 1200);
                     }
                 }
-            }, 0, 1, this.firstJoin() ? 30 : 20);
+            }, 0, 1, this.firstJoin() ? 30 : this.joinsLessThan(3) ? 25 : 15);
         }
     };
     FishPlayer.cachedPlayers = {};
@@ -1610,13 +1600,6 @@ var FishPlayer = /** @class */ (function () {
         numIpsChecked: 0,
         numIpsFlagged: 0,
         numIpsErrored: 0,
-        heuristics: {
-            tripped: {},
-            numTripped: 0,
-            total: 0,
-            trippedCorrect: 0,
-            blocksBroken: {}
-        }
     };
     FishPlayer.lastAuthKicked = null;
     //If a new account joins from one of these IPs, the IP gets banned.
