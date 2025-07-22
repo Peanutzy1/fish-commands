@@ -1018,7 +1018,9 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             else {
                 menus_1.Menu.textPages(sender, Vars.maps.customMaps().map(function (m) {
                     return ["Map information", function () { return maps_1.FMap.getCreate(m).displayStats(f); }];
-                }).toArray());
+                }).toArray(), {
+                    startPage: Vars.maps.customMaps().toArray().indexOf(Vars.state.map),
+                });
             }
         }
     }, gamemode: {
