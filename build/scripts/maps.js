@@ -81,9 +81,7 @@ var FinishedMapRun = /** @class */ (function (_super) {
     //this constructor is useless, but rhino crashes with a bizarre error when trying to run the emitted code
     //do not remove this useless constructor
     function FinishedMapRun(data) {
-        var _this = _super.call(this, data) || this;
-        _this.wave = 0;
-        return _this;
+        return _super.call(this, data) || this;
     }
     FinishedMapRun.prototype.duration = function () {
         return this.endTime - this.startTime;
