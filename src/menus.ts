@@ -218,7 +218,10 @@ export const Menu = {
 	},
 	textPages<TOption extends unknown, TCancelBehavior extends MenuCancelOption>(
 		this:void, target:FishPlayer, pages:(readonly [title:string, description:() => string])[],
-		cfg: Pick<MenuOptions<TOption, TCancelBehavior>, "onCancel"> = {},
+		cfg: Pick<MenuOptions<TOption, TCancelBehavior>, "onCancel"> & {
+			/** Index or title of the initial page. */
+			startPage?: number | string;
+		} = {},
 	){
 		const { promise, reject, resolve } = Promise.withResolvers<
 			(TCancelBehavior extends "null" ? null : never) | TOption,
@@ -249,7 +252,17 @@ export const Menu = {
 				}
 			});
 		}
-		showPage(0);
+		const index = (() => {
+			if(cfg.startPage == undefined) return 0;
+			if(typeof cfg.startPage === 'number'){
+				if(cfg.startPage < 0) return 0;
+				return cfg.startPage;
+			}
+			const index = pages.findIndex(([title]) => title === cfg.startPage);
+			if(index === -1) return 0;
+			return index;
+		})();
+		showPage(index);
 		return promise;
 	},
 	scroll<TOption extends unknown, TCancelBehavior extends MenuCancelOption>(

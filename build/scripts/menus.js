@@ -260,7 +260,23 @@ exports.Menu = {
                 }
             });
         }
-        showPage(0);
+        var index = (function () {
+            if (cfg.startPage == undefined)
+                return 0;
+            if (typeof cfg.startPage === 'number') {
+                if (cfg.startPage < 0)
+                    return 0;
+                return cfg.startPage;
+            }
+            var index = pages.findIndex(function (_a) {
+                var _b = __read(_a, 1), title = _b[0];
+                return title === cfg.startPage;
+            });
+            if (index === -1)
+                return 0;
+            return index;
+        })();
+        showPage(index);
         return promise;
     },
     scroll: function (target, title, description, options, cfg) {
