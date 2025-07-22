@@ -44,6 +44,26 @@ export function formatTime(time:number){
 	].filter(Boolean).join(", ")
 }
 
+export function formatTimeShort(time:number){
+
+	if(maxTime - (time + Date.now()) < 20000) return "forever";
+	if(isNaN(time)) return "N/A";
+
+	const months = Math.floor(time / (30 * 24 * 60 * 60 * 1000));
+	const days = Math.floor((time % (30 * 24 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000));
+	const hours = Math.floor((time % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+	const minutes = Math.floor((time % (60 * 60 * 1000)) / (60 * 1000));
+	const seconds = Math.floor((time % (60 * 1000)) / (1000));
+
+	return [
+		months && `${months}mo`,
+		days && `${days}d`,
+		hours && `${hours}h`,
+		minutes && `${minutes}m`,
+		(seconds || time < 1000) && `${seconds}s`,
+	].filter(Boolean).join(" ")
+}
+
 //TODO move this data to be right next to Mode
 export function formatModeName(name:GamemodeName){
 	return {

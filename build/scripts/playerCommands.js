@@ -1094,5 +1094,12 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             }
             output("Poll not viewed: ".concat(totals[0], "\nPoll canceled: ").concat(totals[1], "\nI won't or can't update to v8: ").concat(totals[2], "\nI will update to v8 if Fish updates to v8: ").concat(totals[3], "\nI have already updated to v8: ").concat(totals[4]));
         }
+    }, highscore: {
+        args: [],
+        perm: commands_1.Perm.none,
+        description: 'This command was moved to /mapinfo.',
+        handler: function () {
+            (0, commands_1.fail)("This command was moved to /mapinfo.");
+        }
     } }));
 var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11, templateObject_12, templateObject_13, templateObject_14, templateObject_15, templateObject_16, templateObject_17, templateObject_18;

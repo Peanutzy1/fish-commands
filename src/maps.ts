@@ -7,7 +7,7 @@ import { FFunction } from '/commands';
 import { computeStatistics } from '/funcs';
 import { FishEvents } from '/globals';
 import { dataClass, serialize } from '/io';
-import { formatTime, match } from '/utils';
+import { formatTime, formatTimeShort, match } from '/utils';
 import { Gamemode } from '/config';
 
 type FinishedMapRunData = {
@@ -69,10 +69,32 @@ export class PartialMapRun {
 		}, 0, 5);
 		Events.on(EventType.GameOverEvent, e => {
 			if(this.current){
-				//Add a new map run
-				FMap.getCreate(Vars.state.map)?.runs.push(
-					this.current.finish({winTeam: e.winner ?? Team.derelict})
-				);
+				const finishedRun = this.current.finish({ winTeam: e.winner ?? Team.derelict });
+				const fmap = FMap.getCreate(Vars.state.map);
+
+				//Highscore message
+				if(Gamemode.attack()){
+					const bestPreviousTime = fmap.stats().shortestWinTime;
+					const duration = finishedRun.duration();
+					Call.sendMessage(
+`[orange]--------
+${finishedRun.success && duration < bestPreviousTime ?
+	`[green]New highscore! Map completed in [accent]${formatTimeShort(duration)}[]`
+: `[orange]Map completed in [accent]${formatTimeShort(duration)}[]. Current highscore: [green]${formatTimeShort(bestPreviousTime)}[]`}
+[orange]--------`
+					);
+				} else if(Gamemode.survival()){
+					const bestPreviousWave = fmap.stats().highestWave;
+					const wave = finishedRun.wave;
+					Call.sendMessage(
+`[orange]--------
+${finishedRun.success && wave < bestPreviousWave ?
+	`[green]New highscore! Reached wave [accent]${wave}[].`
+: `[orange]Reached wave [accent]${wave}[]. Current highscore: [green]${bestPreviousWave}[]`}
+[orange]--------`
+					);
+				}
+				fmap.runs.push(finishedRun);
 			}
 			Core.settings.remove(this.key);
 			this.current = null;
@@ -199,7 +221,8 @@ export class FMap extends dataClass<FMapData>() {
 			return acc;
 		}, {} as Record<string, number>);
 		const teamWinRate = Object.fromEntries(Object.entries(teamWins).map(([team, wins]) => [team, wins / significantRunCount]));
-		const waveStats = computeStatistics(runs.filter(r => r.outcome()[0] !== "rtv").map(r => r.wave));
+		//Remove runs that were on wave 0, due to a silly bug we have thousands of runs with a max wave of 0
+		const waveStats = computeStatistics(runs.filter(r => r.outcome()[0] !== "rtv" && r.wave !== 0).map(r => r.wave));
 		return {
 			allRunCount,
 			significantRunCount,

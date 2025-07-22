@@ -43,6 +43,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.addToTileHistory = exports.foolifyChat = void 0;
 exports.memoizeChatFilter = memoizeChatFilter;
 exports.formatTime = formatTime;
+exports.formatTimeShort = formatTimeShort;
 exports.formatModeName = formatModeName;
 exports.formatTimestamp = formatTimestamp;
 exports.formatTimeRelative = formatTimeRelative;
@@ -118,6 +119,24 @@ function formatTime(time) {
         minutes && "".concat(minutes, " minute").concat(minutes != 1 ? "s" : ""),
         (seconds || time < 1000) && "".concat(seconds, " second").concat(seconds != 1 ? "s" : ""),
     ].filter(Boolean).join(", ");
+}
+function formatTimeShort(time) {
+    if (globals_1.maxTime - (time + Date.now()) < 20000)
+        return "forever";
+    if (isNaN(time))
+        return "N/A";
+    var months = Math.floor(time / (30 * 24 * 60 * 60 * 1000));
+    var days = Math.floor((time % (30 * 24 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000));
+    var hours = Math.floor((time % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+    var minutes = Math.floor((time % (60 * 60 * 1000)) / (60 * 1000));
+    var seconds = Math.floor((time % (60 * 1000)) / (1000));
+    return [
+        months && "".concat(months, "mo"),
+        days && "".concat(days, "d"),
+        hours && "".concat(hours, "h"),
+        minutes && "".concat(minutes, "m"),
+        (seconds || time < 1000) && "".concat(seconds, "s"),
+    ].filter(Boolean).join(" ");
 }
 //TODO move this data to be right next to Mode
 function formatModeName(name) {

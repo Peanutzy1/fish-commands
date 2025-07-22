@@ -1045,4 +1045,12 @@ I have already updated to v8: ${totals[4]}`
 			);
 		}
 	},
+	highscore: {
+		args: [],
+		perm: Perm.none,
+		description: 'This command was moved to /mapinfo.',
+		handler(){
+			fail(`This command was moved to /mapinfo.`);
+		}
+	}
 });

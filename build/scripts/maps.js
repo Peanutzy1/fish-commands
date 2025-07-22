@@ -180,10 +180,26 @@ var PartialMapRun = /** @class */ (function () {
             (_b = _a.current) === null || _b === void 0 ? void 0 : _b.update();
         }, 0, 5);
         Events.on(EventType.GameOverEvent, function (e) {
-            var _b, _c;
+            var _b;
             if (_a.current) {
-                //Add a new map run
-                (_b = FMap.getCreate(Vars.state.map)) === null || _b === void 0 ? void 0 : _b.runs.push(_a.current.finish({ winTeam: (_c = e.winner) !== null && _c !== void 0 ? _c : Team.derelict }));
+                var finishedRun = _a.current.finish({ winTeam: (_b = e.winner) !== null && _b !== void 0 ? _b : Team.derelict });
+                var fmap = FMap.getCreate(Vars.state.map);
+                //Highscore message
+                if (config_1.Gamemode.attack()) {
+                    var bestPreviousTime = fmap.stats().shortestWinTime;
+                    var duration = finishedRun.duration();
+                    Call.sendMessage("[orange]--------\n".concat(finishedRun.success && duration < bestPreviousTime ?
+                        "[green]New highscore! Map completed in [accent]".concat((0, utils_1.formatTimeShort)(duration), "[]")
+                        : "[orange]Map completed in [accent]".concat((0, utils_1.formatTimeShort)(duration), "[]. Current highscore: [green]").concat((0, utils_1.formatTimeShort)(bestPreviousTime), "[]"), "\n[orange]--------"));
+                }
+                else if (config_1.Gamemode.survival()) {
+                    var bestPreviousWave = fmap.stats().highestWave;
+                    var wave = finishedRun.wave;
+                    Call.sendMessage("[orange]--------\n".concat(finishedRun.success && wave < bestPreviousWave ?
+                        "[green]New highscore! Reached wave [accent]".concat(wave, "[].")
+                        : "[orange]Reached wave [accent]".concat(wave, "[]. Current highscore: [green]").concat(bestPreviousWave, "[]"), "\n[orange]--------"));
+                }
+                fmap.runs.push(finishedRun);
             }
             Core.settings.remove(_a.key);
             _a.current = null;
@@ -245,7 +261,8 @@ var FMap = function () {
                     var _d = __read(_c, 2), team = _d[0], wins = _d[1];
                     return [team, wins / significantRunCount];
                 }));
-                var waveStats = (0, funcs_1.computeStatistics)(runs.filter(function (r) { return r.outcome()[0] !== "rtv"; }).map(function (r) { return r.wave; }));
+                //Remove runs that were on wave 0, due to a silly bug we have thousands of runs with a max wave of 0
+                var waveStats = (0, funcs_1.computeStatistics)(runs.filter(function (r) { return r.outcome()[0] !== "rtv" && r.wave !== 0; }).map(function (r) { return r.wave; }));
                 return {
                     allRunCount: allRunCount,
                     significantRunCount: significantRunCount,
