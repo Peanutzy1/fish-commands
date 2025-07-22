@@ -954,6 +954,7 @@ IPs used: ${info.ips.map(i => `[blue]${i}[]`).toString(", ")}`
 		args: ["peace:boolean"],
 		description: "Toggles peaceful mode for sandbox.",
 		perm: Perm.mod,
+		requirements: [Req.mode('sandbox')],
 		handler({args}){
 			if(args.peace){
 				fishState.peacefulMode = true;

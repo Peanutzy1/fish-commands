@@ -1149,6 +1149,7 @@ exports.commands = (0, commands_1.commandList)({
         args: ["peace:boolean"],
         description: "Toggles peaceful mode for sandbox.",
         perm: commands_1.Perm.mod,
+        requirements: [commands_1.Req.mode('sandbox')],
         handler: function (_a) {
             var args = _a.args;
             if (args.peace) {
