@@ -319,17 +319,15 @@ function isImpersonator(name, isAdmin) {
     //very clean code i know
     var filters = (function (input) {
         return input.map(function (i) {
-            return Array.isArray(i)
-                ? [
-                    typeof i[0] == "string" ? function (replacedText) { return replacedText.includes(i[0]); } :
-                        i[0] instanceof RegExp ? function (replacedText) { return i[0].test(replacedText); } :
-                            i[0],
-                    i[1]
-                ]
-                : [
-                    function (replacedText) { return replacedText.includes(i); },
-                    "Name contains disallowed ".concat(i.length == 1 ? "icon" : "word", " '").concat(i, "'")
-                ];
+            return Array.isArray(i) ? [
+                typeof i[0] == "string" ? function (replacedText) { return replacedText.includes(i[0]); } :
+                    i[0] instanceof RegExp ? function (replacedText) { return i[0].test(replacedText); } :
+                        i[0],
+                i[1]
+            ] : [
+                function (replacedText) { return replacedText.includes(i); },
+                "Name contains disallowed ".concat(i.length == 1 ? "icon" : "word", " '").concat(i, "'")
+            ];
         });
     })([
         [/\bserver\b/, "Name contains disallowed word 'server'"],

@@ -615,7 +615,7 @@ var FishPlayer = /** @class */ (function () {
             }
             prefix += this.rank.prefix;
         }
-        if (prefix.length > 0)
+        if (prefix.length > 0 && !prefix.endsWith(" "))
             prefix += " ";
         var replacedName;
         if ((0, utils_1.cleanText)(this.name, true).includes("hacker")) {

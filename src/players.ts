@@ -569,7 +569,7 @@ ${msg}`
 			}
 			prefix += this.rank.prefix;
 		}
-		if(prefix.length > 0) prefix += " ";
+		if(prefix.length > 0 && !prefix.endsWith(" ")) prefix += " ";
 		let replacedName;
 		if(cleanText(this.name, true).includes("hacker")){
 			//"Don't be a script kiddie"

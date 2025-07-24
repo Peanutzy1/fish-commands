@@ -218,14 +218,12 @@ export function isImpersonator(name:string, isAdmin:boolean):false | string {
 	const filters:[check:Boolf<string>, message:string][] = (
 		(input: (string | [string | RegExp | Boolf<string>, string])[]) =>
 		input.map(i =>
-			Array.isArray(i)
-			? [
+			Array.isArray(i) ? [
 				typeof i[0] == "string" ? replacedText => replacedText.includes(<string>i[0]) :
 				i[0] instanceof RegExp ? replacedText => (<RegExp>i[0]).test(replacedText) :
 				i[0],
 				i[1]
-			]
-			: [
+			] : [
 				replacedText => replacedText.includes(i),
 				`Name contains disallowed ${i.length == 1 ? "icon" : "word"} '${i}'`
 			]
