@@ -227,11 +227,12 @@ export function isImpersonator(name:string, isAdmin:boolean):false | string {
 			]
 			: [
 				replacedText => replacedText.includes(i),
-				`Name contains disallowed ${i.length == 1 ? "icon" : "word"} ${i}`
+				`Name contains disallowed ${i.length == 1 ? "icon" : "word"} '${i}'`
 			]
 		)
 	)([
-		"server", "admin", "moderator", "staff", "owner",
+		[/\bserver\b/, "Name contains disallowed word 'server'"],
+		"admin", "moderator", "staff", "owner",
 		[">|||>", "Name contains >|||> which is reserved for the server owner"],
 		"\uE817", "\uE82C", "\uE88E", "\uE813",
 		[/^<.{1,3}>/, "Name contains a prefix such as <a> which is used for role prefixes"],
