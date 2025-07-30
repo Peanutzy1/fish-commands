@@ -73,7 +73,7 @@ export class PartialMapRun {
 				const fmap = FMap.getCreate(Vars.state.map);
 
 				//Highscore message
-				if(Gamemode.attack()){
+				if(Gamemode.attack() && finishedRun.success){
 					const bestPreviousTime = fmap.stats().shortestWinTime;
 					const duration = finishedRun.duration();
 					Call.sendMessage(

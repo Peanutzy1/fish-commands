@@ -185,7 +185,7 @@ var PartialMapRun = /** @class */ (function () {
                 var finishedRun = _a.current.finish({ winTeam: (_b = e.winner) !== null && _b !== void 0 ? _b : Team.derelict });
                 var fmap = FMap.getCreate(Vars.state.map);
                 //Highscore message
-                if (config_1.Gamemode.attack()) {
+                if (config_1.Gamemode.attack() && finishedRun.success) {
                     var bestPreviousTime = fmap.stats().shortestWinTime;
                     var duration = finishedRun.duration();
                     Call.sendMessage("[orange]--------\n".concat(finishedRun.success && duration < bestPreviousTime ?
