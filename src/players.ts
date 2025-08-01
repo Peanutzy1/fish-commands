@@ -1367,7 +1367,7 @@ Will you be able to update?`,
 		this.muted = true;
 		this.showRankPrefix = true;
 		this.updateName();
-		this.sendMessage(`[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.`);
+		this.sendMessage(`[yellow]Hey! You have been muted. You cannot send messages to other players. You can still send messages to staff members.`);
 		this.setPunishedIP(stopAntiEvadeTime);
 		this.addHistoryEntry({
 			action: 'muted',

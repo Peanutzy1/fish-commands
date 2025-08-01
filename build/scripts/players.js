@@ -1484,7 +1484,7 @@ var FishPlayer = /** @class */ (function () {
         this.muted = true;
         this.showRankPrefix = true;
         this.updateName();
-        this.sendMessage("[yellow] Hey! You have been muted. You can still use /msg to send a message to someone.");
+        this.sendMessage("[yellow]Hey! You have been muted. You cannot send messages to other players. You can still send messages to staff members.");
         this.setPunishedIP(config_1.stopAntiEvadeTime);
         this.addHistoryEntry({
             action: 'muted',
