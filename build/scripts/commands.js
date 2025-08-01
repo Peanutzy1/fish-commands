@@ -200,6 +200,8 @@ var Perm = /** @class */ (function () {
         attack: Perm.admin,
         hexed: Perm.mod,
         pvp: Perm.trusted,
+        minigame: Perm.trusted,
+        testsrv: Perm.trusted,
     });
     /** Whether players should be allowed to change the team of a unit or building. If not, they will be kicked out of their current unit or building before switching teams. */
     Perm.changeTeamExternal = new Perm("changeTeamExternal", "admin").exceptModes({
