@@ -82,7 +82,7 @@ export class Perm {
 	static trusted = Perm.fromRank(Rank.trusted);
 	static mod = Perm.fromRank(Rank.mod);
 	static admin = Perm.fromRank(Rank.admin);
-	static member = new Perm("member", fishP => fishP.hasFlag("member") && !fishP.marked(), "[pink]", `You must have a ${FColor.member`Fish Membership`} to use this command. Get a Fish Membership at[sky] ${text.membershipURL} []`);
+	static member = new Perm("member", fishP => fishP.hasFlag("member"), "[pink]", `You must have a ${FColor.member`Fish Membership`} to use this command. Get a Fish Membership at[sky] ${text.membershipURL} []`);
 	static chat = new Perm("chat", fishP => (!fishP.muted && !fishP.autoflagged) || fishP.ranksAtLeast("mod"));
 	static bypassChatFilter = new Perm("bypassChatFilter", "admin");
 	static seeMutedMessages = new Perm("seeMutedMessages", fishP => fishP.muted || fishP.autoflagged || fishP.ranksAtLeast("mod"));
