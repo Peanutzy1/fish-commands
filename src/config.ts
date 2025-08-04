@@ -198,6 +198,11 @@ export class FishServer {
 		"162.248.100.133", "6567",
 		["h", "hx", "hxd", "hpvp", "hxpvp", "hexpvp"]
 	);
+	static minigame = new FishServer(
+		"minigame",
+		"162.248.101.116", "6567",
+		["m", "mg", "mini", "minig", "mgame", "mng", "minigame", "mpvp"]
+	);
 	static byName(input:string):FishServer | null {
 		input = input.toLowerCase();
 		return FishServer.all.find(s => s.aliases.concat(s.name).includes(input)) ?? null;
