@@ -275,6 +275,10 @@ function handleLabel(player:mindustryPlayer, content:string, isSingle:boolean):b
 		return false;
 	}
 
+	if(isSingle && Strings.stripColors(message).length > 150){
+		player.sendMessage('Label too large. Maximum is 150 characters, not including color tags.');
+	}
+
 	if (isSingle) {
 		lastLabel = message;
 	}

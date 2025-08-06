@@ -227,6 +227,9 @@ function handleLabel(player, content, isSingle) {
         player.sendMessage(invalidReq);
         return false;
     }
+    if (isSingle && Strings.stripColors(message).length > 150) {
+        player.sendMessage('Label too large. Maximum is 150 characters, not including color tags.');
+    }
     if (isSingle) {
         lastLabel = message;
     }
