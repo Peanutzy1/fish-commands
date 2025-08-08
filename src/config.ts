@@ -343,7 +343,7 @@ export const tips = {
 
 	],
 	v8migration: [
-		`[coral]Announcement: Fish will be updating to Mindustry v8 on August 15th at 09:00 GMT.\n[white]To learn how to update your game, run [accent]/v8upgrade[].`
+		`[coral]Announcement: Fish will be updating to Mindustry v8 on August 16th at 09:00 GMT.\n[white]To learn how to update your game, run [accent]/v8upgrade[].`
 	],
 };
 export const rules = [
