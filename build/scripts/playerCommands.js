@@ -1068,6 +1068,37 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             var sender = _a.sender;
             sender.runv8poll();
         }
+    }, v8upgrade: {
+        args: [],
+        perm: commands_1.Perm.none,
+        description: "Provides instructions to update to v8.",
+        handler: function (_a) {
+            var sender = _a.sender;
+            menus_1.Menu.menu("V8 Migration Information", "Where did you download Mindustry?", sender.con.mobile ? [
+                "Google Play Store",
+                "Apple App Store",
+                "itch.io",
+                "F-Droid (APK)",
+            ] : [
+                "Steam",
+                "itch.io",
+                "GitHub",
+                "Foo's Client",
+                "MindustryLauncher",
+            ], sender, { onCancel: 'reject', includeCancel: true }).then(function (response) {
+                var message = (0, utils_1.match)(response, {
+                    "Google Play Store": "It is possible to update by selecting the \"Join the beta\" option in the app's page, and then updating the game. It is also possible to switch back to v7 by leaving the beta program.",
+                    "Foo's Client": "It is easy to switch between v7 and v8 by simply clicking the button on the title screen.",
+                    "GitHub": "It is easy to update by downloading the Mindustry.jar file from the latest \"pre-release\" release. It is also easy to switch back to v7, by running your current Mindustry.jar file.",
+                    "itch.io": "It is easy to update by downloading the file marked \"unstable\". It is also easy to switch back to v7, by opening your existing installation of the game.",
+                    "F-Droid (APK)": "It is easy to update by downloading the latest release from F-Droid.",
+                    "Apple App Store": "It is possible to update to v8 by installing the TestFlight app and then using this link https://testflight.apple.com/join/79Azm1hZ to join the beta.",
+                    "Steam": "It is possible to update to v8 by right-clicking Mindustry in your library, selecting Properties -> Betas and selecting v8 beta. You can also switch back to v7 using this method.",
+                    "MindustryLauncher": "It is easy to update to v8 by specifying the version as \"v149\" or \"foo-v8-latest\" with the --version flag."
+                });
+                sender.sendMessage("[coral]V8 Migration[] for [accent]".concat(response, "[]: ").concat(message, "\nIf you update now, you will not be able to join Fish anymore without downgrading to v7! Wait until Fish updates before updating.\nRun [accent]/v8poll[] to let us know if you will update when that happens."));
+            });
+        }
     }, v8pollresults: {
         args: [],
         perm: commands_1.Perm.mod,
