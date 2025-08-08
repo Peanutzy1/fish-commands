@@ -762,9 +762,10 @@ We apologize for the inconvenience.`
 				this.showAdNext = false;
 				showAd = true;
 			}
-			let messagePool = showAd ? tips.ads : (Mode.isChristmas && Math.random() > 0.6) ? tips.christmas : tips.normal;
+			const showV8migration = Version.number === 7;
+			let messagePool = showV8migration ? tips.v8migration : showAd ? tips.ads : (Mode.isChristmas && Math.random() > 0.6) ? tips.christmas : tips.normal;
 			const messageText = messagePool[Math.floor(Math.random() * messagePool.length)];
-			const message = showAd ? `[gold]${messageText}[]` : `[gold]Tip: ${messageText}[]`;
+			const message = showV8migration ? messageText : showAd ? `[gold]${messageText}[]` : `[gold]Tip: ${messageText}[]`;
 
 			//Delay sending the message so it doesn't get lost in the spam of messages that usually occurs when you join
 			Timer.schedule(() => this.sendMessage(message), 3);

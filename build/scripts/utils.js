@@ -605,8 +605,8 @@ function getAntiBotInfo(side) {
 }
 var failPrefix = "[scarlet]\u26A0 [yellow]";
 var successPrefix = "[#48e076]\uE800 ";
-function outputFail(message, sender) {
-    sender.sendMessage(failPrefix + (typeof message == "function" && "__partialFormatString" in message ? message("[yellow]") : message));
+function outputFail(message, sender, ratelimit) {
+    sender.sendMessage(failPrefix + (typeof message == "function" && "__partialFormatString" in message ? message("[yellow]") : message), ratelimit);
 }
 function outputSuccess(message, sender) {
     sender.sendMessage(successPrefix + (typeof message == "function" && "__partialFormatString" in message ? message("[#48e076]") : message));

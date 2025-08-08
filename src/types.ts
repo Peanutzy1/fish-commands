@@ -245,7 +245,7 @@ export interface FishPlayerData {
 		gamesWon: number;
 	};
 	showRankPrefix: boolean;
-	pollResponse: 0 | 1 | 2 | 3;
+	pollResponse: 0 | 1 | 2 | 3 | 4;
 }
 
 export interface PlayerHistoryEntry {

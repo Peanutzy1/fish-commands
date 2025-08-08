@@ -325,7 +325,10 @@ exports.tips = {
         "Fish becomes a bit more jolly around Christmastime!",
         "Many server maps have been changed for the season.",
     ],
-    staff: []
+    staff: [],
+    v8migration: [
+        "[coral]Announcement: Fish will be updating to Mindustry v8 on August 15th at 09:00 GMT.\n[white]To learn how to update your game, run [accent]/v8upgrade[]."
+    ],
 };
 exports.rules = [
     "# 1: [red]No griefing. This refers to intentionally hurting your own team in any way.",

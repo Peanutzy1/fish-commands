@@ -341,7 +341,10 @@ export const tips = {
 	],
 	staff: [
 
-	]
+	],
+	v8migration: [
+		`[coral]Announcement: Fish will be updating to Mindustry v8 on August 15th at 09:00 GMT.\n[white]To learn how to update your game, run [accent]/v8upgrade[].`
+	],
 };
 export const rules = [
 	`# 1: [red]No griefing. This refers to intentionally hurting your own team in any way.`,

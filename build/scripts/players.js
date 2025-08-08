@@ -815,9 +815,10 @@ var FishPlayer = /** @class */ (function () {
                 this.showAdNext = false;
                 showAd = true;
             }
-            var messagePool = showAd ? config_1.tips.ads : (config_1.Mode.isChristmas && Math.random() > 0.6) ? config_1.tips.christmas : config_1.tips.normal;
+            var showV8migration = Version.number === 7;
+            var messagePool = showV8migration ? config_1.tips.v8migration : showAd ? config_1.tips.ads : (config_1.Mode.isChristmas && Math.random() > 0.6) ? config_1.tips.christmas : config_1.tips.normal;
             var messageText = messagePool[Math.floor(Math.random() * messagePool.length)];
-            var message_1 = showAd ? "[gold]".concat(messageText, "[]") : "[gold]Tip: ".concat(messageText, "[]");
+            var message_1 = showV8migration ? messageText : showAd ? "[gold]".concat(messageText, "[]") : "[gold]Tip: ".concat(messageText, "[]");
             //Delay sending the message so it doesn't get lost in the spam of messages that usually occurs when you join
             Timer.schedule(function () { return _this.sendMessage(message_1); }, 3);
         }
