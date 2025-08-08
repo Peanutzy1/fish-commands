@@ -334,8 +334,8 @@ export class FishPlayer {
 			);
 			//Only show this to active players
 			//At least 10 joins, and has joined at least once in the past month
-			//Also, don't spam it if the player doesn't respond (wait 5 hours before asking again)
-			if(fishPlayer.joinsAtLeast(10) && Date.now() - previousJoin < 2592000_000 && fishPlayer.pollResponse === 0 && Date.now() - fishPlayer.lastPollSent > 5 * 3600_000){
+			//Also, don't spam it if the player doesn't respond (wait 6 hours before asking again)
+			if(fishPlayer.joinsAtLeast(10) && Date.now() - previousJoin < 2592000_000 && [0, 1].includes(fishPlayer.pollResponse) && Date.now() - fishPlayer.lastPollSent > 6 * 3600_000){
 				fishPlayer.runv8poll();
 			}
 
@@ -980,7 +980,7 @@ Will you be able to update?`,
 						gamesWon: fishPlayerData.readNumber(5),
 					},
 					showRankPrefix: fishPlayerData.readBool(),
-					pollResponse: fishPlayerData.readNumber(1) as 0 | 1 | 2 | 3,
+					pollResponse: fishPlayerData.readNumber(1) as 0 | 1 | 2 | 3 | 4,
 				}, player);
 			default: crash(`Unknown save version ${version}`);
 		}

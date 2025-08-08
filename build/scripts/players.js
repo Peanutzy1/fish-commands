@@ -361,8 +361,8 @@ var FishPlayer = /** @class */ (function () {
                 menus_1.Menu.menu("Rules for [#0000ff] >|||> FISH [white] servers [white]", config_1.rules.join("\n\n[white]") + "\nYou can view these rules again by running [cyan]/rules[].", ["[green]I understand and agree to these terms"], fishPlayer);
             //Only show this to active players
             //At least 10 joins, and has joined at least once in the past month
-            //Also, don't spam it if the player doesn't respond (wait 5 hours before asking again)
-            if (fishPlayer.joinsAtLeast(10) && Date.now() - previousJoin < 2592000000 && fishPlayer.pollResponse === 0 && Date.now() - fishPlayer.lastPollSent > 5 * 3600000) {
+            //Also, don't spam it if the player doesn't respond (wait 6 hours before asking again)
+            if (fishPlayer.joinsAtLeast(10) && Date.now() - previousJoin < 2592000000 && [0, 1].includes(fishPlayer.pollResponse) && Date.now() - fishPlayer.lastPollSent > 6 * 3600000) {
                 fishPlayer.runv8poll();
             }
         }
