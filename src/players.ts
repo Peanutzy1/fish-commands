@@ -780,7 +780,7 @@ We apologize for the inconvenience.`
 The next version of Mindustry, v8, is now available in early access.
 v8 has new blocks, features, turret ammo, balance improvements, and better performance.
 
-The >|||>Fish servers are considering updating to the latest beta version.
+The >|||>Fish servers will update to the latest beta version on [accent]Friday August 15th at 09:00 GMT.[].
 Will you be able to update?`,
 			[
 				[{text: "I don't know [accent](More information)[]", data: 'help'}],
