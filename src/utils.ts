@@ -482,7 +482,9 @@ const successPrefix = "[#48e076]\uE800 ";
 export function outputFail(message:string | PartialFormatString, sender:mindustryPlayer | FishPlayer):void;
 export function outputFail(message:string | PartialFormatString, sender:FishPlayer, ratelimit:number):void;
 export function outputFail(message:string | PartialFormatString, sender:mindustryPlayer | FishPlayer, ratelimit?:number){
-	sender.sendMessage(failPrefix + (typeof message == "function" && "__partialFormatString" in message ? message("[yellow]") : message), ratelimit);
+	const msg = failPrefix + (typeof message == "function" && "__partialFormatString" in message ? message("[yellow]") : message);
+	if(ratelimit) sender.sendMessage(msg, ratelimit);
+	else sender.sendMessage(msg);
 }
 export function outputSuccess(message:string | PartialFormatString, sender:mindustryPlayer | FishPlayer){
 	sender.sendMessage(successPrefix + (typeof message == "function" && "__partialFormatString" in message ? message("[#48e076]") : message));
