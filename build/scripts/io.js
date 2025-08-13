@@ -326,7 +326,7 @@ if (!Symbol.metadata)
         configurable: false,
         value: Symbol("Symbol.metadata")
     });
-function serialize(settingsKey, schema, oldSchema) {
+function serialize(settingsKey, schema, oldSchema, fixer) {
     return function decorate(_, _a) {
         var addInitializer = _a.addInitializer, access = _a.access, name = _a.name;
         addInitializer(function () {
@@ -336,8 +336,11 @@ function serialize(settingsKey, schema, oldSchema) {
             });
             globals_1.FishEvents.on("loadData", function () {
                 var value = serializer().readSettings();
-                if (value)
+                if (value) {
+                    if (fixer)
+                        value = fixer(value);
                     access.set(_this, value);
+                }
             });
             globals_1.FishEvents.on("saveData", function () {
                 try {

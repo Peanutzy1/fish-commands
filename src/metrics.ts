@@ -16,7 +16,12 @@ export class Metrics {
    */
   @serialize("player-count-data", () => ["version", 0,
     ["array", "u16", ["array", 2520, ["number", "i8"]]]
-  ])
+  ], undefined, weeks => {
+    for(let i = 0; i < Metrics.weekNumber(); i ++){
+      weeks[i] ??= Metrics.newWeek();
+    }
+    return weeks;
+  })
   static weeks: Array<MetricsWeek> = Array(this.weekNumber() + 1).fill(0).map(() => this.newWeek());
 
   static {

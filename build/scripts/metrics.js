@@ -89,7 +89,13 @@ var Metrics = function () {
             var _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(null) : void 0;
             _static_weeks_decorators = [(0, io_1.serialize)("player-count-data", function () { return ["version", 0,
                     ["array", "u16", ["array", 2520, ["number", "i8"]]]
-                ]; })];
+                ]; }, undefined, function (weeks) {
+                    var _b;
+                    for (var i = 0; i < Metrics.weekNumber(); i++) {
+                        (_b = weeks[i]) !== null && _b !== void 0 ? _b : (weeks[i] = Metrics.newWeek());
+                    }
+                    return weeks;
+                })];
             __esDecorate(null, null, _static_weeks_decorators, { kind: "field", name: "weeks", static: true, private: false, access: { has: function (obj) { return "weeks" in obj; }, get: function (obj) { return obj.weeks; }, set: function (obj, value) { obj.weeks = value; } }, metadata: _metadata }, _static_weeks_initializers, _static_weeks_extraInitializers);
             if (_metadata) Object.defineProperty(_a, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
         })(),

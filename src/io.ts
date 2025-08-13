@@ -243,7 +243,8 @@ if(!Symbol.metadata)
 
 export function serialize<T extends Serializable>(
 	settingsKey: string,
-	schema: () => Schema<T>, oldSchema?: () => Schema<T>
+	schema: () => Schema<T>, oldSchema?: () => Schema<T>,
+	fixer?: (raw:T) => T,
 ){
 	return function decorate<
 		This extends { [P in Name]: T }, Name extends string | symbol
@@ -256,8 +257,11 @@ export function serialize<T extends Serializable>(
 				new SettingsSerializer<T>(settingsKey, schema(), oldSchema?.())
 			);
 			FishEvents.on("loadData", () => {
-				const value = serializer().readSettings();
-				if(value) access.set(this, value);
+				let value = serializer().readSettings();
+				if(value){
+					if(fixer) value = fixer(value);
+					access.set(this, value);
+				}
 			});
 			FishEvents.on("saveData", () => {
 				try {
