@@ -91,7 +91,7 @@ var Metrics = function () {
                     ["array", "u16", ["array", 2520, ["number", "i8"]]]
                 ]; }, undefined, function (weeks) {
                     var _b;
-                    for (var i = 0; i < Metrics.weekNumber(); i++) {
+                    for (var i = 0; i <= Metrics.weekNumber(); i++) {
                         (_b = weeks[i]) !== null && _b !== void 0 ? _b : (weeks[i] = Metrics.newWeek());
                     }
                     return weeks;
