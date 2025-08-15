@@ -197,7 +197,7 @@ export const commands = commandList({
 								);
 								data.forEach(entry => {
 									output(
-										`[yellow]Tile history for tile (${i}, ${j}):\n` +
+										`[yellow]Tile history for tile (${i}, ${j}): ` +
 										(uuidPattern.test(entry.uuid)
 											? (sender.hasPerm("viewUUIDs")
 												? `[yellow]${admins.getInfoOptional(entry.uuid)?.plainLastName()}[lightgray](${entry.uuid})[yellow] ${entry.action} a [cyan]${entry.type}[] ${formatTimeRelative(entry.time)}`

@@ -9,4 +9,5 @@ build/scripts/client.d.js
 spec/build
 scripts/client.js
 scripts/client.ts
+playerCommands.ts
 dev-server

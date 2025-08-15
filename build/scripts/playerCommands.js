@@ -289,7 +289,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
                                 });
                                 data.forEach(function (entry) {
                                     var _a, _b;
-                                    output("[yellow]Tile history for tile (".concat(i, ", ").concat(j, "):\n") +
+                                    output("[yellow]Tile history for tile (".concat(i, ", ").concat(j, "): ") +
                                         (globals_1.uuidPattern.test(entry.uuid)
                                             ? (sender.hasPerm("viewUUIDs")
                                                 ? "[yellow]".concat((_a = admins.getInfoOptional(entry.uuid)) === null || _a === void 0 ? void 0 : _a.plainLastName(), "[lightgray](").concat(entry.uuid, ")[yellow] ").concat(entry.action, " a [cyan]").concat(entry.type, "[] ").concat((0, utils_1.formatTimeRelative)(entry.time))
