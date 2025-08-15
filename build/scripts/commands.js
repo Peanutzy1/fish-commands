@@ -673,6 +673,7 @@ function handleTapEvent(event) {
         return;
     var command = exports.allCommands[sender.tapInfo.commandName];
     var usageData = sender.getUsageData(sender.tapInfo.commandName);
+    var handleTapsUpdated = false;
     try {
         var failed_1 = false;
         (_a = command.tapped) === null || _a === void 0 ? void 0 : _a.call(command, {
@@ -691,6 +692,15 @@ function handleTapEvent(event) {
             tile: event.tile,
             x: event.tile.x,
             y: event.tile.y,
+            currentTapMode: sender.tapInfo.commandName == null ? "off" : sender.tapInfo.mode,
+            handleTaps: function (mode) {
+                if (mode == "off") {
+                    sender.tapInfo.commandName = null;
+                    return;
+                }
+                sender.tapInfo.mode = mode;
+                handleTapsUpdated = true;
+            },
         });
         if (!failed_1)
             usageData.tapLastUsedSuccessfully = Date.now();
@@ -709,7 +719,7 @@ function handleTapEvent(event) {
         }
     }
     finally {
-        if (sender.tapInfo.mode == "once") {
+        if (sender.tapInfo.mode == "once" && !handleTapsUpdated) {
             sender.tapInfo.commandName = null;
         }
         usageData.tapLastUsed = Date.now();

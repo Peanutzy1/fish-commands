@@ -508,6 +508,7 @@ export function handleTapEvent(event:EventType["TapEvent"]){
 	if(sender.tapInfo.commandName == null) return;
 	const command = allCommands[sender.tapInfo.commandName];
 	const usageData = sender.getUsageData(sender.tapInfo.commandName);
+	let handleTapsUpdated = false;
 	try {
 		let failed = false;
 		command.tapped?.({
@@ -526,6 +527,15 @@ export function handleTapEvent(event:EventType["TapEvent"]){
 			tile: event.tile,
 			x: event.tile.x,
 			y: event.tile.y,
+			currentTapMode: sender.tapInfo.commandName == null ? "off" : sender.tapInfo.mode,
+			handleTaps(mode){
+				if(mode == "off"){
+					sender.tapInfo.commandName = null;
+					return;
+				}
+				sender.tapInfo.mode = mode;
+				handleTapsUpdated = true;
+			},
 		});
 		if(!failed)
 			usageData.tapLastUsedSuccessfully = Date.now();
@@ -541,7 +551,7 @@ export function handleTapEvent(event:EventType["TapEvent"]){
 			Log.err(err as Error);
 		}
 	} finally {
-		if(sender.tapInfo.mode == "once"){
+		if(sender.tapInfo.mode == "once" && !handleTapsUpdated){
 			sender.tapInfo.commandName = null;
 		}
 		usageData.tapLastUsed = Date.now();

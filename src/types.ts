@@ -167,6 +167,9 @@ export interface TapHandler<ArgType extends string, StoredData> {
 		outputSuccess(message:string | PartialFormatString):void;
 		/** Use to tag template literals, formatting players, numbers, ranks, and more */
 		f:TagFunction<Formattable, PartialFormatString>;
+		currentTapMode:TapHandleMode;
+		/** Call this function to set tap handling mode. */
+		handleTaps(mode:TapHandleMode):void;
 		/** Timestamp of the last time this command was run. */
 		commandLastUsed:number;
 		/** Timestamp of the last time this command was run succesfully. */
