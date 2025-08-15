@@ -15,6 +15,7 @@ import { tagProcessorPartial } from '/funcs';
 import { parseError } from '/funcs';
 import { escapeStringColorsClient, escapeStringColorsServer } from '/funcs';
 import { crash } from '/funcs';
+import {TapHandleMode} from '/types'
 
 const hiddenUnauthorizedMessage = "[scarlet]Unknown command. Check [lightgray]/help[scarlet].";
 
@@ -525,7 +526,8 @@ export function handleTapEvent(event:EventType["TapEvent"]){
 			sender,
 			tile: event.tile,
 			x: event.tile.x,
-			y: event.tile.y,
+			y: event.tile.y,	
+			handleTaps(mode:TapHandleMode):void {}
 		});
 		if(!failed)
 			usageData.tapLastUsedSuccessfully = Date.now();

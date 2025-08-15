@@ -691,6 +691,7 @@ function handleTapEvent(event) {
             tile: event.tile,
             x: event.tile.x,
             y: event.tile.y,
+            handleTaps: function (mode) { }
         });
         if (!failed_1)
             usageData.tapLastUsedSuccessfully = Date.now();

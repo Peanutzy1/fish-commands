@@ -177,6 +177,8 @@ export interface TapHandler<ArgType extends string, StoredData> {
 		lastUsed:number;
 		/** Timestamp of the last time this tap handler was run succesfully. (without fail() being called) */
 		lastUsedSuccessfully:number;
+		/** yes handle taps here */
+		handleTaps(mode:TapHandleMode):void;
 	}):unknown;
 }
 
