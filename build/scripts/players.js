@@ -359,12 +359,6 @@ var FishPlayer = /** @class */ (function () {
             //I think this is a better spot for this
             if (fishPlayer.firstJoin())
                 menus_1.Menu.menu("Rules for [#0000ff] >|||> FISH [white] servers [white]", config_1.rules.join("\n\n[white]") + "\nYou can view these rules again by running [cyan]/rules[].", ["[green]I understand and agree to these terms"], fishPlayer);
-            //Only show this to active players
-            //At least 10 joins, and has joined at least once in the past month
-            //Also, don't spam it if the player doesn't respond (wait 6 hours before asking again)
-            if (fishPlayer.joinsAtLeast(10) && Date.now() - previousJoin < 2592000000 && [0, 1].includes(fishPlayer.pollResponse) && Date.now() - fishPlayer.lastPollSent > 6 * 3600000) {
-                fishPlayer.runv8poll();
-            }
         }
     };
     /** Must be run on PlayerJoinEvent. */
@@ -822,58 +816,6 @@ var FishPlayer = /** @class */ (function () {
             //Delay sending the message so it doesn't get lost in the spam of messages that usually occurs when you join
             Timer.schedule(function () { return _this.sendMessage(message_1); }, 3);
         }
-    };
-    FishPlayer.prototype.runv8poll = function () {
-        var _this = this;
-        this.lastPollSent = Date.now();
-        menus_1.Menu.buttons(this, "V8 Migration Poll", "[scarlet]IMPORTANT![]\n\nThe next version of Mindustry, v8, is now available in early access.\nv8 has new blocks, features, turret ammo, balance improvements, and better performance.\n\nThe >|||>Fish servers will update to the latest beta version on [accent]Saturday August 16th at 09:00 GMT.[].\nWill you be able to update?", [
-            [{ text: "I don't know [accent](More information)[]", data: 'help' }],
-            [{ text: "[#FFCCCC]I can't or won't update to v8", data: 2 }],
-            [{ text: "[#CCFFCC]I will update once Fish updates", data: 3 }],
-            [{ text: "[#CCCCFF]I have already updated to v8", data: 4 }],
-            [{ text: "[#AAAAAA]Close", data: 'close' }],
-        ], { onCancel: 'ignore' }).then(function (response) {
-            if (response == 'close') {
-                _this.pollResponse = 1;
-                return;
-            }
-            if (response != 'help') {
-                _this.pollResponse = response;
-                _this.sendMessage("Your response has been recorded. To change it, run [accent]/v8poll[]");
-                return;
-            }
-            menus_1.Menu.menu("V8 Migration Information", "Where did you download Mindustry?", _this.con.mobile ? [
-                "Google Play Store",
-                "Apple App Store",
-                "itch.io",
-                "F-Droid (APK)",
-            ] : [
-                "Steam",
-                "itch.io",
-                "GitHub",
-                "Foo's Client",
-                "MindustryLauncher",
-            ], _this, { onCancel: 'reject', includeCancel: true }).then(function (response) {
-                var message = (0, utils_1.match)(response, {
-                    "Google Play Store": "It is possible to update by selecting the \"Join the beta\" option in the app's page, and then updating the game. It is also possible to switch back to v7 by leaving the beta program.",
-                    "Foo's Client": "It is easy to switch between v7 and v8 by simply clicking the button on the title screen.",
-                    "GitHub": "It is easy to update by downloading the Mindustry.jar file from the latest \"pre-release\" release. It is also easy to switch back to v7, by running your current Mindustry.jar file.",
-                    "itch.io": "It is easy to update by downloading the file marked \"unstable\". It is also easy to switch back to v7, by opening your existing installation of the game.",
-                    "F-Droid (APK)": "It is easy to update by downloading the latest release from F-Droid.",
-                    "Apple App Store": "It is possible to update to v8 by installing the TestFlight app and then using this link https://testflight.apple.com/join/79Azm1hZ to join the beta.",
-                    "Steam": "It is possible to update to v8 by right-clicking Mindustry in your library, selecting Properties -> Betas and selecting v8 beta. You can also switch back to v7 using this method.",
-                    "MindustryLauncher": "It is easy to update to v8 by specifying the version as \"v149\" or \"foo-v8-latest\" with the --version flag."
-                });
-                _this.sendMessage("[coral]V8 Migration[] for [accent]".concat(response, "[]: ").concat(message, "\nIf you update now, you will not be able to join Fish anymore without downgrading to v7! Wait until Fish updates before updating.\nRun [accent]/v8poll[] to let us know if you will update when that happens."));
-            }).catch(function (err) {
-                var _a;
-                if (err === "cancel") {
-                    (_a = _this.player) === null || _a === void 0 ? void 0 : _a.sendMessage("To see the v8 migration survey again, run [accent]/v8poll[].");
-                }
-                else
-                    throw err;
-            });
-        });
     };
     FishPlayer.prototype.checkAutoRanks = function () {
         var e_7, _a;

@@ -1060,14 +1060,6 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
             reloader.end();
             outputSuccess("Changed mode to ".concat(args.mode));
         }
-    }, v8poll: {
-        args: [],
-        perm: commands_1.Perm.none,
-        description: "Displays the v8 poll.",
-        handler: function (_a) {
-            var sender = _a.sender;
-            sender.runv8poll();
-        }
     }, v8upgrade: {
         args: [],
         perm: commands_1.Perm.none,
@@ -1096,7 +1088,7 @@ exports.commands = (0, commands_1.commandList)(__assign(__assign({ about: {
                     "Steam": "It is possible to update to v8 by right-clicking Mindustry in your library, selecting Properties -> Betas and selecting v8 beta. You can also switch back to v7 using this method.",
                     "MindustryLauncher": "It is easy to update to v8 by specifying the version as \"v149\" or \"foo-v8-latest\" with the --version flag."
                 });
-                sender.sendMessage("[coral]V8 Migration[] for [accent]".concat(response, "[]: ").concat(message, "\nIf you update now, you will not be able to join Fish anymore without downgrading to v7! Wait until Fish updates before updating.\nRun [accent]/v8poll[] to let us know if you will update when that happens."));
+                sender.sendMessage("[coral]V8 Migration[] for [accent]".concat(response, "[]: ").concat(message));
             });
         }
     }, v8pollresults: {

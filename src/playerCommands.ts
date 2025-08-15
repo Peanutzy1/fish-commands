@@ -1016,14 +1016,6 @@ Win rate: ${target.stats.gamesWon / target.stats.gamesFinished}`
 			outputSuccess(`Changed mode to ${args.mode}`);
 		}
 	},
-	v8poll: {
-		args: [],
-		perm: Perm.none,
-		description: `Displays the v8 poll.`,
-		handler({sender}){
-			sender.runv8poll();
-		}
-	},
 	v8upgrade: {
 		args: [],
 		perm: Perm.none,
@@ -1057,7 +1049,7 @@ Win rate: ${target.stats.gamesWon / target.stats.gamesFinished}`
 					"Steam": `It is possible to update to v8 by right-clicking Mindustry in your library, selecting Properties -> Betas and selecting v8 beta. You can also switch back to v7 using this method.`,
 					"MindustryLauncher": `It is easy to update to v8 by specifying the version as "v149" or "foo-v8-latest" with the --version flag.`
 				});
-				sender.sendMessage(`[coral]V8 Migration[] for [accent]${response}[]: ${message}\nIf you update now, you will not be able to join Fish anymore without downgrading to v7! Wait until Fish updates before updating.\nRun [accent]/v8poll[] to let us know if you will update when that happens.`);
+				sender.sendMessage(`[coral]V8 Migration[] for [accent]${response}[]: ${message}`);
 			});
 		}
 	},

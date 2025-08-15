@@ -332,12 +332,6 @@ export class FishPlayer {
 				["[green]I understand and agree to these terms"],
 				fishPlayer
 			);
-			//Only show this to active players
-			//At least 10 joins, and has joined at least once in the past month
-			//Also, don't spam it if the player doesn't respond (wait 6 hours before asking again)
-			if(fishPlayer.joinsAtLeast(10) && Date.now() - previousJoin < 2592000_000 && [0, 1].includes(fishPlayer.pollResponse) && Date.now() - fishPlayer.lastPollSent > 6 * 3600_000){
-				fishPlayer.runv8poll();
-			}
 
 		}
 	}
@@ -770,72 +764,6 @@ We apologize for the inconvenience.`
 			//Delay sending the message so it doesn't get lost in the spam of messages that usually occurs when you join
 			Timer.schedule(() => this.sendMessage(message), 3);
 		}
-	}
-	runv8poll(){
-		this.lastPollSent = Date.now();
-		Menu.buttons<'close' | 2 | 3 | 4 | 'help', "ignore">(
-			this,
-			"V8 Migration Poll",
-`[scarlet]IMPORTANT![]
-
-The next version of Mindustry, v8, is now available in early access.
-v8 has new blocks, features, turret ammo, balance improvements, and better performance.
-
-The >|||>Fish servers will update to the latest beta version on [accent]Saturday August 16th at 09:00 GMT.[].
-Will you be able to update?`,
-			[
-				[{text: "I don't know [accent](More information)[]", data: 'help'}],
-				[{text: "[#FFCCCC]I can't or won't update to v8", data: 2}],
-				[{text: "[#CCFFCC]I will update once Fish updates", data: 3}],
-				[{text: "[#CCCCFF]I have already updated to v8", data: 4}],
-				[{text: "[#AAAAAA]Close", data: 'close'}],
-			],
-			{ onCancel: 'ignore' }
-		).then(response => {
-			if(response == 'close'){
-				this.pollResponse = 1;
-				return;
-			}
-			if(response != 'help'){
-				this.pollResponse = response;
-				this.sendMessage(`Your response has been recorded. To change it, run [accent]/v8poll[]`);
-				return;
-			}
-			Menu.menu(
-				"V8 Migration Information",
-				`Where did you download Mindustry?`,
-				this.con.mobile ? [
-					"Google Play Store",
-					"Apple App Store",
-					"itch.io",
-					"F-Droid (APK)",
-				] as const : [
-					"Steam",
-					"itch.io",
-					"GitHub",
-					"Foo's Client",
-					"MindustryLauncher",
-				] as const,
-				this,
-				{ onCancel: 'reject', includeCancel: true }
-			).then(response => {
-				const message = match(response, {
-					"Google Play Store": `It is possible to update by selecting the "Join the beta" option in the app's page, and then updating the game. It is also possible to switch back to v7 by leaving the beta program.`,
-					"Foo's Client": `It is easy to switch between v7 and v8 by simply clicking the button on the title screen.`,
-					"GitHub": `It is easy to update by downloading the Mindustry.jar file from the latest "pre-release" release. It is also easy to switch back to v7, by running your current Mindustry.jar file.`,
-					"itch.io": `It is easy to update by downloading the file marked "unstable". It is also easy to switch back to v7, by opening your existing installation of the game.`,
-					"F-Droid (APK)": `It is easy to update by downloading the latest release from F-Droid.`,
-					"Apple App Store": `It is possible to update to v8 by installing the TestFlight app and then using this link https://testflight.apple.com/join/79Azm1hZ to join the beta.`,
-					"Steam": `It is possible to update to v8 by right-clicking Mindustry in your library, selecting Properties -> Betas and selecting v8 beta. You can also switch back to v7 using this method.`,
-					"MindustryLauncher": `It is easy to update to v8 by specifying the version as "v149" or "foo-v8-latest" with the --version flag.`
-				});
-				this.sendMessage(`[coral]V8 Migration[] for [accent]${response}[]: ${message}\nIf you update now, you will not be able to join Fish anymore without downgrading to v7! Wait until Fish updates before updating.\nRun [accent]/v8poll[] to let us know if you will update when that happens.`);
-			}).catch(err => {
-				if(err === "cancel"){
-					this.player?.sendMessage(`To see the v8 migration survey again, run [accent]/v8poll[].`);
-				} else throw err;
-			});
-		});
 	}
 	checkAutoRanks(){
 		if(this.stelled()) return;
