@@ -592,7 +592,7 @@ export const commands = commandList({
 			if(target.team() !== newcontroller.team()){
 				if(!sender.hasPerm("changeTeamExternal")){
 					if(!sender.hasPerm("changeTeam")) fail(`You do not have permission to change teams.`);
-					newcontroller.setTeam(unit.team());
+					newcontroller.setTeam(unit.team);
 				}
 			}
 			target.forceRespawn();

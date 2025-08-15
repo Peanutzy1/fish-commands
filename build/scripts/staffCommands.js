@@ -762,7 +762,7 @@ exports.commands = (0, commands_1.commandList)({
                 if (!sender.hasPerm("changeTeamExternal")) {
                     if (!sender.hasPerm("changeTeam"))
                         (0, commands_1.fail)("You do not have permission to change teams.");
-                    newcontroller.setTeam(unit.team());
+                    newcontroller.setTeam(unit.team);
                 }
             }
             target.forceRespawn();
