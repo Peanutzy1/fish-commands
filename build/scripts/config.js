@@ -327,7 +327,7 @@ exports.tips = {
     ],
     staff: [],
     v8migration: [
-        "[coral]Announcement: Fish will be updating to Mindustry v8 on August 16th at 09:00 GMT.\n[white]To learn how to update your game, run [accent]/v8upgrade[]."
+        "[coral]Announcement: Fish has updated to Mindustry v8. This server will remain on v7 temporarily, but it will also be upgraded in 1 week.\n[white]To learn how to update your game, run [accent]/v8upgrade[]."
     ],
 };
 exports.rules = [
