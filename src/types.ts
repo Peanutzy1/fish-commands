@@ -187,7 +187,7 @@ export type FishCommandRequirement<ArgType extends string, StoredData> = (data:F
 
 export interface FishCommandData<ArgType extends string, StoredData> {
 	/** Args for this command, like ["player:player", "reason:string?"] */
-	args: ArgType[];
+	args: readonly ArgType[];
 	description: string;
 	/**
 	 * Permission level required for players to run this command.
