@@ -54,7 +54,7 @@ var VoteManager = /** @class */ (function (_super) {
     __extends(VoteManager, _super);
     function VoteManager(voteTime, goal, isEligible) {
         if (goal === void 0) { goal = ["fractionOfVoters", 0.50001]; }
-        if (isEligible === void 0) { isEligible = function () { return true; }; }
+        if (isEligible === void 0) { isEligible = function (fishP) { return !fishP.afk(); }; }
         var _this = _super.call(this) || this;
         _this.voteTime = voteTime;
         _this.goal = goal;

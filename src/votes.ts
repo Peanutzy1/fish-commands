@@ -34,7 +34,7 @@ export class VoteManager<SessionData extends {}> extends EventEmitter<VoteEventM
 	constructor(
 		public voteTime:number,
 		public goal:["fractionOfVoters", number] | ["absolute", number] = ["fractionOfVoters", 0.50001],
-		public isEligible:(fishP:FishPlayer, data: SessionData) => boolean = () => true
+		public isEligible:(fishP:FishPlayer, data: SessionData) => boolean = (fishP) => !fishP.afk()
 	){
 		super();
 		if(goal[0] == "fractionOfVoters"){
